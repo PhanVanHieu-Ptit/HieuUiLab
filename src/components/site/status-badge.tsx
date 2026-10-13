@@ -1,21 +1,28 @@
+import { Badge, type BadgeProps } from '@/components/ui/badge'
 import type { RegistryStatus } from '@/registry/types'
-import { cn } from '@/lib/cn'
 
-const styles: Record<RegistryStatus, string> = {
-  stable: 'border-success/40 text-success',
-  beta: 'border-warning/40 text-warning',
-  planned: 'border-border text-muted-foreground',
+const variants: Record<RegistryStatus, BadgeProps['variant']> = {
+  stable: 'success',
+  beta: 'warning',
+  planned: 'outline',
 }
 
-export function StatusBadge({ status }: { status: RegistryStatus }) {
+const labels: Record<RegistryStatus, string> = {
+  stable: 'Stable',
+  beta: 'Beta',
+  planned: 'Planned',
+}
+
+export function StatusBadge({
+  status,
+  size,
+}: {
+  status: RegistryStatus
+  size?: BadgeProps['size']
+}) {
   return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium capitalize',
-        styles[status],
-      )}
-    >
-      {status}
-    </span>
+    <Badge variant={variants[status]} size={size ?? 'md'}>
+      {labels[status]}
+    </Badge>
   )
 }

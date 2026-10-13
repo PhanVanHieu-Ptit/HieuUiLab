@@ -1,37 +1,33 @@
 import { Link } from 'react-router'
 
+import { PageHeader } from '@/components/site/page'
 import { StatusBadge } from '@/components/site/status-badge'
+import { Card, CardDescription, CardHeader, CardLink, CardTitle } from '@/components/ui/card'
 import { registry } from '@/registry'
 
 export function ComponentsIndexPage() {
   const components = registry.filter((entry) => entry.category === 'component')
 
   return (
-    <article className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Components</h1>
-        <p className="mt-2 text-muted-foreground">
-          Accessible building blocks. Copy the source into your project and own it.
-        </p>
-      </header>
-      <ul className="grid gap-4 sm:grid-cols-2">
+    <article className="flex flex-col gap-8">
+      <PageHeader
+        title="Components"
+        description="Accessible building blocks. Copy the source into your project and own it."
+      />
+      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {components.map((entry) => (
-          <li
-            key={entry.slug}
-            className="relative rounded-lg border bg-surface p-5 hover:bg-accent/40"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <h2 className="font-medium">
-                <Link
-                  to={`/components/${entry.slug}`}
-                  className="rounded-sm outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-2 focus-visible:after:ring-ring"
-                >
-                  {entry.name}
-                </Link>
-              </h2>
-              <StatusBadge status={entry.status} />
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">{entry.description}</p>
+          <li key={entry.slug} className="flex">
+            <Card variant="interactive" className="flex-1">
+              <CardHeader>
+                <CardTitle as="h2" className="justify-between">
+                  <CardLink asChild>
+                    <Link to={`/components/${entry.slug}`}>{entry.name}</Link>
+                  </CardLink>
+                  <StatusBadge status={entry.status} size="sm" />
+                </CardTitle>
+                <CardDescription className="line-clamp-3">{entry.description}</CardDescription>
+              </CardHeader>
+            </Card>
           </li>
         ))}
       </ul>

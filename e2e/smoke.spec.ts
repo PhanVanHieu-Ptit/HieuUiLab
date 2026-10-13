@@ -23,18 +23,19 @@ test('navigates from home to the Button page and switches a demo to code', async
   await expect(page.getByRole('button', { name: 'Copy code' }).first()).toBeVisible()
 })
 
-test('toggles and persists the dark theme', async ({ page }) => {
+test('switches and persists the dark theme from the theme menu', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' })
   await page.goto('/components/button')
   const html = page.locator('html')
   await expect(html).not.toHaveClass(/dark/)
 
-  await page.getByRole('button', { name: 'Switch to dark theme' }).click()
+  await page.getByRole('button', { name: 'Theme: System' }).click()
+  await page.getByRole('menuitemradio', { name: 'Dark' }).click()
   await expect(html).toHaveClass(/dark/)
 
   await page.reload()
   await expect(html).toHaveClass(/dark/)
-  await expect(page.getByRole('button', { name: 'Switch to light theme' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Theme: Dark' })).toBeVisible()
 })
 
 test('first Tab press reaches the skip link, which moves focus to main', async ({ page }) => {

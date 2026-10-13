@@ -4,8 +4,11 @@
 
 /*
  * Semantic design tokens. Components reference these through Tailwind
- * utilities (bg-background, text-muted-foreground, ring-ring, ...) and
+ * utilities (bg-background, text-muted-foreground, outline-ring, ...) and
  * never use raw palette colors.
+ *
+ * Neutrals sit on hue 260 with low chroma; primary (hue 264) is the single
+ * accent. Status colors are reserved for status, never decoration.
  *
  * Text pairs (each *-foreground on its fill, muted/status text on
  * background, surface, and muted) must keep a WCAG AA contrast of 4.5:1;
@@ -14,16 +17,25 @@
 :root {
   --radius: 0.5rem;
 
+  /* Stacking layers, used as z-(--z-header) etc. */
+  --z-header: 40;
+  --z-overlay: 50;
+  --z-popover: 60;
+
   --background: oklch(0.99 0.002 260);
   --foreground: oklch(0.2 0.02 260);
   --surface: oklch(1 0 0);
   --surface-foreground: oklch(0.2 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.02 260);
   --muted: oklch(0.96 0.006 260);
   --muted-foreground: oklch(0.48 0.02 260);
   --accent: oklch(0.94 0.012 260);
   --accent-foreground: oklch(0.22 0.02 260);
   --primary: oklch(0.5 0.19 264);
   --primary-foreground: oklch(0.99 0.004 260);
+  --primary-subtle: oklch(0.95 0.03 264);
+  --primary-subtle-foreground: oklch(0.42 0.17 264);
   --secondary: oklch(0.93 0.01 260);
   --secondary-foreground: oklch(0.22 0.02 260);
   --destructive: oklch(0.55 0.21 27);
@@ -37,21 +49,31 @@
   --border: oklch(0.9 0.008 260);
   --input: oklch(0.88 0.01 260);
   --ring: oklch(0.55 0.19 264);
-  --code: oklch(0.97 0.004 260);
+  --overlay: oklch(0.2 0.02 260 / 0.4);
+  --code: oklch(0.975 0.004 260);
   --code-foreground: oklch(0.25 0.02 260);
+
+  --elevation-raised:
+    0 1px 2px 0 oklch(0.2 0.02 260 / 0.06), 0 1px 3px 0 oklch(0.2 0.02 260 / 0.08);
+  --elevation-floating:
+    0 12px 32px -8px oklch(0.2 0.02 260 / 0.2), 0 4px 8px -4px oklch(0.2 0.02 260 / 0.1);
 }
 
 .dark {
   --background: oklch(0.16 0.012 260);
   --foreground: oklch(0.95 0.006 260);
-  --surface: oklch(0.2 0.014 260);
+  --surface: oklch(0.19 0.013 260);
   --surface-foreground: oklch(0.95 0.006 260);
+  --popover: oklch(0.21 0.014 260);
+  --popover-foreground: oklch(0.95 0.006 260);
   --muted: oklch(0.24 0.014 260);
   --muted-foreground: oklch(0.72 0.016 260);
   --accent: oklch(0.27 0.018 260);
   --accent-foreground: oklch(0.95 0.006 260);
   --primary: oklch(0.7 0.15 264);
   --primary-foreground: oklch(0.16 0.02 264);
+  --primary-subtle: oklch(0.26 0.06 264);
+  --primary-subtle-foreground: oklch(0.86 0.08 264);
   --secondary: oklch(0.28 0.016 260);
   --secondary-foreground: oklch(0.95 0.006 260);
   --destructive: oklch(0.65 0.2 27);
@@ -62,11 +84,15 @@
   --warning-foreground: oklch(0.16 0.02 80);
   --info: oklch(0.72 0.12 235);
   --info-foreground: oklch(0.16 0.02 235);
-  --border: oklch(0.3 0.014 260);
+  --border: oklch(0.29 0.014 260);
   --input: oklch(0.34 0.016 260);
   --ring: oklch(0.72 0.15 264);
-  --code: oklch(0.19 0.012 260);
+  --overlay: oklch(0.08 0.01 260 / 0.6);
+  --code: oklch(0.185 0.012 260);
   --code-foreground: oklch(0.9 0.008 260);
+
+  --elevation-raised: 0 1px 2px 0 oklch(0 0 0 / 0.3);
+  --elevation-floating: 0 16px 40px -8px oklch(0 0 0 / 0.55), 0 0 0 1px oklch(1 0 0 / 0.04);
 }
 
 @theme inline {
@@ -74,12 +100,16 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-surface-foreground: var(--surface-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-destructive: var(--destructive);
@@ -93,28 +123,139 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
   --color-code: var(--code);
   --color-code-foreground: var(--code-foreground);
+
+  --shadow-raised: var(--elevation-raised);
+  --shadow-floating: var(--elevation-floating);
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
   --radius-xl: calc(var(--radius) + 8px);
-
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, monospace;
 }
 
 /*
- * Theme-independent layout tokens. The spacing scale itself stays on
- * Tailwind's default 0.25rem base (p-2, gap-4, ...); these name the
- * recurring layout values: px-gutter, py-section, max-w-page, max-w-content.
+ * Theme-independent tokens. The spacing scale itself stays on Tailwind's
+ * default 0.25rem base (p-2, gap-4, ...); these name the recurring values:
+ * px-gutter, py-section, h-header, top-header, w-sidebar, max-w-page,
+ * max-w-content, max-w-sheet, text-display/title/heading/mono.
  */
 @theme {
+  --font-sans: 'IBM Plex Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, monospace;
+
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.08;
+  --text-display--letter-spacing: -0.03em;
+  --text-display--font-weight: 600;
+  --text-title: 2rem;
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.025em;
+  --text-title--font-weight: 600;
+  --text-heading: 1.25rem;
+  --text-heading--line-height: 1.35;
+  --text-heading--letter-spacing: -0.015em;
+  --text-heading--font-weight: 600;
+  --text-mono: 0.8125rem;
+  --text-mono--line-height: 1.7;
+
   --spacing-gutter: 1rem;
   --spacing-section: 4rem;
+  --spacing-header: 3.5rem;
+  --spacing-sidebar: 15rem;
   --container-page: 80rem;
   --container-content: 64rem;
+  --container-prose: 42rem;
+  --container-sheet: 20rem;
+
+  --animate-fade-in: fade-in 150ms ease-out;
+  --animate-fade-out: fade-out 120ms ease-in;
+  --animate-pop-in: pop-in 160ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-pop-out: pop-out 120ms ease-in;
+  --animate-slide-in-left: slide-in-left 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-slide-out-left: slide-out-left 160ms ease-in;
+  --animate-slide-in-right: slide-in-right 220ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  --animate-slide-out-right: slide-out-right 160ms ease-in;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      scale: 0.97;
+    }
+  }
+  @keyframes pop-out {
+    to {
+      opacity: 0;
+      scale: 0.97;
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      translate: -100% 0;
+    }
+  }
+  @keyframes slide-out-left {
+    to {
+      translate: -100% 0;
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      translate: 100% 0;
+    }
+  }
+  @keyframes slide-out-right {
+    to {
+      translate: 100% 0;
+    }
+  }
+}
+
+/*
+ * Shared interaction states. Every interactive element uses these so
+ * focus and disabled look identical everywhere. Focus uses outline (not
+ * box-shadow) so it survives forced-colors mode.
+ */
+@utility focus-ring {
+  /* Ring color and size are set at rest so color transitions never animate the outline in. */
+  outline: 2px none var(--color-ring);
+  outline-offset: 2px;
+
+  &:focus-visible {
+    outline-style: solid;
+  }
+}
+
+/* For items inside scroll containers, where an outside outline would be clipped. */
+@utility focus-ring-inset {
+  outline: 2px none var(--color-ring);
+  outline-offset: -2px;
+
+  &:focus-visible {
+    outline-style: solid;
+  }
+}
+
+@utility disabled-state {
+  &:disabled,
+  &[aria-disabled='true'],
+  &[data-disabled] {
+    pointer-events: none;
+    opacity: 0.5;
+  }
 }
 
 @layer base {
@@ -124,6 +265,7 @@
 
   html {
     color-scheme: light;
+    -webkit-text-size-adjust: 100%;
   }
 
   html.dark {
@@ -131,12 +273,40 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+
+  code,
+  kbd,
+  pre,
+  samp {
+    font-feature-settings: 'calt' 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Anchor targets clear the sticky header. */
+  [id] {
+    scroll-margin-top: calc(var(--spacing-header) + 1.5rem);
+  }
+
+  ::selection {
+    @apply bg-primary-subtle text-primary-subtle-foreground;
   }
 
   /* Shiki dual-theme output: switch token colors with the active theme. */
   .dark .shiki,
   .dark .shiki span {
     color: var(--shiki-dark) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

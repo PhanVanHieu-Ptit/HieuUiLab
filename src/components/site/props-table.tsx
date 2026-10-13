@@ -3,7 +3,7 @@ import type { PropDoc } from '@/registry/types'
 export function PropsTable({ props, caption }: { props: readonly PropDoc[]; caption: string }) {
   return (
     <div className="overflow-x-auto rounded-lg border">
-      <table className="w-full text-left text-sm">
+      <table className="w-full min-w-xl text-left text-sm">
         <caption className="sr-only">{caption}</caption>
         <thead className="bg-muted text-muted-foreground">
           <tr>
