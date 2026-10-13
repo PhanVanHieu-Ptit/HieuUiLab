@@ -6,6 +6,10 @@
  * Semantic design tokens. Components reference these through Tailwind
  * utilities (bg-background, text-muted-foreground, ring-ring, ...) and
  * never use raw palette colors.
+ *
+ * Text pairs (each *-foreground on its fill, muted/status text on
+ * background, surface, and muted) must keep a WCAG AA contrast of 4.5:1;
+ * tokens.test.ts enforces this for both themes.
  */
 :root {
   --radius: 0.5rem;
@@ -25,7 +29,11 @@
   --destructive: oklch(0.55 0.21 27);
   --destructive-foreground: oklch(0.99 0.004 27);
   --success: oklch(0.52 0.13 155);
-  --warning: oklch(0.6 0.14 75);
+  --success-foreground: oklch(0.99 0.004 155);
+  --warning: oklch(0.53 0.12 70);
+  --warning-foreground: oklch(0.99 0.004 75);
+  --info: oklch(0.52 0.14 240);
+  --info-foreground: oklch(0.99 0.004 240);
   --border: oklch(0.9 0.008 260);
   --input: oklch(0.88 0.01 260);
   --ring: oklch(0.55 0.19 264);
@@ -49,7 +57,11 @@
   --destructive: oklch(0.65 0.2 27);
   --destructive-foreground: oklch(0.16 0.02 27);
   --success: oklch(0.72 0.14 155);
+  --success-foreground: oklch(0.16 0.02 155);
   --warning: oklch(0.8 0.14 80);
+  --warning-foreground: oklch(0.16 0.02 80);
+  --info: oklch(0.72 0.12 235);
+  --info-foreground: oklch(0.16 0.02 235);
   --border: oklch(0.3 0.014 260);
   --input: oklch(0.34 0.016 260);
   --ring: oklch(0.72 0.15 264);
@@ -73,7 +85,11 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -83,9 +99,22 @@
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
 
   --font-sans: ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', 'Cascadia Code', Menlo, monospace;
+}
+
+/*
+ * Theme-independent layout tokens. The spacing scale itself stays on
+ * Tailwind's default 0.25rem base (p-2, gap-4, ...); these name the
+ * recurring layout values: px-gutter, py-section, max-w-page, max-w-content.
+ */
+@theme {
+  --spacing-gutter: 1rem;
+  --spacing-section: 4rem;
+  --container-page: 80rem;
+  --container-content: 64rem;
 }
 
 @layer base {

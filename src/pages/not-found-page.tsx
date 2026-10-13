@@ -17,7 +17,7 @@ export function NotFoundContent() {
 
 export function NotFoundPage() {
   return (
-    <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-4 outline-none">
+    <main id="main" tabIndex={-1} className="mx-auto max-w-content px-gutter outline-none">
       <NotFoundContent />
     </main>
   )
