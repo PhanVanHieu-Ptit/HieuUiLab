@@ -14,7 +14,14 @@ describe('App', () => {
       'href',
       '/components',
     )
-    expect(screen.getByRole('button', { name: /^Switch to (dark|light) theme$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: /^Theme: (Light|Dark|System)$/ })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Search docs' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Open navigation' })).toBeVisible()
+    expect(screen.getByRole('link', { name: 'GitHub (opens in a new tab)' })).toHaveAttribute(
+      'target',
+      '_blank',
+    )
+    expect(container.querySelectorAll('main')).toHaveLength(1)
     expect(container.querySelector('main#main')).not.toBeNull()
   })
 })

@@ -34,7 +34,7 @@ export default tseslint.config(
       'react-refresh/only-export-components': [
         'warn',
         // cva variant helpers are part of a component's public API.
-        { allowConstantExport: true, allowExportNames: ['buttonVariants'] },
+        { allowConstantExport: true, allowExportNames: ['buttonVariants', 'badgeVariants'] },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',

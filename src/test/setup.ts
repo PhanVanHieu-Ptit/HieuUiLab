@@ -17,6 +17,18 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
+// jsdom gaps that Radix popovers and the search list rely on.
+class ResizeObserverStub {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+Object.defineProperty(window, 'ResizeObserver', { writable: true, value: ResizeObserverStub })
+Element.prototype.scrollIntoView = vi.fn()
+Element.prototype.hasPointerCapture = vi.fn(() => false)
+Element.prototype.releasePointerCapture = vi.fn()
+window.scrollTo = vi.fn()
+
 afterEach(() => {
   cleanup()
 })

@@ -1,16 +1,11 @@
 import buttonSource from '@/components/ui/button.tsx?raw'
 
 import type { RegistryEntry } from '../types'
+import { demoExtractor } from '../utils'
 import { ButtonSizesDemo, ButtonStatesDemo, ButtonVariantsDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
-/** Extract a single exported demo function from the demos file for display. */
-function demoCode(name: string): string {
-  const start = demosSource.indexOf(`export function ${name}`)
-  if (start === -1) return demosSource
-  const next = demosSource.indexOf('\nexport function ', start + 1)
-  return demosSource.slice(start, next === -1 ? undefined : next).trim()
-}
+const demoCode = demoExtractor(demosSource)
 
 export const buttonEntry: RegistryEntry = {
   slug: 'button',

@@ -1,34 +1,78 @@
-import { FlaskConical } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { Link, NavLink } from 'react-router'
 
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Kbd } from '@/components/ui/kbd'
+import { mainNav, siteConfig } from '@/config/site'
 import { cn } from '@/lib/cn'
 
-import { ThemeToggle } from './theme-toggle'
+import { GitHubIcon, LogoMark } from './icons'
+import { MobileNav } from './mobile-nav'
+import { ThemeMenu } from './theme-menu'
+
+const isApple = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
-    'rounded-md px-2 py-1 text-sm transition-colors outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
-    isActive ? 'text-foreground' : 'text-muted-foreground',
+    'inline-flex h-8 items-center rounded-md px-2.5 text-sm focus-ring transition-colors',
+    isActive ? 'font-medium text-foreground' : 'text-muted-foreground hover:text-foreground',
   )
 
-export function SiteHeader() {
+export function SiteHeader({ onOpenSearch }: { onOpenSearch: () => void }) {
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-page items-center gap-6 px-gutter">
+    <header className="sticky top-0 z-(--z-header) border-b bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex h-header max-w-page items-center gap-1 px-gutter md:gap-4">
+        <MobileNav className="-ml-2 md:hidden" />
         <Link
           to="/"
-          className="flex items-center gap-2 rounded-md font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex shrink-0 items-center gap-2 rounded-md font-semibold tracking-tight focus-ring"
         >
-          <FlaskConical aria-hidden="true" className="size-5 text-primary" />
-          Hieu UI Lab
+          <LogoMark className="size-6" />
+          <span>{siteConfig.name}</span>
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-2">
-          <NavLink to="/components" className={navLinkClass}>
-            Components
-          </NavLink>
+
+        <nav aria-label="Main" className="hidden items-center gap-0.5 md:flex">
+          {mainNav.map((item) =>
+            item.disabled ? (
+              <span
+                key={item.href}
+                aria-disabled="true"
+                className={cn(navLinkClass({ isActive: false }), 'disabled-state gap-1.5')}
+              >
+                {item.title}
+                {item.label ? <Badge size="sm">{item.label}</Badge> : null}
+              </span>
+            ) : (
+              <NavLink key={item.href} to={item.href} className={navLinkClass}>
+                {item.title}
+              </NavLink>
+            ),
+          )}
         </nav>
-        <div className="ml-auto">
-          <ThemeToggle />
+
+        <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="outline"
+            onClick={onOpenSearch}
+            aria-keyshortcuts={isApple ? 'Meta+K' : 'Control+K'}
+            className="size-9 px-0 text-muted-foreground md:h-8 md:w-60 md:justify-start md:px-2.5 lg:w-72"
+          >
+            <Search aria-hidden="true" />
+            <span className="sr-only md:not-sr-only md:flex-1 md:text-left md:font-normal">
+              Search docs
+            </span>
+            <Kbd aria-hidden="true" className="hidden md:inline-flex">
+              {isApple ? '⌘' : 'Ctrl'} K
+            </Kbd>
+          </Button>
+          <Button asChild variant="ghost" size="icon">
+            <a href={siteConfig.githubUrl} target="_blank" rel="noreferrer">
+              <GitHubIcon />
+              <span className="sr-only">GitHub (opens in a new tab)</span>
+            </a>
+          </Button>
+          <ThemeMenu />
         </div>
       </div>
     </header>
