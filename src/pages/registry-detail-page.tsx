@@ -1,23 +1,29 @@
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 
 import { CodeBlock } from '@/components/site/code-block'
 import { ComponentPreview } from '@/components/site/component-preview'
 import { PageHeader, SectionHeader } from '@/components/site/page'
 import { PropsTable } from '@/components/site/props-table'
 import { StatusBadge } from '@/components/site/status-badge'
-import { getRegistryEntry } from '@/registry'
+import { getRegistryEntry, registryHref } from '@/registry'
+import type { RegistryCategory } from '@/registry/types'
 
 import { NotFoundContent } from './not-found-page'
 
 const inlineCode = 'rounded-sm bg-muted px-1 py-0.5 font-mono text-xs'
 
-export function ComponentDetailPage() {
+/** Detail page for one registry entry; other categories' slugs are not found here. */
+export function RegistryDetailPage({ category }: { category: RegistryCategory }) {
   const { slug = '' } = useParams()
-  const entry = getRegistryEntry(slug)
+  const entry = getRegistryEntry(slug, category)
 
   if (!entry) return <NotFoundContent />
 
   const installCommand = `pnpm add ${entry.dependencies.join(' ')}`
+  const requires = (entry.registryDependencies ?? []).flatMap((dependency) => {
+    const required = getRegistryEntry(dependency)
+    return required ? [required] : []
+  })
 
   return (
     <article className="flex flex-col gap-14">
@@ -48,6 +54,23 @@ export function ComponentDetailPage() {
             </>
           }
         />
+        {requires.length > 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Also copy these registry entries first:{' '}
+            {requires.map((required, index) => (
+              <span key={required.slug}>
+                {index > 0 ? ', ' : null}
+                <Link
+                  to={registryHref(required)}
+                  className="rounded-sm font-medium text-foreground underline underline-offset-4 focus-ring"
+                >
+                  {required.name}
+                </Link>
+              </span>
+            ))}
+            .
+          </p>
+        ) : null}
         {entry.dependencies.length > 0 ? (
           <CodeBlock code={installCommand} language="bash" title="terminal" />
         ) : null}

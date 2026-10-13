@@ -13,6 +13,15 @@ const routes = [
   '/components',
   '/components/button',
   '/components/tabs',
+  '/blocks',
+  '/blocks/resource-list',
+  '/lab',
+  '/lab/map-projections',
+  '/lab/webgl-scene',
+  '/projects',
+  '/projects/contrast-tested-design-system',
+  '/notes',
+  '/notes/theme-without-flash',
 ]
 const themes = ['light', 'dark'] as const
 
@@ -154,7 +163,18 @@ test.describe('keyboard and focus', () => {
   test('header controls show a visible focus outline', async ({ page }) => {
     await page.setViewportSize(viewports[2])
     await page.goto('/components')
-    const expected = ['Hieu UI Lab', 'Docs', 'Components', 'Search docs', 'GitHub', 'Theme']
+    const expected = [
+      'Hieu UI Lab',
+      'Components',
+      'Blocks',
+      'Lab',
+      'Projects',
+      'Notes',
+      'Docs',
+      'Search docs',
+      'GitHub',
+      'Theme',
+    ]
 
     await page.keyboard.press('Tab') // skip link
     for (const name of expected) {
@@ -182,12 +202,14 @@ test.describe('keyboard and focus', () => {
     }
   })
 
-  test('the disabled Blocks item is not focusable', async ({ page }) => {
+  test('every main nav item navigates to a page with its own heading', async ({ page }) => {
     await page.setViewportSize(viewports[2])
-    await page.goto('/')
-    const blocks = page.getByRole('navigation', { name: 'Main' }).getByText('Blocks')
-    await expect(blocks).toHaveAttribute('aria-disabled', 'true')
-    await expect(page.getByRole('link', { name: /Blocks/ })).toHaveCount(0)
+    for (const name of ['Components', 'Blocks', 'Lab', 'Projects', 'Notes', 'Docs']) {
+      await page.goto('/')
+      await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name }).click()
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Page not found' })).toHaveCount(0)
+    }
   })
 
   test('Ctrl/Cmd+K opens search; Enter navigates to the active result', async ({ page }) => {

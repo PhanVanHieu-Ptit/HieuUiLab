@@ -4,7 +4,7 @@ test('navigates from home to the Button page and switches a demo to code', async
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
-  await page.getByRole('link', { name: 'Browse components' }).click()
+  await page.getByRole('link', { name: 'Explore Components' }).click()
   await expect(page).toHaveURL(/\/components$/)
 
   await page
@@ -21,6 +21,31 @@ test('navigates from home to the Button page and switches a demo to code', async
     'export function ButtonVariantsDemo',
   )
   await expect(page.getByRole('button', { name: 'Copy code' }).first()).toBeVisible()
+})
+
+test('navigates from the landing page to a case study through View Projects', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1, name: 'Build. Learn. Share.' })).toBeVisible()
+
+  await page.getByRole('link', { name: 'View Projects' }).click()
+  await expect(page).toHaveURL(/\/projects$/)
+  await page.getByRole('link', { name: 'Registry-driven documentation' }).click()
+
+  await expect(page).toHaveURL(/\/projects\/registry-driven-documentation$/)
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Registry-driven documentation' }),
+  ).toBeVisible()
+})
+
+test('landing previews are interactive in place', async ({ page }) => {
+  await page.goto('/')
+  const preview = page.getByRole('group', { name: 'Tabs live preview' })
+  await preview.getByRole('tab', { name: 'Activity' }).click()
+  await expect(page).toHaveURL(/\/$/)
+  await expect(preview.getByRole('tab', { name: 'Activity' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
 })
 
 test('switches and persists the dark theme from the theme menu', async ({ page }) => {
@@ -50,4 +75,19 @@ test('first Tab press reaches the skip link, which moves focus to main', async (
 test('unknown routes render the not-found page', async ({ page }) => {
   await page.goto('/nope')
   await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible()
+})
+
+test('the WebGL scene starts still under reduced motion, or explains why it cannot run', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/lab/webgl-scene')
+  const paused = page.getByText('Paused because your system asks for reduced motion.')
+  const unavailable = page.getByRole('heading', { name: 'WebGL is unavailable' })
+  await expect(paused.or(unavailable)).toBeVisible()
+
+  if (await paused.isVisible()) {
+    await page.getByRole('button', { name: 'Play rotation' }).click()
+    await expect(page.getByRole('button', { name: 'Pause rotation' })).toBeVisible()
+  }
 })

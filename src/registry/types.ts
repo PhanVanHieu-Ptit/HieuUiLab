@@ -33,6 +33,8 @@ export interface RegistryEntry {
   status: RegistryStatus
   /** npm packages the copied source depends on. */
   dependencies: readonly string[]
+  /** Slugs of other registry entries the source imports, e.g. a block's components. */
+  registryDependencies?: readonly string[]
   /** Path the source is expected to live at in a consuming project. */
   targetPath: string
   /** Full source of the component file. */

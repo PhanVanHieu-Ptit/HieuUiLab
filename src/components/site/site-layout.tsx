@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Outlet, ScrollRestoration } from 'react-router'
 
 import { CommandMenu } from './command-menu'
+import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 
 function isTypingTarget(target: EventTarget | null): boolean {
@@ -42,6 +43,7 @@ export function SiteLayout() {
         }}
       />
       <Outlet />
+      <SiteFooter />
       <CommandMenu open={searchOpen} onOpenChange={setSearchOpen} />
       <ScrollRestoration />
     </div>
