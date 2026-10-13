@@ -15,6 +15,7 @@ export default defineConfig({
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    css: false,
+    // Process CSS only for ?raw imports (token tests read globals.css as text).
+    css: { include: [/\.css\?raw$/] },
   },
 })

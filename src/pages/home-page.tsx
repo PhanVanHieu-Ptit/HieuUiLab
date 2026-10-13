@@ -33,7 +33,11 @@ const roadmap: readonly RoadmapItem[] = [
 
 export function HomePage() {
   return (
-    <main id="main" tabIndex={-1} className="mx-auto max-w-5xl px-4 py-16 outline-none sm:py-24">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="mx-auto max-w-content px-gutter py-section outline-none sm:py-24"
+    >
       <section aria-labelledby="hero-title" className="max-w-3xl">
         <p className="mb-3 font-mono text-sm text-primary">React · TypeScript · Tailwind</p>
         <h1

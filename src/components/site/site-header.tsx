@@ -14,7 +14,7 @@ const navLinkClass = ({ isActive }: { isActive: boolean }) =>
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4">
+      <div className="mx-auto flex h-14 max-w-page items-center gap-6 px-gutter">
         <Link
           to="/"
           className="flex items-center gap-2 rounded-md font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
