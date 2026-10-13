@@ -9,9 +9,13 @@ import { siteConfig } from '@/config/site'
 const structure = `src/
   components/
     ui/        # registry components: the copyable source
+    blocks/    # registry blocks composed from ui components
     site/      # app shell and docs UI (not part of the registry)
+    landing/   # landing page sections
   config/
-    site.ts    # navigation, used by header, sidebar, drawer, search, breadcrumbs
+    site.ts    # navigation, used by header, sidebar, drawer, search, breadcrumbs, footer
+  content/     # typed notes, case studies, experiments, and landing data
+  lab/         # geospatial and 3D experiments, lazy-loaded per route
   registry/    # one folder per entry: demos.tsx + meta.ts
   styles/
     globals.css  # semantic tokens, themes, shared state utilities`

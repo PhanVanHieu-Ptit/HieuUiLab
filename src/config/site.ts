@@ -1,4 +1,4 @@
-import { registry } from '@/registry'
+import { getRegistryEntries, registryHref } from '@/registry'
 import type { RegistryStatus } from '@/registry/types'
 
 export interface NavItem {
@@ -24,16 +24,30 @@ export const siteConfig = {
   description:
     'Reusable React components, UI blocks, and frontend engineering experiments, documented and tested.',
   githubUrl: 'https://github.com/PhanVanHieu-Ptit/HieuUiLab',
+  githubProfileUrl: 'https://github.com/PhanVanHieu-Ptit',
+  issuesUrl: 'https://github.com/PhanVanHieu-Ptit/HieuUiLab/issues/new',
 } as const
 
 /** Top-level destinations in the header and mobile drawer. */
 export const mainNav: readonly NavItem[] = [
-  { title: 'Docs', href: '/docs' },
   { title: 'Components', href: '/components' },
-  { title: 'Blocks', href: '/blocks', disabled: true, label: 'Soon' },
+  { title: 'Blocks', href: '/blocks' },
+  { title: 'Lab', href: '/lab', description: 'Geospatial and 3D experiments.' },
+  { title: 'Projects', href: '/projects', description: 'Engineering case studies.' },
+  { title: 'Notes', href: '/notes', description: 'Short technical write-ups.' },
+  { title: 'Docs', href: '/docs' },
 ]
 
-/** Documentation sidebar. Components are derived from the registry. */
+function registryNavItems(category: 'component' | 'block'): NavItem[] {
+  return getRegistryEntries(category).map((entry) => ({
+    title: entry.name,
+    href: registryHref(entry),
+    description: entry.description,
+    status: entry.status,
+  }))
+}
+
+/** Documentation sidebar. Components and blocks are derived from the registry. */
 export const docsNav: readonly NavSection[] = [
   {
     title: 'Getting started',
@@ -53,14 +67,12 @@ export const docsNav: readonly NavSection[] = [
   {
     title: 'Components',
     href: '/components',
-    items: registry
-      .filter((entry) => entry.category === 'component')
-      .map((entry) => ({
-        title: entry.name,
-        href: `/components/${entry.slug}`,
-        description: entry.description,
-        status: entry.status,
-      })),
+    items: registryNavItems('component'),
+  },
+  {
+    title: 'Blocks',
+    href: '/blocks',
+    items: registryNavItems('block'),
   },
 ]
 

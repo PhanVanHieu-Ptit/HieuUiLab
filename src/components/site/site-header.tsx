@@ -56,13 +56,13 @@ export function SiteHeader({ onOpenSearch }: { onOpenSearch: () => void }) {
             variant="outline"
             onClick={onOpenSearch}
             aria-keyshortcuts={isApple ? 'Meta+K' : 'Control+K'}
-            className="size-9 px-0 text-muted-foreground md:h-8 md:w-60 md:justify-start md:px-2.5 lg:w-72"
+            className="size-9 px-0 text-muted-foreground lg:h-8 lg:w-56 lg:justify-start lg:px-2.5 xl:w-72"
           >
             <Search aria-hidden="true" />
-            <span className="sr-only md:not-sr-only md:flex-1 md:text-left md:font-normal">
+            <span className="sr-only lg:not-sr-only lg:flex-1 lg:text-left lg:font-normal">
               Search docs
             </span>
-            <Kbd aria-hidden="true" className="hidden md:inline-flex">
+            <Kbd aria-hidden="true" className="hidden lg:inline-flex">
               {isApple ? '⌘' : 'Ctrl'} K
             </Kbd>
           </Button>

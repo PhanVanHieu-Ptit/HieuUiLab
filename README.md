@@ -5,17 +5,20 @@ copyable source, props documentation, and tests.
 
 ## Status
 
-| Area                                                                                       | State                                                               |
-| ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- |
-| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu         | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks) |
-| Design tokens (color, status, elevation, type, layout) and shared state utilities          | Implemented, contrast-tested                                        |
-| Registry model + component docs page                                                       | Implemented                                                         |
-| `Button`, `Badge`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs` | Implemented, unit tested                                            |
-| `Dialog`, `Sheet`                                                                          | Beta, unit + e2e tested                                             |
-| Blocks section                                                                             | Shown as "Soon" in the nav; not implemented                         |
-| Form controls, form patterns (RHF + Zod), MapLibre                                         | Planned — not implemented                                           |
-| CI (GitHub Actions)                                                                        | Workflow present; not yet run on GitHub                             |
-| Deployment                                                                                 | Not set up                                                          |
+| Area                                                                                           | State                                                                   |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu             | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
+| Design tokens (color, status, elevation, type, layout) and shared state utilities              | Implemented, contrast-tested                                            |
+| Registry model + component docs page                                                           | Implemented                                                             |
+| `Button`, `Badge`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`     | Implemented, unit tested                                                |
+| `Dialog`, `Sheet`                                                                              | Beta, unit + e2e tested                                                 |
+| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer | Implemented, unit + e2e tested (incl. internal link integrity)          |
+| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (beta)                          | Implemented, unit tested                                                |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states       | Beta, unit + e2e tested; no map or 3D library                           |
+| Projects (case studies) and notes                                                              | Typed local data in `src/content/`; content describes work in this repo |
+| Form controls, form patterns (RHF + Zod), MapLibre, MDX content                                | Planned — not implemented                                               |
+| CI (GitHub Actions)                                                                            | Workflow present; not yet run on GitHub                                 |
+| Deployment                                                                                     | Not set up                                                              |
 
 ## Stack
 

@@ -14,10 +14,18 @@ describe('MobileNav', () => {
     const nav = within(drawer).getByRole('navigation', { name: 'Site' })
     expect(within(nav).getByRole('link', { name: 'Introduction' })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: 'Button' })).toBeInTheDocument()
-    expect(within(nav).getByText('Blocks').closest('[aria-disabled]')).toHaveAttribute(
-      'aria-disabled',
-      'true',
+    expect(within(nav).getByRole('link', { name: /^Resource list/ })).toHaveAttribute(
+      'href',
+      '/blocks/resource-list',
     )
+    for (const [name, href] of [
+      ['Lab', '/lab'],
+      ['Projects', '/projects'],
+      ['Notes', '/notes'],
+    ] as const) {
+      expect(within(nav).getByRole('link', { name })).toHaveAttribute('href', href)
+    }
+    expect(nav.querySelector('[aria-disabled="true"]')).toBeNull()
   })
 
   it('closes on Escape and returns focus to the trigger', async () => {

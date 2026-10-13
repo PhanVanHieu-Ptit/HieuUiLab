@@ -1,46 +1,14 @@
-import { Link, Outlet, useLocation } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
 import { getDocsBreadcrumbs } from '@/config/site'
 
+import { CrumbTrail } from './crumb-trail'
 import { MainContent } from './main-content'
 import { SiteSidebar } from './site-sidebar'
 
 function DocsBreadcrumbs() {
   const { pathname } = useLocation()
-  const crumbs = getDocsBreadcrumbs(pathname)
-  if (crumbs.length === 0) return null
-
-  return (
-    <Breadcrumb className="mb-6">
-      <BreadcrumbList>
-        {crumbs.map((crumb, index) => {
-          const isLast = index === crumbs.length - 1
-          return [
-            <BreadcrumbItem key={crumb.title}>
-              {isLast ? (
-                <BreadcrumbPage>{crumb.title}</BreadcrumbPage>
-              ) : crumb.href ? (
-                <BreadcrumbLink asChild>
-                  <Link to={crumb.href}>{crumb.title}</Link>
-                </BreadcrumbLink>
-              ) : (
-                <span>{crumb.title}</span>
-              )}
-            </BreadcrumbItem>,
-            isLast ? null : <BreadcrumbSeparator key={`${crumb.title}-separator`} />,
-          ]
-        })}
-      </BreadcrumbList>
-    </Breadcrumb>
-  )
+  return <CrumbTrail crumbs={getDocsBreadcrumbs(pathname)} className="mb-6" />
 }
 
 export function DocsLayout() {

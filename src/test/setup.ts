@@ -28,6 +28,11 @@ Element.prototype.scrollIntoView = vi.fn()
 Element.prototype.hasPointerCapture = vi.fn(() => false)
 Element.prototype.releasePointerCapture = vi.fn()
 window.scrollTo = vi.fn()
+// jsdom has no canvas backend; report "no context" instead of logging "not implemented".
+Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+  writable: true,
+  value: vi.fn(() => null),
+})
 
 afterEach(() => {
   cleanup()
