@@ -1,43 +1,67 @@
 import breadcrumbSource from '@/components/ui/breadcrumb.tsx?raw'
 
-import type { RegistryEntry } from '../types'
+import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
 import { BreadcrumbDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
 
-export const breadcrumbEntry: RegistryEntry = {
+export const breadcrumbEntry: ImplementedEntry = {
+  id: 'breadcrumb',
   slug: 'breadcrumb',
   name: 'Breadcrumb',
   description:
     'A labelled navigation trail. The current page is marked with aria-current, separators are hidden from assistive tech, and items wrap on narrow screens.',
-  category: 'component',
+  kind: 'component',
+  category: 'navigation',
+  tags: ['a11y', 'polymorphic', 'responsive'],
   status: 'stable',
-  dependencies: ['clsx', 'tailwind-merge', 'radix-ui', 'lucide-react'],
-  targetPath: 'components/ui/breadcrumb.tsx',
+  installation: {
+    targetPath: 'components/ui/breadcrumb.tsx',
+    packages: ['radix-ui', 'lucide-react'],
+    registryDependencies: [],
+    requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
+  },
   source: breadcrumbSource,
-  demos: [
+  examples: [
     { id: 'basic', title: 'Basic', component: BreadcrumbDemo, code: demoCode('BreadcrumbDemo') },
   ],
-  props: [
-    {
-      name: 'aria-label',
-      type: 'string',
-      default: "'Breadcrumb'",
-      description: 'Breadcrumb: name of the navigation landmark.',
-    },
-    {
-      name: 'asChild',
-      type: 'boolean',
-      default: 'false',
-      description: 'BreadcrumbLink: merge onto a child such as a router Link.',
-    },
-    {
-      name: 'children',
-      type: 'ReactNode',
-      default: '<ChevronRight />',
-      description: 'BreadcrumbSeparator: custom separator glyph.',
-    },
-  ],
+  api: {
+    parts: [
+      {
+        name: 'Breadcrumb',
+        props: [
+          {
+            name: 'aria-label',
+            type: 'string',
+            default: "'Breadcrumb'",
+            description: 'Name of the navigation landmark.',
+          },
+        ],
+      },
+      {
+        name: 'BreadcrumbLink',
+        props: [
+          {
+            name: 'asChild',
+            type: 'boolean',
+            default: 'false',
+            description: 'Merge onto a child such as a router Link.',
+          },
+        ],
+      },
+      {
+        name: 'BreadcrumbSeparator',
+        props: [
+          {
+            name: 'children',
+            type: 'ReactNode',
+            default: '<ChevronRight />',
+            description: 'Custom separator glyph.',
+          },
+        ],
+      },
+    ],
+  },
 }

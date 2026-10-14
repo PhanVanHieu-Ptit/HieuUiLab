@@ -1,36 +1,57 @@
 import dialogSource from '@/components/ui/dialog.tsx?raw'
 
-import type { RegistryEntry } from '../types'
+import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
 import { DialogDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
 
-export const dialogEntry: RegistryEntry = {
+export const dialogEntry: ImplementedEntry = {
+  id: 'dialog',
   slug: 'dialog',
   name: 'Dialog',
   description:
     'A centered modal on Radix Dialog with overlay, focus trap, Escape to close, and a close button. The site search palette is built on it.',
-  category: 'component',
-  status: 'beta',
-  dependencies: ['clsx', 'tailwind-merge', 'radix-ui', 'lucide-react'],
-  targetPath: 'components/ui/dialog.tsx',
+  kind: 'component',
+  category: 'overlays',
+  tags: ['focus-trap', 'keyboard', 'modal', 'radix'],
+  status: 'experimental',
+  installation: {
+    targetPath: 'components/ui/dialog.tsx',
+    packages: ['radix-ui', 'lucide-react'],
+    registryDependencies: [],
+    requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
+  },
   source: dialogSource,
-  demos: [
+  examples: [
     { id: 'confirm', title: 'Confirmation', component: DialogDemo, code: demoCode('DialogDemo') },
   ],
-  props: [
-    {
-      name: 'open / onOpenChange',
-      type: 'boolean / (open: boolean) => void',
-      description: 'Dialog: controlled open state (optional).',
-    },
-    {
-      name: 'showClose',
-      type: 'boolean',
-      default: 'true',
-      description: 'DialogContent: render the top-right close button.',
-    },
-  ],
+  api: {
+    parts: [
+      {
+        name: 'Dialog',
+        description: 'Root; holds the open state.',
+        props: [
+          {
+            name: 'open / onOpenChange',
+            type: 'boolean / (open: boolean) => void',
+            description: 'Controlled open state (optional).',
+          },
+        ],
+      },
+      {
+        name: 'DialogContent',
+        description: 'The modal panel, rendered in a portal over an overlay.',
+        props: [
+          {
+            name: 'showClose',
+            type: 'boolean',
+            default: 'true',
+            description: 'Render the top-right close button.',
+          },
+        ],
+      },
+    ],
+  },
 }

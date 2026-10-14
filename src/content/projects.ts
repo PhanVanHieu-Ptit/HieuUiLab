@@ -90,7 +90,7 @@ export const projects: readonly Project[] = [
       {
         heading: 'What reads the registry',
         paragraphs: [
-          'The docs sidebar, the mobile drawer, the ⌘K search palette, the breadcrumbs, the component and block pages, and the featured sections on the landing page all derive from the same array. Status labels — stable, beta, planned — come from the entry, so the site cannot claim more than is built.',
+          'The docs sidebar, the mobile drawer, the ⌘K search palette, the breadcrumbs, the component and block pages, and the featured sections on the landing page all derive from the same array. Status labels — stable, experimental, planned — come from the entry, so the site cannot claim more than is built.',
         ],
       },
       {

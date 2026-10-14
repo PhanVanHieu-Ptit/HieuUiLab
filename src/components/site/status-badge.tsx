@@ -3,13 +3,13 @@ import type { RegistryStatus } from '@/registry/types'
 
 const variants: Record<RegistryStatus, BadgeProps['variant']> = {
   stable: 'success',
-  beta: 'warning',
+  experimental: 'warning',
   planned: 'outline',
 }
 
 const labels: Record<RegistryStatus, string> = {
   stable: 'Stable',
-  beta: 'Beta',
+  experimental: 'Experimental',
   planned: 'Planned',
 }
 

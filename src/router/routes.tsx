@@ -53,7 +53,12 @@ const projectPages = () => import('@/pages/project-pages')
 const aboutPage = () => import('@/pages/about-page')
 
 const registryHandle = handle(
-  metaFromData<RegistryEntry>((entry) => ({ title: entry.name, description: entry.description })),
+  metaFromData<RegistryEntry>((entry) => ({
+    title: entry.name,
+    description: entry.description,
+    // A planned entry has no content worth indexing yet.
+    noindex: entry.status === 'planned',
+  })),
 )
 
 /**
@@ -117,7 +122,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      element: <RegistryIndexPage category="component" {...sections.components} />,
+                      element: <RegistryIndexPage kind="component" {...sections.components} />,
                     },
                     {
                       path: ':slug',
@@ -133,7 +138,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      element: <RegistryIndexPage category="block" {...sections.blocks} />,
+                      element: <RegistryIndexPage kind="block" {...sections.blocks} />,
                     },
                     {
                       path: ':slug',

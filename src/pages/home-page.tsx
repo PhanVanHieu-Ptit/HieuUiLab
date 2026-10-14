@@ -50,7 +50,7 @@ export function HomePage() {
       >
         <RegistryShowcase
           slugs={featuredComponentSlugs}
-          category="component"
+          kind="component"
           className="md:grid-cols-2 lg:grid-cols-3"
         />
       </LandingSection>
@@ -61,7 +61,7 @@ export function HomePage() {
         description="Components composed into patterns with every state handled: loading, empty, error, and success."
         more={{ label: 'All blocks', href: '/blocks' }}
       >
-        <RegistryShowcase slugs={featuredBlockSlugs} category="block" className="lg:grid-cols-2" />
+        <RegistryShowcase slugs={featuredBlockSlugs} kind="block" className="lg:grid-cols-2" />
       </LandingSection>
 
       <LandingSection

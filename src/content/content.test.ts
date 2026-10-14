@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { labDemos } from '@/lab'
-import { getRegistryEntry } from '@/registry'
+import { getImplementedEntry } from '@/registry'
 
 import { experiments } from './experiments'
 import {
@@ -25,12 +25,12 @@ describe('content', () => {
     expectUnique(experiments.map((experiment) => experiment.slug))
   })
 
-  it('features only entries that exist', () => {
+  it('features only implemented entries that exist', () => {
     for (const slug of featuredComponentSlugs) {
-      expect(getRegistryEntry(slug, 'component'), slug).toBeDefined()
+      expect(getImplementedEntry(slug, 'component'), slug).toBeDefined()
     }
     for (const slug of featuredBlockSlugs) {
-      expect(getRegistryEntry(slug, 'block'), slug).toBeDefined()
+      expect(getImplementedEntry(slug, 'block'), slug).toBeDefined()
     }
     for (const slug of featuredProjectSlugs) {
       expect(getProject(slug), slug).toBeDefined()

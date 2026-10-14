@@ -8,16 +8,23 @@ import {
 } from '@/content/experiments'
 import { getNote } from '@/content/notes'
 import { getProject } from '@/content/projects'
-import { getRegistryEntry, registryHref } from '@/registry'
-import type { RegistryCategory } from '@/registry/types'
+import { getRegistryEntry, registry, registryHref } from '@/registry'
+import { suggestEntries } from '@/registry/catalog'
+import type { RegistryKind } from '@/registry/types'
 
 // Loaders only look up local, typed content. They run before a lazy page chunk
 // downloads, so unknown slugs resolve to a 404 and moved URLs redirect without it.
 // Redirects use `replace` so the old URL does not stay in history (Back would bounce).
 
-function notFound(): never {
+/** Data thrown with a 404; the not-found page offers these links. */
+export interface NotFoundData {
+  suggestions: readonly { title: string; href: string }[]
+}
+
+function notFound(suggestions: NotFoundData['suggestions'] = []): never {
+  const body: NotFoundData = { suggestions }
   // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router renders thrown data as a route error response.
-  throw data(null, { status: 404, statusText: 'Not Found' })
+  throw data(body, { status: 404, statusText: 'Not Found' })
 }
 
 function slugParam(params: LoaderFunctionArgs['params'], key = 'slug'): string {
@@ -32,15 +39,23 @@ export function projectLoader({ params }: LoaderFunctionArgs) {
   return getProject(slugParam(params)) ?? notFound()
 }
 
-/** An entry of `category`; a slug from another category redirects to its own page. */
-export function registryLoader(category: RegistryCategory) {
+/**
+ * An entry of `kind`; a slug of the other kind redirects to its own page, and an
+ * unknown slug is a 404 that suggests the closest entries.
+ */
+export function registryLoader(kind: RegistryKind) {
   return ({ params }: LoaderFunctionArgs) => {
     const slug = slugParam(params)
-    const entry = getRegistryEntry(slug, category)
+    const entry = getRegistryEntry(slug, kind)
     if (entry) return entry
     const elsewhere = getRegistryEntry(slug)
     if (elsewhere) return replace(registryHref(elsewhere))
-    return notFound()
+    return notFound(
+      suggestEntries(registry, slug).map((suggestion) => ({
+        title: suggestion.name,
+        href: registryHref(suggestion),
+      })),
+    )
   }
 }
 

@@ -7,7 +7,7 @@ export const experiments: readonly Experiment[] = [
     summary:
       'Compare how equirectangular, Web Mercator, and orthographic projections place the same graticule and cities.',
     kind: 'geospatial',
-    status: 'beta',
+    status: 'experimental',
     capabilities: [
       'Projection maths as pure, unit-tested functions',
       'SVG rendering with no map library or tile server',
@@ -35,7 +35,7 @@ export const experiments: readonly Experiment[] = [
     summary:
       'A lit cube drawn with raw WebGL2 that respects reduced motion, pauses off-screen, and falls back when WebGL is unavailable.',
     kind: '3d',
-    status: 'beta',
+    status: 'experimental',
     capabilities: [
       'Raw WebGL2 shaders and matrix maths, no 3D library',
       'Starts paused for reduced motion, with an explicit Play control',
