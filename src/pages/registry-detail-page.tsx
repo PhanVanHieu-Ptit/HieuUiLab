@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
 
 import { CodeBlock } from '@/components/site/code-block'
 import { ComponentPreview } from '@/components/site/component-preview'
@@ -6,18 +6,13 @@ import { PageHeader, SectionHeader } from '@/components/site/page'
 import { PropsTable } from '@/components/site/props-table'
 import { StatusBadge } from '@/components/site/status-badge'
 import { getRegistryEntry, registryHref } from '@/registry'
-import type { RegistryCategory } from '@/registry/types'
-
-import { NotFoundContent } from './not-found-page'
+import type { RegistryEntry } from '@/registry/types'
 
 const inlineCode = 'rounded-sm bg-muted px-1 py-0.5 font-mono text-xs'
 
-/** Detail page for one registry entry; other categories' slugs are not found here. */
-export function RegistryDetailPage({ category }: { category: RegistryCategory }) {
-  const { slug = '' } = useParams()
-  const entry = getRegistryEntry(slug, category)
-
-  if (!entry) return <NotFoundContent />
+/** Detail page for one registry entry, loaded by the route's `registryLoader`. */
+export function RegistryDetailPage() {
+  const entry = useLoaderData<RegistryEntry>()
 
   const installCommand = `pnpm add ${entry.dependencies.join(' ')}`
   const requires = (entry.registryDependencies ?? []).flatMap((dependency) => {

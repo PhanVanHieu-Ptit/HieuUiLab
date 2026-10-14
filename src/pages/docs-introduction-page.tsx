@@ -1,24 +1,9 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { CodeBlock } from '@/components/site/code-block'
 import { PageHeader, SectionHeader } from '@/components/site/page'
 import { Button } from '@/components/ui/button'
 import { siteConfig } from '@/config/site'
-
-const structure = `src/
-  components/
-    ui/        # registry components: the copyable source
-    blocks/    # registry blocks composed from ui components
-    site/      # app shell and docs UI (not part of the registry)
-    landing/   # landing page sections
-  config/
-    site.ts    # navigation, used by header, sidebar, drawer, search, breadcrumbs, footer
-  content/     # typed notes, case studies, experiments, and landing data
-  lab/         # geospatial and 3D experiments, lazy-loaded per route
-  registry/    # one folder per entry: demos.tsx + meta.ts
-  styles/
-    globals.css  # semantic tokens, themes, shared state utilities`
 
 const proseLink =
   'rounded-sm font-medium text-primary underline-offset-4 hover:underline focus-ring'
@@ -60,9 +45,18 @@ export function DocsIntroductionPage() {
         </p>
       </section>
 
-      <section aria-labelledby="structure" className="flex flex-col gap-4">
-        <SectionHeader id="structure" title="Project structure" anchorLabel="Project structure" />
-        <CodeBlock code={structure} language="text" title="tree" />
+      <section aria-labelledby="next-steps" className="flex max-w-prose flex-col gap-4">
+        <SectionHeader id="next-steps" title="Next steps" anchorLabel="Next steps" />
+        <p className="text-pretty">
+          <Link to="/docs/installation" className={proseLink}>
+            Installation
+          </Link>{' '}
+          covers what a copied entry expects in your project.{' '}
+          <Link to="/docs/architecture" className={proseLink}>
+            Architecture
+          </Link>{' '}
+          explains how this site is organised: the registry, routing, and code splitting.
+        </p>
       </section>
     </article>
   )

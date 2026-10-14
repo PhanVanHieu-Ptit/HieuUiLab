@@ -4,20 +4,20 @@ import { describe, expect, it } from 'vitest'
 import { renderRoute } from '@/test/render'
 
 describe('Lab pages', () => {
-  it('lists the experiments', () => {
-    renderRoute('/lab')
+  it('lists the experiments', async () => {
+    await renderRoute('/labs')
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Geospatial and 3D experiments' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'WebGL scene with motion controls' })).toHaveAttribute(
       'href',
-      '/lab/webgl-scene',
+      '/labs/3d/webgl-scene',
     )
   })
 
   it('shows a loading state, then the lazily loaded demo', async () => {
-    renderRoute('/lab/map-projections')
+    await renderRoute('/labs/maps/map-projections')
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Map projection explorer' }),
@@ -28,20 +28,21 @@ describe('Lab pages', () => {
   })
 
   it('shows the unavailable state for WebGL in an environment without it', async () => {
-    renderRoute('/lab/webgl-scene')
+    await renderRoute('/labs/3d/webgl-scene')
     expect(await screen.findByRole('heading', { name: 'WebGL is unavailable' })).toBeInTheDocument()
   })
 
-  it('links back to the lab from the breadcrumb', () => {
-    renderRoute('/lab/webgl-scene')
+  it('links back to the lab from the breadcrumb', async () => {
+    await renderRoute('/labs/3d/webgl-scene')
     const breadcrumb = screen.getByRole('navigation', { name: 'Breadcrumb' })
-    expect(within(breadcrumb).getByRole('link', { name: 'Lab' })).toHaveAttribute('href', '/lab')
+    expect(within(breadcrumb).getByRole('link', { name: 'Labs' })).toHaveAttribute('href', '/labs')
+    expect(within(breadcrumb).getByRole('link', { name: '3D' })).toHaveAttribute('href', '/labs/3d')
   })
 })
 
 describe('Project pages', () => {
-  it('lists case studies and opens one', () => {
-    renderRoute('/projects')
+  it('lists case studies and opens one', async () => {
+    await renderRoute('/projects')
     expect(
       screen.getByRole('heading', { level: 1, name: 'Engineering case studies' }),
     ).toBeInTheDocument()
@@ -51,8 +52,8 @@ describe('Project pages', () => {
     )
   })
 
-  it('renders the case study with facts and sections', () => {
-    renderRoute('/projects/contrast-tested-design-system')
+  it('renders the case study with facts and sections', async () => {
+    await renderRoute('/projects/contrast-tested-design-system')
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'A contrast-tested design system' }),
@@ -67,16 +68,16 @@ describe('Project pages', () => {
 })
 
 describe('Note pages', () => {
-  it('lists notes with machine-readable dates', () => {
-    renderRoute('/notes')
+  it('lists notes with machine-readable dates', async () => {
+    await renderRoute('/notes')
     expect(screen.getByRole('heading', { level: 1, name: 'Technical notes' })).toBeInTheDocument()
     const link = screen.getByRole('link', { name: 'Switching themes without a first-paint flash' })
     expect(link).toHaveAttribute('href', '/notes/theme-without-flash')
     expect(document.querySelector('time[datetime="2026-10-13"]')).not.toBeNull()
   })
 
-  it('renders a note', () => {
-    renderRoute('/notes/theme-without-flash')
+  it('renders a note', async () => {
+    await renderRoute('/notes/theme-without-flash')
     expect(
       screen.getByRole('heading', {
         level: 1,
@@ -90,10 +91,10 @@ describe('Note pages', () => {
 })
 
 describe('unknown slugs', () => {
-  it.each(['/lab/nope', '/projects/nope', '/notes/nope', '/blocks/nope'])(
+  it.each(['/labs/maps/nope', '/labs/nope', '/projects/nope', '/notes/nope', '/blocks/nope'])(
     '%s renders the not-found page',
-    (path) => {
-      renderRoute(path)
+    async (path) => {
+      await renderRoute(path)
       expect(screen.getByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument()
     },
   )

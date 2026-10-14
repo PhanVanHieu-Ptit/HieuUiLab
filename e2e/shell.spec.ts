@@ -15,13 +15,20 @@ const routes = [
   '/components/tabs',
   '/blocks',
   '/blocks/resource-list',
-  '/lab',
-  '/lab/map-projections',
-  '/lab/webgl-scene',
+  '/docs/installation',
+  '/docs/architecture',
+  '/templates',
+  '/playground',
+  '/labs',
+  '/labs/maps',
+  '/labs/3d',
+  '/labs/maps/map-projections',
+  '/labs/3d/webgl-scene',
   '/projects',
   '/projects/contrast-tested-design-system',
   '/notes',
   '/notes/theme-without-flash',
+  '/about',
 ]
 const themes = ['light', 'dark'] as const
 
@@ -167,10 +174,11 @@ test.describe('keyboard and focus', () => {
       'Hieu UI Lab',
       'Components',
       'Blocks',
-      'Lab',
+      'Labs',
       'Projects',
       'Notes',
       'Docs',
+      'About',
       'Search docs',
       'GitHub',
       'Theme',
@@ -204,7 +212,7 @@ test.describe('keyboard and focus', () => {
 
   test('every main nav item navigates to a page with its own heading', async ({ page }) => {
     await page.setViewportSize(viewports[2])
-    for (const name of ['Components', 'Blocks', 'Lab', 'Projects', 'Notes', 'Docs']) {
+    for (const name of ['Components', 'Blocks', 'Labs', 'Projects', 'Notes', 'Docs', 'About']) {
       await page.goto('/')
       await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name }).click()
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
@@ -229,7 +237,7 @@ test.describe('keyboard and focus', () => {
   test('the breadcrumb trail reflects the route', async ({ page }) => {
     await page.goto('/components/tabs')
     const trail = page.getByRole('navigation', { name: 'Breadcrumb' })
-    await expect(trail.getByRole('link')).toHaveText(['Docs', 'Components'])
+    await expect(trail.getByRole('link')).toHaveText(['Home', 'Components'])
     await expect(trail.locator('[aria-current="page"]')).toHaveText('Tabs')
   })
 })

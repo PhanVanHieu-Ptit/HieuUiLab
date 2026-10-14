@@ -5,26 +5,27 @@ import { siteConfig } from '@/config/site'
 import { renderRoute } from '@/test/render'
 
 describe('SiteFooter', () => {
-  it('appears on every layout', () => {
+  it('appears on every layout', async () => {
     for (const path of ['/', '/docs', '/notes']) {
-      const { unmount } = renderRoute(path)
+      const { unmount } = await renderRoute(path)
       expect(screen.getByRole('contentinfo'), path).toBeInTheDocument()
       unmount()
     }
   })
 
-  it('links to every section, the source, and GitHub contact without an email address', () => {
-    renderRoute('/')
+  it('links to every section, the source, and GitHub contact without an email address', async () => {
+    await renderRoute('/')
     const footer = screen.getByRole('contentinfo')
 
     const explore = within(footer).getByRole('navigation', { name: 'Footer: Explore' })
     for (const [name, href] of [
       ['Components', '/components'],
       ['Blocks', '/blocks'],
-      ['Lab', '/lab'],
+      ['Labs', '/labs'],
       ['Projects', '/projects'],
       ['Notes', '/notes'],
       ['Docs', '/docs'],
+      ['About', '/about'],
     ] as const) {
       expect(within(explore).getByRole('link', { name })).toHaveAttribute('href', href)
     }

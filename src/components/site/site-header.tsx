@@ -44,7 +44,13 @@ export function SiteHeader({ onOpenSearch }: { onOpenSearch: () => void }) {
                 {item.label ? <Badge size="sm">{item.label}</Badge> : null}
               </span>
             ) : (
-              <NavLink key={item.href} to={item.href} className={navLinkClass}>
+              <NavLink
+                key={item.href}
+                to={item.href}
+                className={(state) =>
+                  cn(navLinkClass(state), item.headerFromLg && 'hidden lg:inline-flex')
+                }
+              >
                 {item.title}
               </NavLink>
             ),

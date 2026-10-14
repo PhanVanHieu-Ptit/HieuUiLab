@@ -15,6 +15,8 @@ copyable source, props documentation, and tests.
 | Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer | Implemented, unit + e2e tested (incl. internal link integrity)          |
 | Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (beta)                          | Implemented, unit tested                                                |
 | Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states       | Beta, unit + e2e tested; no map or 3D library                           |
+| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)      | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
+| `/templates`, `/playground`                                                                    | Planned — routes exist and say so; nothing built                        |
 | Projects (case studies) and notes                                                              | Typed local data in `src/content/`; content describes work in this repo |
 | Form controls, form patterns (RHF + Zod), MapLibre, MDX content                                | Planned — not implemented                                               |
 | CI (GitHub Actions)                                                                            | Workflow present; not yet run on GitHub                                 |
@@ -76,6 +78,39 @@ excludes `.env` and `.env.*` (except `.env.example`) and `*.local`.
 
 Run `pnpm check` before pushing. CI also runs `pnpm test:e2e`.
 
+## Routes
+
+| Path                                                                 | Page                                                    |
+| -------------------------------------------------------------------- | ------------------------------------------------------- |
+| `/`                                                                  | Landing page                                            |
+| `/components`, `/components/:slug`                                   | Registry components (docs layout)                       |
+| `/blocks`, `/blocks/:slug`                                           | Registry blocks (docs layout)                           |
+| `/docs`, `/docs/installation`, `/docs/architecture`, `/docs/theming` | Documentation                                           |
+| `/templates`, `/playground`                                          | **Planned** — labelled as such, `noindex`, no content   |
+| `/labs`, `/labs/maps`, `/labs/3d`                                    | Experiments and their categories                        |
+| `/labs/:kind/:slug`                                                  | One experiment, e.g. `/labs/3d/webgl-scene`             |
+| `/notes`, `/notes/:slug`                                             | Technical notes                                         |
+| `/projects`, `/projects/:slug`                                       | Case studies                                            |
+| `/about`                                                             | About the lab, built from the registry and content data |
+
+The route tree is in `src/router/routes.tsx` (React Router data router):
+
+- **Titles, descriptions, breadcrumbs** come from each route's `handle.meta`, resolved in
+  `src/router/meta.ts`. Detail routes derive them from their loader data, so pages never repeat them.
+  Section copy shared by page headers and metadata lives in `sections` in `src/config/site.ts`.
+- **Unknown slugs**: loaders in `src/router/loaders.ts` throw a 404, rendered inside the layout
+  (sidebar kept) with a link back to the section. Unmatched URLs hit the `*` route.
+- **Redirects** (history `replace`, so Back does not bounce): the old `/lab` and `/lab/:slug`,
+  a registry slug under the wrong category, and an experiment under the wrong lab category.
+- **Lazy loading**: docs, registry detail, labs, notes, projects, and about pages are separate chunks.
+  Loaders and metadata stay eager, so 404s and redirects resolve before any chunk loads. The registry
+  (with each entry's source text) is still in the main chunk because the navigation lists it.
+- Use `createRoutes()`, never a shared array: React Router clears resolved `lazy` keys in place, so
+  route objects cannot be reused across routers (e.g. between tests).
+- Metadata is set client-side. Crawlers that do not run JavaScript see `index.html`'s defaults.
+- **Hosting** needs an SPA fallback (serve `index.html` for unknown paths) so nested URLs load
+  directly and on refresh. `pnpm dev` and `pnpm preview` already do this.
+
 ## Design tokens
 
 All tokens live in `src/styles/globals.css`. Raw values are defined on `:root` (light) and
@@ -125,9 +160,10 @@ src/
   components/ui/      Registry components (the copyable source)
   components/site/    App shell and docs UI (not part of the registry): header, sidebar,
                       mobile drawer, command menu, theme menu, page/section headers, code panel
-  config/site.ts      Navigation: the one source for header, sidebar, drawer, search, breadcrumbs
+  config/site.ts      Navigation and section copy: header, sidebar, drawer, search, footer
   registry/           Entry metadata, demos, and props docs per component
   pages/              Route components
+  router/             Route tree, slug loaders, route metadata (titles, breadcrumbs)
   styles/globals.css  Design tokens (light/dark) mapped to Tailwind utilities
   app.test.tsx        App smoke test (boots the real router)
 e2e/                  Playwright tests
@@ -140,8 +176,9 @@ e2e/                  Playwright tests
 3. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, index, and route pick it
    up automatically.
 
-To add a docs page, add a route under `DocsLayout` in `src/routes.tsx` and an item to `docsNav`
-in `src/config/site.ts`; breadcrumbs and search follow from the nav entry.
+To add a docs page, add an item to `docsNav` in `src/config/site.ts` and a lazy route under `docs`
+in `src/router/routes.tsx` with `handle: docsHandle('/docs/<page>')`. The title, description,
+breadcrumb, sidebar, and search all follow from the nav entry.
 
 ## Troubleshooting
 

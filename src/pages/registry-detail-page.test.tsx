@@ -1,18 +1,12 @@
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { createMemoryRouter, RouterProvider } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
-import { routes } from '@/routes'
-
-function renderAt(path: string) {
-  const router = createMemoryRouter(routes, { initialEntries: [path] })
-  return render(<RouterProvider router={router} />)
-}
+import { renderRoute } from '@/test/render'
 
 describe('RegistryDetailPage', () => {
-  it('renders the Button entry with demos, source, and props', () => {
-    renderAt('/components/button')
+  it('renders the Button entry with demos, source, and props', async () => {
+    await renderRoute('/components/button')
 
     expect(screen.getByRole('heading', { level: 1, name: 'Button' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Variants' })).toBeInTheDocument()
@@ -22,7 +16,7 @@ describe('RegistryDetailPage', () => {
 
   it('switches a demo from Preview to Code', async () => {
     const user = userEvent.setup()
-    renderAt('/components/button')
+    await renderRoute('/components/button')
 
     const tablist = screen.getByRole('tablist', { name: 'Variants example' })
     const codeTab = screen
@@ -38,13 +32,13 @@ describe('RegistryDetailPage', () => {
     expect(panel).toHaveTextContent('export function ButtonVariantsDemo')
   })
 
-  it('shows a not-found message for an unknown slug', () => {
-    renderAt('/components/does-not-exist')
+  it('shows a not-found message for an unknown slug', async () => {
+    await renderRoute('/components/does-not-exist')
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
   })
 
-  it('renders a block with links to the registry entries it needs', () => {
-    renderAt('/blocks/resource-list')
+  it('renders a block with links to the registry entries it needs', async () => {
+    await renderRoute('/blocks/resource-list')
 
     expect(screen.getByRole('heading', { level: 1, name: 'Resource list' })).toBeInTheDocument()
     const breadcrumb = screen.getByRole('navigation', { name: 'Breadcrumb' })
@@ -60,8 +54,9 @@ describe('RegistryDetailPage', () => {
     ).toEqual(['/blocks/empty-state', '/components/button', '/components/skeleton'])
   })
 
-  it('only serves entries from its own category', () => {
-    renderAt('/components/resource-list')
-    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
+  it('redirects an entry requested under another category to its own page', async () => {
+    const { router } = await renderRoute('/components/resource-list')
+    expect(router.state.location.pathname).toBe('/blocks/resource-list')
+    expect(screen.getByRole('heading', { level: 1, name: 'Resource list' })).toBeInTheDocument()
   })
 })

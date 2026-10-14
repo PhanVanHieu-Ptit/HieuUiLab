@@ -69,7 +69,12 @@ export function DocsNavList({ sections, onNavigate, className }: NavListProps) {
                       <ItemLabel item={item} />
                     </span>
                   ) : (
-                    <NavLink to={item.href} end className={itemClass} onClick={onNavigate}>
+                    <NavLink
+                      to={item.href}
+                      end={!item.matchNested}
+                      className={itemClass}
+                      onClick={onNavigate}
+                    >
                       <ItemLabel item={item} />
                     </NavLink>
                   )}

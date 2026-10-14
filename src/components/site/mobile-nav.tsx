@@ -4,18 +4,27 @@ import { Link } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { docsNav, mainNav, siteConfig } from '@/config/site'
+import { docsNav, labsNav, mainNav, siteConfig, type NavSection } from '@/config/site'
 
 import { DocsNavList } from './docs-nav'
 import { LogoMark } from './icons'
 
-// Header destinations that the docs sections do not already cover (e.g. Blocks).
-const docsHrefs = new Set(
-  docsNav.flatMap((section) => [section.href, ...section.items.map((item) => item.href)]),
+// The drawer holds the docs sections, the lab categories, then any header
+// destination they do not already cover (e.g. Projects, Notes, About).
+const coveredHrefs = new Set(
+  [...docsNav, labsNav].flatMap((section) => [
+    section.href,
+    ...section.items.map((item) => item.href),
+  ]),
 )
-const extraNav = mainNav.filter((item) => !docsHrefs.has(item.href))
-const drawerSections =
-  extraNav.length > 0 ? [...docsNav, { title: 'More', items: extraNav }] : docsNav
+const extraNav = mainNav
+  .filter((item) => !coveredHrefs.has(item.href))
+  .map((item) => ({ ...item, matchNested: true }))
+const drawerSections: readonly NavSection[] = [
+  ...docsNav,
+  labsNav,
+  ...(extraNav.length > 0 ? [{ title: 'More', items: extraNav }] : []),
+]
 
 /** Below `md`, the header nav and docs sidebar move into this drawer. */
 export function MobileNav({ className }: { className?: string }) {

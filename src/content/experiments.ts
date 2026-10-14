@@ -1,4 +1,4 @@
-import type { Experiment } from './types'
+import type { Experiment, ExperimentKind } from './types'
 
 export const experiments: readonly Experiment[] = [
   {
@@ -64,4 +64,47 @@ export function getExperiment(slug: string): Experiment | undefined {
   return experiments.find((experiment) => experiment.slug === slug)
 }
 
-export const experimentKindLabel = { geospatial: 'Geospatial', '3d': '3D' } as const
+export interface ExperimentKindInfo {
+  kind: ExperimentKind
+  /** Badge label on cards and detail pages. */
+  label: string
+  /** Category page title and breadcrumb. */
+  title: string
+  /** URL segment under /labs. */
+  path: string
+  description: string
+}
+
+export const experimentKinds: Readonly<Record<ExperimentKind, ExperimentKindInfo>> = {
+  geospatial: {
+    kind: 'geospatial',
+    label: 'Geospatial',
+    title: 'Maps',
+    path: 'maps',
+    description:
+      'Geospatial experiments: map projections and rendering written without a map library or tile server.',
+  },
+  '3d': {
+    kind: '3d',
+    label: '3D',
+    title: '3D',
+    path: '3d',
+    description: '3D graphics experiments drawn with raw WebGL2, without a 3D library.',
+  },
+}
+
+export function getExperimentKind(path: string): ExperimentKindInfo | undefined {
+  return Object.values(experimentKinds).find((info) => info.path === path)
+}
+
+export function getExperimentsOfKind(kind: ExperimentKind): readonly Experiment[] {
+  return experiments.filter((experiment) => experiment.kind === kind)
+}
+
+export function experimentKindHref(path: string): string {
+  return `/labs/${path}`
+}
+
+export function experimentHref(experiment: Pick<Experiment, 'kind' | 'slug'>): string {
+  return `${experimentKindHref(experimentKinds[experiment.kind].path)}/${experiment.slug}`
+}

@@ -1,15 +1,8 @@
-import { Outlet, useLocation } from 'react-router'
+import { Outlet } from 'react-router'
 
-import { getDocsBreadcrumbs } from '@/config/site'
-
-import { CrumbTrail } from './crumb-trail'
 import { MainContent } from './main-content'
+import { RouteBreadcrumbs } from './route-breadcrumbs'
 import { SiteSidebar } from './site-sidebar'
-
-function DocsBreadcrumbs() {
-  const { pathname } = useLocation()
-  return <CrumbTrail crumbs={getDocsBreadcrumbs(pathname)} className="mb-6" />
-}
 
 export function DocsLayout() {
   return (
@@ -18,7 +11,7 @@ export function DocsLayout() {
         <SiteSidebar />
       </aside>
       <MainContent className="min-w-0 pt-6 pb-section md:pt-8">
-        <DocsBreadcrumbs />
+        <RouteBreadcrumbs className="mb-6" />
         <Outlet />
       </MainContent>
     </div>

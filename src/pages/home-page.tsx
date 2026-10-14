@@ -68,7 +68,7 @@ export function HomePage() {
         id="lab"
         title="Geospatial and 3D experiments"
         description="Maps and graphics written from first principles, without a map or 3D library."
-        more={{ label: 'All experiments', href: '/lab' }}
+        more={{ label: 'All experiments', href: '/labs' }}
       >
         <ul className="grid gap-4 md:grid-cols-2">
           {experiments.map((experiment) => (

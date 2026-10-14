@@ -5,8 +5,8 @@ import { describe, expect, it } from 'vitest'
 import { renderRoute } from '@/test/render'
 
 describe('HomePage', () => {
-  it('leads with the hero and both primary actions', () => {
-    renderRoute('/')
+  it('leads with the hero and both primary actions', async () => {
+    await renderRoute('/')
 
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Build. Learn. Share.')
     expect(screen.getByRole('link', { name: 'Explore Components' })).toHaveAttribute(
@@ -16,8 +16,8 @@ describe('HomePage', () => {
     expect(screen.getByRole('link', { name: 'View Projects' })).toHaveAttribute('href', '/projects')
   })
 
-  it('renders every landing section', () => {
-    renderRoute('/')
+  it('renders every landing section', async () => {
+    await renderRoute('/')
 
     for (const name of [
       'What the lab is for',
@@ -33,8 +33,8 @@ describe('HomePage', () => {
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
 
-  it('names all three capabilities', () => {
-    renderRoute('/')
+  it('names all three capabilities', async () => {
+    await renderRoute('/')
     const section = screen.getByRole('region', { name: 'What the lab is for' })
 
     expect(
@@ -50,7 +50,7 @@ describe('HomePage', () => {
 
   it('renders working component previews, not pictures of them', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     const preview = screen.getByRole('group', { name: 'Tabs live preview' })
 
     await user.click(within(preview).getByRole('tab', { name: 'Activity' }))
@@ -62,8 +62,8 @@ describe('HomePage', () => {
     expect(screen.getByRole('link', { name: 'Tabs' })).toHaveAttribute('href', '/components/tabs')
   })
 
-  it('links featured cards to their detail pages', () => {
-    renderRoute('/')
+  it('links featured cards to their detail pages', async () => {
+    await renderRoute('/')
 
     expect(screen.getByRole('link', { name: 'Resource list' })).toHaveAttribute(
       'href',
@@ -71,7 +71,7 @@ describe('HomePage', () => {
     )
     expect(screen.getByRole('link', { name: 'Map projection explorer' })).toHaveAttribute(
       'href',
-      '/lab/map-projections',
+      '/labs/maps/map-projections',
     )
     expect(screen.getByRole('link', { name: 'Registry-driven documentation' })).toHaveAttribute(
       'href',
@@ -79,8 +79,8 @@ describe('HomePage', () => {
     )
   })
 
-  it('has no internal link that leads to the not-found page', () => {
-    const { container, unmount } = renderRoute('/')
+  it('has no internal link that leads to the not-found page', async () => {
+    const { container, unmount } = await renderRoute('/')
     const hrefs = new Set(
       Array.from(container.querySelectorAll<HTMLAnchorElement>('a[href^="/"]'), (anchor) =>
         anchor.getAttribute('href'),
@@ -91,7 +91,7 @@ describe('HomePage', () => {
 
     for (const href of hrefs) {
       if (!href) continue
-      const view = renderRoute(href)
+      const view = await renderRoute(href)
       expect(
         screen.queryByRole('heading', { name: 'Page not found' }),
         `${href} should resolve`,
@@ -101,8 +101,8 @@ describe('HomePage', () => {
     }
   })
 
-  it('opens external links in a new tab with an accessible hint', () => {
-    renderRoute('/')
+  it('opens external links in a new tab with an accessible hint', async () => {
+    await renderRoute('/')
     const stack = screen.getByRole('region', { name: 'Technology stack' })
     const react = within(stack).getByRole('link', { name: 'React (opens in a new tab)' })
 
