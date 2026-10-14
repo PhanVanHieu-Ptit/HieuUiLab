@@ -1,3 +1,5 @@
+import manifestSource from '../../package.json?raw'
+
 /**
  * Every npm package a registry entry may ask the reader to install, with why.
  * A test checks each one is a dependency of this project, so documented install
@@ -57,4 +59,11 @@ export function isPackageName(value: string): value is PackageName {
 
 export function isRequirementId(value: string): value is RequirementId {
   return Object.hasOwn(registryRequirements, value)
+}
+
+const manifest = JSON.parse(manifestSource) as { dependencies?: Record<string, string> }
+
+/** The version range this site builds and tests the registry against, from package.json. */
+export function packageVersion(name: PackageName): string | undefined {
+  return manifest.dependencies?.[name]
 }

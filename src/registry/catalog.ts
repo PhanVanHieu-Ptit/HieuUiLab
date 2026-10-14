@@ -7,7 +7,12 @@ import {
   type RegistryCategory,
   type RegistryTag,
 } from './taxonomy'
-import type { RegistryEntry, RegistryStatus } from './types'
+import {
+  isImplemented,
+  type ImplementedEntry,
+  type RegistryEntry,
+  type RegistryStatus,
+} from './types'
 
 export const catalogSorts = {
   name: 'Name',
@@ -118,6 +123,66 @@ export function facetsFor(entries: readonly RegistryEntry[]): CatalogFacets {
     categories: registryCategoryIds.filter((id) => categories.has(id)),
     tags: registryTags.filter((tag) => tags.has(tag)),
   }
+}
+
+function dependenciesOf(entry: RegistryEntry): readonly string[] {
+  return isImplemented(entry) ? entry.installation.registryDependencies : []
+}
+
+/** Implemented entries that list `slug` as a direct registry dependency, by name. */
+export function registryDependents(
+  entries: readonly RegistryEntry[],
+  slug: string,
+): ImplementedEntry[] {
+  return entries
+    .filter(isImplemented)
+    .filter((entry) => entry.installation.registryDependencies.includes(slug))
+    .sort(byName)
+}
+
+export interface RelatedEntry {
+  entry: RegistryEntry
+  /** Why it is related, from its own side, e.g. `Uses Button` or `Also in Actions`. */
+  reasons: string[]
+}
+
+/**
+ * Entries most related to `entry`, scored from metadata alone: a direct registry
+ * dependency either way (3), the same category (2), and each shared tag (1).
+ * Planned entries are left out, since they have nothing to use yet.
+ */
+export function relatedEntries(
+  entry: RegistryEntry,
+  entries: readonly RegistryEntry[],
+  limit = 4,
+): RelatedEntry[] {
+  const scored = entries.flatMap((other) => {
+    if (other.slug === entry.slug || !isImplemented(other)) return []
+    const reasons: string[] = []
+    let score = 0
+    if (dependenciesOf(entry).includes(other.slug)) {
+      score += 3
+      reasons.push(`Required by ${entry.name}`)
+    }
+    if (dependenciesOf(other).includes(entry.slug)) {
+      score += 3
+      reasons.push(`Uses ${entry.name}`)
+    }
+    if (other.category === entry.category) {
+      score += 2
+      reasons.push(`Also in ${registryCategories[entry.category].label}`)
+    }
+    const shared = entry.tags.filter((tag) => other.tags.includes(tag))
+    if (shared.length > 0) {
+      score += shared.length
+      reasons.push(`Shares ${shared.join(', ')}`)
+    }
+    return score > 0 ? [{ entry: other, reasons, score }] : []
+  })
+  return scored
+    .sort((a, b) => b.score - a.score || byName(a.entry, b.entry))
+    .slice(0, limit)
+    .map(({ entry: related, reasons }) => ({ entry: related, reasons }))
 }
 
 /** Entries that best match an unknown slug, for "did you mean" links on a 404. */

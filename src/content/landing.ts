@@ -26,7 +26,11 @@ export const capabilities: readonly Capability[] = [
 ]
 
 export const featuredComponentSlugs: readonly string[] = ['button', 'tabs', 'dialog']
-export const featuredBlockSlugs: readonly string[] = ['resource-list', 'confirm-action']
+export const featuredBlockSlugs: readonly string[] = [
+  'orders-dashboard',
+  'data-table',
+  'confirm-action',
+]
 export const featuredProjectSlugs: readonly string[] = [
   'contrast-tested-design-system',
   'registry-driven-documentation',

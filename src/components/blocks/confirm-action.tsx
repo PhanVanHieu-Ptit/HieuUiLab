@@ -20,10 +20,12 @@ export interface ConfirmActionProps {
   cancelLabel?: string
   /** May return a promise; the dialog stays open and busy until it settles. */
   onConfirm: () => void | Promise<void>
+  /** Style of the confirm button. Use `default` for reversible or non-destructive actions. */
+  confirmVariant?: 'destructive' | 'default'
 }
 
 /**
- * Confirmation for destructive actions. Async work keeps the dialog open with a
+ * Confirmation for consequential actions, destructive by default. Async work keeps the dialog open with a
  * busy confirm button; a rejection is shown inline so the user can retry.
  */
 export function ConfirmAction({
@@ -33,6 +35,7 @@ export function ConfirmAction({
   confirmLabel,
   cancelLabel = 'Cancel',
   onConfirm,
+  confirmVariant = 'destructive',
 }: ConfirmActionProps) {
   const [open, setOpen] = useState(false)
   const [pending, setPending] = useState(false)
@@ -80,7 +83,7 @@ export function ConfirmAction({
             </Button>
           </DialogClose>
           <Button
-            variant="destructive"
+            variant={confirmVariant}
             loading={pending}
             onClick={() => {
               void confirm()

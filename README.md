@@ -5,24 +5,25 @@ copyable source, props documentation, and tests.
 
 ## Status
 
-| Area                                                                                                                                                                | State                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu                                                                                  | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
-| Design tokens (color, status, elevation, type, layout) and shared state utilities                                                                                   | Implemented, contrast-tested                                            |
-| Registry model, validation, catalog search/filter/sort, detail pages                                                                                                | Implemented, unit + e2e tested                                          |
-| Actions, display, feedback: `Button`, `Badge`, `Alert`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`                                     | Implemented, unit tested                                                |
-| Form controls: `Input`, `Textarea`, `PasswordInput`, `SearchInput`, `Label`, `Checkbox`, `Switch`, `Select`, `Field`                                                | Implemented, unit + e2e tested                                          |
-| Forms: `FormField` + `useFormSubmit` (React Hook Form adapter), `FormFeedback`; blocks `ProfileForm`, `SearchFilterForm` (Zod schemas, mock handlers in demos only) | Experimental, unit + e2e tested                                         |
-| Overlays: `Dialog`, `Tooltip` (stable), `Sheet` (experimental)                                                                                                      | Implemented, unit + e2e tested                                          |
-| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer                                                                      | Implemented, unit + e2e tested (incl. internal link integrity)          |
-| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                                                                                       | Implemented, unit tested                                                |
-| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                                                            | Experimental, unit + e2e tested; no map or 3D library                   |
-| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                                                           | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
-| `/templates`, `/playground`; registry entries `Combobox`, `Data table`                                                                                              | Planned — pages exist and say so; nothing built                         |
-| Projects (case studies) and notes                                                                                                                                   | Typed local data in `src/content/`; content describes work in this repo |
-| MapLibre, MDX content                                                                                                                                               | Planned — not implemented                                               |
-| CI (GitHub Actions)                                                                                                                                                 | Workflow present; not yet run on GitHub                                 |
-| Deployment                                                                                                                                                          | Not set up                                                              |
+| Area                                                                                                                                                                                                                                    | State                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu                                                                                                                                                      | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
+| Design tokens (color, status, elevation, type, layout) and shared state utilities                                                                                                                                                       | Implemented, contrast-tested                                            |
+| Registry model, validation, catalog search/filter/sort with removable filter chips and search suggestions; detail pages with playground controls, Usage/Source tabs, dependencies, related entries                                      | Implemented, unit + e2e tested                                          |
+| Actions, display, feedback: `Button`, `Badge`, `Alert`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`                                                                                                         | Implemented, unit tested                                                |
+| Form controls: `Input`, `Textarea`, `PasswordInput`, `SearchInput`, `Label`, `Checkbox`, `Switch`, `Select`, `Field`                                                                                                                    | Implemented, unit + e2e tested                                          |
+| Forms: `FormField` + `useFormSubmit` (React Hook Form adapter), `FormFeedback`; blocks `ProfileForm`, `SearchFilterForm` (Zod schemas, mock handlers in demos only)                                                                     | Experimental, unit + e2e tested                                         |
+| Overlays: `Dialog`, `Tooltip` (stable), `Sheet` (experimental)                                                                                                                                                                          | Implemented, unit + e2e tested                                          |
+| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer                                                                                                                                          | Implemented, unit + e2e tested (incl. internal link integrity)          |
+| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                                                                                                                                                           | Implemented, unit tested                                                |
+| Data display: `Table` (sortable headers), `Pagination`, `StatusBadge`, `MetricCard`, `NotificationItem`; blocks `DataTable`, `DataToolbar`, `ErrorState`, `ActivityList`, `DetailPanel`, `OrdersDashboard` (typed mock data, in memory) | Experimental, unit + e2e tested                                         |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                                                                                                                                | Experimental, unit + e2e tested; no map or 3D library                   |
+| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                                                                                                                               | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
+| `/templates`, `/playground`; registry entry `Combobox`                                                                                                                                                                                  | Planned — pages exist and say so; nothing built                         |
+| Projects (case studies) and notes                                                                                                                                                                                                       | Typed local data in `src/content/`; content describes work in this repo |
+| MapLibre, MDX content                                                                                                                                                                                                                   | Planned — not implemented                                               |
+| CI (GitHub Actions)                                                                                                                                                                                                                     | Workflow present; not yet run on GitHub                                 |
+| Deployment                                                                                                                                                                                                                              | Not set up                                                              |
 
 ## Stack
 
@@ -182,7 +183,14 @@ e2e/                  Playwright tests
    backticks render as inline code). Each demo is an `export function` whose body is self-contained,
    because the Code tab shows exactly that function. Categories and tags come from `src/registry/taxonomy.ts`; packages and setup requirements from
    `src/registry/packages.ts`.
-3. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, catalog, landing cards,
+3. Optionally add a `playground` with `definePlayground(Component, { part, controls })`
+   (`src/registry/playground.ts`; see `button/meta.ts`) when the component renders fully from
+   props and text. Control props and select options are type-checked against the component's
+   props, and `validateRegistry` checks them against the documented API (documented prop, options
+   within the documented union, default equal to the documented default). The preview and the
+   copyable code are generated from the same resolved props. Entries without one show no
+   controls.
+4. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, catalog, landing cards,
    About counts, and detail route all read from that one array.
 
 A planned entry is a `PlannedEntry` (see `src/registry/planned.ts`): metadata and a
@@ -190,8 +198,10 @@ A planned entry is a `PlannedEntry` (see `src/registry/planned.ts`): metadata an
 
 `validateRegistry` (`src/registry/validate.ts`) runs at startup in development and in the test
 suite. It rejects duplicate ids or slugs, unknown categories, tags, packages, or requirements,
-missing or planned registry dependencies, dependency cycles, duplicate examples or props, and
-install steps that drift from what the source actually imports.
+missing or planned registry dependencies, dependency cycles, duplicate examples or props,
+install steps that drift from what the source actually imports, documented API parts the source
+does not export (the Usage tab's import line is built from them), and playground controls that
+drift from the documented props.
 
 To add a docs page, add an item to `docsNav` in `src/config/site.ts` and a lazy route under `docs`
 in `src/router/routes.tsx` with `handle: docsHandle('/docs/<page>')`. The title, description,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getRegistryEntries, registry } from '.'
+import { getRegistryEntries, getRegistryEntry, registry } from '.'
 import {
   defaultCatalogQuery,
   facetsFor,
@@ -8,6 +8,8 @@ import {
   isCatalogQueryActive,
   matchesSearch,
   parseCatalogQuery,
+  registryDependents,
+  relatedEntries,
   suggestEntries,
   toSearchParams,
   type CatalogQuery,
@@ -36,11 +38,15 @@ describe('filterRegistry', () => {
   })
 
   it('searches descriptions, tags, and category labels', () => {
-    expect(slugs(filterRegistry(registry, { q: 'aria-current' }))).toEqual(['breadcrumb'])
+    expect(slugs(filterRegistry(registry, { q: 'aria-current' }))).toEqual([
+      'breadcrumb',
+      'pagination',
+    ])
     expect(slugs(filterRegistry(registry, { q: 'focus-trap' }))).toEqual(
       expect.arrayContaining(['dialog', 'sheet', 'confirm-action']),
     )
     expect(slugs(filterRegistry(registry, { q: 'overlays' }))).toEqual([
+      'detail-panel',
       'dialog',
       'sheet',
       'tooltip',
@@ -146,7 +152,7 @@ describe('facetsFor', () => {
     for (const tag of facets.tags) {
       expect(blocks.some((entry) => entry.tags.includes(tag))).toBe(true)
     }
-    expect(facets.categories).not.toContain('overlays')
+    expect(facets.categories).not.toContain('navigation')
   })
 })
 
@@ -170,5 +176,70 @@ describe('registry data', () => {
       expect(entry).not.toHaveProperty('examples')
       expect(entry).not.toHaveProperty('installation')
     }
+  })
+})
+
+describe('relatedEntries', () => {
+  function related(slug: string) {
+    const entry = getRegistryEntry(slug)
+    if (!entry) throw new Error(`No entry "${slug}"`)
+    return relatedEntries(entry, registry)
+  }
+
+  it('ranks registry dependencies first, then category, then shared tags', () => {
+    expect(related('resource-list')).toEqual([
+      {
+        entry: getRegistryEntry('empty-state'),
+        reasons: ['Required by Resource list', 'Shares composition, status'],
+      },
+      {
+        entry: getRegistryEntry('error-state'),
+        reasons: ['Required by Resource list', 'Shares async, status'],
+      },
+      {
+        entry: getRegistryEntry('data-table'),
+        reasons: ['Also in Data display', 'Shares async, loading'],
+      },
+      {
+        entry: getRegistryEntry('orders-dashboard'),
+        reasons: ['Also in Data display', 'Shares composition, status'],
+      },
+    ])
+  })
+
+  it('names entries that use this one', () => {
+    expect(related('button')[0]).toEqual({
+      entry: getRegistryEntry('confirm-action'),
+      reasons: ['Uses Button', 'Also in Actions'],
+    })
+  })
+
+  it('never returns the entry itself or planned entries', () => {
+    for (const entry of registry) {
+      const found = relatedEntries(entry, registry, registry.length)
+      expect(found.map((each) => each.entry.slug)).not.toContain(entry.slug)
+      expect(found.every((each) => isImplemented(each.entry))).toBe(true)
+    }
+  })
+
+  it('respects the limit', () => {
+    expect(related('kbd')).toHaveLength(4)
+    const button = getRegistryEntry('button')
+    expect(button && relatedEntries(button, registry, 2)).toHaveLength(2)
+  })
+})
+
+describe('registryDependents', () => {
+  it('lists entries that import the slug directly, by name', () => {
+    expect(slugs(registryDependents(registry, 'empty-state'))).toEqual(
+      slugs(
+        registry
+          .filter(isImplemented)
+          .filter((entry) => entry.installation.registryDependencies.includes('empty-state'))
+          .sort((a, b) => a.name.localeCompare(b.name, 'en')),
+      ),
+    )
+    expect(slugs(registryDependents(registry, 'button'))).toContain('confirm-action')
+    expect(registryDependents(registry, 'kbd')).toEqual([])
   })
 })

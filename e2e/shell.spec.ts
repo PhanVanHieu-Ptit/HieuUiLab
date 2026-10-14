@@ -18,12 +18,17 @@ const routes = [
   '/components/dialog',
   '/components/input',
   '/components/label',
+  '/components/pagination',
   '/components/select',
   '/components/skeleton',
   '/components/switch',
+  '/components/table',
   '/components/tabs',
   '/components/tooltip',
   '/blocks',
+  '/blocks/data-table',
+  '/blocks/detail-panel',
+  '/blocks/orders-dashboard',
   '/blocks/resource-list',
   '/docs/installation',
   '/docs/architecture',
@@ -247,7 +252,7 @@ test.describe('keyboard and focus', () => {
   test('the breadcrumb trail reflects the route', async ({ page }) => {
     await page.goto('/components/tabs')
     const trail = page.getByRole('navigation', { name: 'Breadcrumb' })
-    await expect(trail.getByRole('link')).toHaveText(['Home', 'Components'])
+    await expect(trail.getByRole('link')).toHaveText(['Home', 'Components', 'Navigation'])
     await expect(trail.locator('[aria-current="page"]')).toHaveText('Tabs')
   })
 })

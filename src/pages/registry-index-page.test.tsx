@@ -42,7 +42,13 @@ describe('RegistryIndexPage', () => {
     await renderRoute('/components?category=feedback&sort=name')
 
     expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('feedback')
-    expect(cardTitles()).toEqual(['Alert', 'Form feedback', 'Skeleton', 'Spinner'])
+    expect(cardTitles()).toEqual([
+      'Alert',
+      'Form feedback',
+      'Notification item',
+      'Skeleton',
+      'Spinner',
+    ])
   })
 
   it('filters by category and tag', async () => {
@@ -54,7 +60,7 @@ describe('RegistryIndexPage', () => {
 
     expect(router.state.location.search).toBe('?category=navigation&tag=keyboard')
     expect(screen.getByRole('button', { name: 'keyboard', pressed: true })).toBeInTheDocument()
-    expect(cardTitles()).toEqual(['Tabs'])
+    expect(cardTitles()).toEqual(['Pagination', 'Tabs'])
   })
 
   it('sorts by status with planned entries last', async () => {
@@ -64,7 +70,7 @@ describe('RegistryIndexPage', () => {
     await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'status')
 
     // Stable first, then experimental, then planned.
-    expect(cardTitles().slice(-2)).toEqual(['Sheet', 'Combobox'])
+    expect(cardTitles().slice(-2)).toEqual(['Table', 'Combobox'])
   })
 
   it('shows an empty state with a way to clear the filters', async () => {
@@ -89,6 +95,76 @@ describe('RegistryIndexPage', () => {
       .getAllByRole('option')
       .map((option) => option.textContent)
     expect(options).toContain('Data display')
-    expect(options).not.toContain('Overlays')
+    expect(options).not.toContain('Navigation')
+  })
+
+  it('removes one active filter at a time', async () => {
+    const user = userEvent.setup()
+    const { router } = await renderRoute('/components?q=a&category=navigation&tag=keyboard')
+    const active = screen.getByRole('list', { name: 'Active filters' })
+
+    await user.click(within(active).getByRole('button', { name: 'Remove tag keyboard' }))
+    expect(router.state.location.search).toBe('?q=a&category=navigation')
+
+    await user.click(within(active).getByRole('button', { name: 'Remove category Navigation' }))
+    expect(router.state.location.search).toBe('?q=a')
+    expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('')
+
+    await user.click(within(active).getByRole('button', { name: 'Remove search “a”' }))
+    expect(router.state.location.search).toBe('')
+    expect(screen.queryByRole('list', { name: 'Active filters' })).toBeNull()
+
+    // Each removal was its own history entry.
+    await router.navigate(-1)
+    await screen.findByRole('button', { name: 'Remove search “a”' })
+  })
+
+  it('clears the search with Escape and links the searchbox to the results', async () => {
+    const user = userEvent.setup()
+    const { router } = await renderRoute('/components?q=modal')
+    const search = screen.getByRole('searchbox', { name: 'Search components' })
+    expect(search).toHaveAttribute(
+      'aria-controls',
+      screen.getByRole('list', { name: 'Components results' }).id,
+    )
+
+    search.focus()
+    await user.keyboard('{Escape}')
+
+    expect(search).toHaveValue('')
+    expect(router.state.location.search).toBe('')
+    expect(cardTitles()).toHaveLength(components.length)
+  })
+
+  it('suggests close names for a mistyped search', async () => {
+    await renderRoute('/components?q=buton')
+    const suggestions = screen.getByRole('navigation', { name: 'Search suggestions' })
+    expect(within(suggestions).getByRole('link', { name: 'Button' })).toHaveAttribute(
+      'href',
+      '/components/button',
+    )
+  })
+
+  it('points to the other catalog when it has matches', async () => {
+    const user = userEvent.setup()
+    const { router } = await renderRoute('/components?q=dashboard')
+    const suggestions = screen.getByRole('navigation', { name: 'Search suggestions' })
+    await user.click(within(suggestions).getByRole('link', { name: '1 block matches “dashboard”' }))
+
+    expect(router.state.location.pathname).toBe('/blocks')
+    expect(router.state.location.search).toBe('?q=dashboard')
+    expect(cardTitles('Blocks results')).toEqual(['Orders dashboard'])
+  })
+
+  it('opens an entry from its card', async () => {
+    const user = userEvent.setup()
+    const { router } = await renderRoute('/components?q=modal')
+    const results = screen.getByRole('list', { name: 'Components results' })
+
+    await user.click(within(results).getByRole('link', { name: 'Dialog' }))
+
+    // The detail page is a lazy chunk; the location updates once it has loaded.
+    expect(await screen.findByRole('heading', { level: 1, name: 'Dialog' })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/components/dialog')
   })
 })

@@ -23,6 +23,8 @@ interface RegistryCardProps {
   showPreview?: boolean
   /** Show the category and tags under the description. */
   showTaxonomy?: boolean
+  /** A short line under the description, e.g. why the entry is related. */
+  note?: string
   className?: string
 }
 
@@ -35,6 +37,7 @@ export function RegistryCard({
   headingLevel = 'h3',
   showPreview = false,
   showTaxonomy = false,
+  note,
   className,
 }: RegistryCardProps) {
   const Example = showPreview && isImplemented(entry) ? entry.examples[0].component : undefined
@@ -64,6 +67,7 @@ export function RegistryCard({
           <StatusBadge status={entry.status} size="sm" />
         </CardTitle>
         <CardDescription className="line-clamp-3">{entry.description}</CardDescription>
+        {note ? <p className="text-xs font-medium text-muted-foreground">{note}</p> : null}
       </CardHeader>
       {showTaxonomy ? (
         <CardFooter className="mt-auto flex-wrap">

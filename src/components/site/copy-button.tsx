@@ -2,6 +2,7 @@ import { Check, Copy } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import { canWriteClipboard } from '@/lib/clipboard'
 import { cn } from '@/lib/cn'
 
 interface CopyButtonProps {
@@ -10,7 +11,9 @@ interface CopyButtonProps {
   className?: string
 }
 
+/** Copies `value` exactly. Renders nothing where the clipboard API is unavailable. */
 export function CopyButton({ value, label = 'Copy code', className }: CopyButtonProps) {
+  const [supported] = useState(canWriteClipboard)
   const [status, setStatus] = useState<'idle' | 'copied' | 'error'>('idle')
 
   useEffect(() => {
@@ -31,6 +34,8 @@ export function CopyButton({ value, label = 'Copy code', className }: CopyButton
       setStatus('error')
     }
   }
+
+  if (!supported) return null
 
   return (
     <>

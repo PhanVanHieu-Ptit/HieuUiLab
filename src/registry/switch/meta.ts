@@ -1,5 +1,7 @@
+import { Switch } from '@/components/ui/switch'
 import switchSource from '@/components/ui/switch.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
 import { SwitchControlledDemo, SwitchDemo } from './demos'
@@ -81,4 +83,13 @@ export const switchEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Switch, {
+    part: 'Switch',
+    controls: [
+      { kind: 'boolean', prop: 'defaultChecked', label: 'Checked by default', default: false },
+      { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },
+      { kind: 'boolean', prop: 'disabled', default: false },
+    ],
+    staticProps: { 'aria-label': 'Email notifications' },
+  }),
 }

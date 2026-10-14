@@ -55,6 +55,38 @@ export interface RegistryExample {
   preview?: PreviewConfig
 }
 
+/** A value a playground control can set: an option, a flag, or text. */
+export type PlaygroundValue = string | boolean
+
+/** One control in an entry's playground; `prop` is a prop of the playground's API part. */
+export type PlaygroundControl =
+  | {
+      kind: 'select'
+      prop: string
+      label?: string
+      /** A subset of the literals in the documented type. */
+      options: readonly string[]
+      /** Must equal the documented default, so leaving the prop out renders the same. */
+      default: string
+    }
+  | { kind: 'boolean'; prop: string; label?: string; default: boolean }
+  /** Free text; `prop: 'children'` sets the element's content. */
+  | { kind: 'text'; prop: string; label?: string; default: string }
+
+/**
+ * Live controls for one part of an entry. The preview and the generated code are
+ * both built from the same resolved props, so they cannot disagree.
+ */
+export interface RegistryPlayground {
+  /** API part the controls configure; also the JSX tag in the generated code. */
+  part: string
+  /** The real component the preview renders. */
+  component: ComponentType<Record<string, PlaygroundValue>>
+  controls: readonly PlaygroundControl[]
+  /** Props always passed, e.g. an aria-label. Shown in the generated code too. */
+  staticProps?: Readonly<Record<string, PlaygroundValue>>
+}
+
 export interface RegistryInstallation {
   /** Path the source is expected to live at in a consuming project. */
   targetPath: string
@@ -93,6 +125,8 @@ export interface ImplementedEntry extends RegistryEntryBase {
    */
   guidelines?: readonly string[]
   api: RegistryApi
+  /** Live prop controls, only for entries that render fully from props and text. */
+  playground?: RegistryPlayground
 }
 
 /**

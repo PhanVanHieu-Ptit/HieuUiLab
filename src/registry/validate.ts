@@ -1,6 +1,7 @@
 import { isPackageName, isRequirementId } from './packages'
 import { isRegistryCategory, isRegistryTag } from './taxonomy'
-import type { ImplementedEntry, RegistryEntry } from './types'
+import type { ApiPart, ImplementedEntry, PropDoc, RegistryEntry } from './types'
+import { partExportNames, sourceExports } from './usage'
 
 export interface RegistryIssue {
   /** The entry's id, or its position when the id itself is unusable. */
@@ -204,6 +205,97 @@ function validateImplemented(
       }
       if (prop.required && prop.default !== undefined) {
         report(`api.${part.name}`, `prop "${prop.name}" is required but has a default`)
+      }
+    }
+  }
+
+  // The generated import line names only real exports.
+  if (!isBlank(source)) {
+    const exported = sourceExports(source)
+    for (const part of api.parts) {
+      for (const name of partExportNames(part)) {
+        if (!exported.has(name)) report(`api.${part.name}`, `source does not export "${name}"`)
+      }
+    }
+  }
+
+  validatePlayground(entry, report)
+}
+
+/** The documented prop named exactly `name`, or one of a grouped doc like `name / value`. */
+function findPropDoc(part: ApiPart, name: string): PropDoc | undefined {
+  return part.props.find((prop) => prop.name.split(' / ').some((each) => each.trim() === name))
+}
+
+/** The string literals of a type made only of them, e.g. `'sm' | 'md'`; otherwise undefined. */
+function literalUnion(type: string): string[] | undefined {
+  if (!/^\s*'[^']*'(?:\s*\|\s*'[^']*')*\s*$/.test(type)) return undefined
+  return [...type.matchAll(/'([^']*)'/g)].map((match) => match[1] ?? '')
+}
+
+/** A documented default as the control value it means: `'md'` → `md`, `false` → `false`. */
+function documentedDefault(prop: PropDoc): string | undefined {
+  return prop.default?.replace(/^'(.*)'$/, '$1')
+}
+
+function validatePlayground(
+  entry: ImplementedEntry,
+  report: (field: string, message: string) => void,
+) {
+  const { playground } = entry
+  if (!playground) return
+  const field = 'playground'
+  const part = entry.api.parts.find((each) => each.name === playground.part)
+  if (!part) {
+    report(field, `part "${playground.part}" is not documented in api.parts`)
+    return
+  }
+  const name = playground.component.displayName ?? playground.component.name
+  // Minified builds rename functions; the check only means something in dev and tests.
+  if (import.meta.env.DEV && name !== playground.part) {
+    report(field, `renders ${name || 'an anonymous component'} but generates <${playground.part}>`)
+  }
+  if (playground.controls.length === 0) report(field, 'needs at least one control')
+  for (const prop of duplicates([
+    ...playground.controls.map((control) => control.prop),
+    ...Object.keys(playground.staticProps ?? {}),
+  ])) {
+    report(field, `sets "${prop}" more than once`)
+  }
+
+  const spreadsNative = part.props.some((prop) => prop.name === '...props')
+  for (const control of playground.controls) {
+    const label = `control "${control.prop}"`
+    const doc = findPropDoc(part, control.prop)
+    if (!doc && !spreadsNative) {
+      report(field, `${label} is not a documented prop of ${part.name}`)
+      continue
+    }
+    if (control.kind === 'select') {
+      // An omitted select must render as its default, so the default must be documented.
+      const exact = part.props.find((prop) => prop.name === control.prop)
+      if (exact?.default === undefined) {
+        report(field, `${label} needs a documented default`)
+      } else if (documentedDefault(exact) !== control.default) {
+        report(field, `${label} defaults to "${control.default}" but the docs say ${exact.default}`)
+      }
+      const literals = exact ? literalUnion(exact.type) : undefined
+      for (const option of control.options) {
+        if (literals && !literals.includes(option)) {
+          report(field, `${label} offers "${option}", which ${exact?.type ?? ''} does not allow`)
+        }
+      }
+      if (!control.options.includes(control.default)) {
+        report(field, `${label} default "${control.default}" is not one of its options`)
+      }
+    } else if (control.kind === 'boolean') {
+      // An omitted flag is false, so a documented default must be false too.
+      const exact = part.props.find((prop) => prop.name === control.prop)
+      if (exact?.default !== undefined && exact.default !== 'false') {
+        report(
+          field,
+          `${label} is left out when false, but the docs default it to ${exact.default}`,
+        )
       }
     }
   }

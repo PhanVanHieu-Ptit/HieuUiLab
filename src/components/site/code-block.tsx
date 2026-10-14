@@ -12,6 +12,8 @@ interface CodeBlockProps {
   language?: 'tsx' | 'bash' | 'text'
   /** Optional file name shown in the header bar; defaults to the language. */
   title?: string
+  /** Accessible name of the copy button; name what is copied when a page has several. */
+  copyLabel?: string
   className?: string
 }
 
@@ -19,7 +21,13 @@ interface CodeBlockProps {
  * Code panel: header with file name and copy button, then a scrollable body.
  * Long lines scroll inside the panel and never widen the page.
  */
-export function CodeBlock({ code, language = 'tsx', title, className }: CodeBlockProps) {
+export function CodeBlock({
+  code,
+  language = 'tsx',
+  title,
+  copyLabel = 'Copy code',
+  className,
+}: CodeBlockProps) {
   const [highlighted, setHighlighted] = useState<{ code: string; html: string } | null>(null)
 
   useEffect(() => {
@@ -53,7 +61,7 @@ export function CodeBlock({ code, language = 'tsx', title, className }: CodeBloc
         <span className="min-w-0 flex-1 truncate font-mono text-xs text-muted-foreground">
           {title ?? language}
         </span>
-        <CopyButton value={code} />
+        <CopyButton value={code} label={copyLabel} />
       </figcaption>
       {html === null ? (
         <pre className="max-h-128 overflow-auto p-4 font-mono text-mono">

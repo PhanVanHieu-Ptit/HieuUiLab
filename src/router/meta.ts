@@ -6,6 +6,8 @@ export interface PageMeta {
   /** Page title; also the breadcrumb label unless `crumb` is set. */
   title: string
   crumb?: string | undefined
+  /** Crumbs between the parent route and this page, e.g. the entry's category in its catalog. */
+  parents?: readonly Crumb[] | undefined
   description?: string | undefined
   /** Keep the page out of search indexes, e.g. a planned page or a 404. */
   noindex?: boolean | undefined
@@ -63,7 +65,10 @@ export function resolveRouteMeta(matches: readonly UIMatch[]): ResolvedRouteMeta
     if (resolved.noindex) noindex = true
     if (resolved.description) description = resolved.description
     if (crumbs.at(-1)?.href !== match.pathname) {
-      crumbs.push({ title: resolved.crumb ?? resolved.title, href: match.pathname })
+      crumbs.push(...(resolved.parents ?? []), {
+        title: resolved.crumb ?? resolved.title,
+        href: match.pathname,
+      })
     }
   }
 

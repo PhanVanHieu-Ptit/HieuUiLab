@@ -235,6 +235,80 @@ describe('validateRegistry', () => {
     expect(issues).toContain('a api.X: prop "open" is required but has a default')
   })
 
+  it('detects documented API parts the source does not export', () => {
+    const issues = messages([
+      implemented('a', {
+        api: {
+          parts: [
+            { name: 'X / Y', props: [] },
+            { name: 'Z<T>', props: [] },
+          ],
+        },
+      }),
+    ])
+    expect(issues).toEqual([
+      'a api.X / Y: source does not export "Y"',
+      'a api.Z<T>: source does not export "Z"',
+    ])
+  })
+
+  it('detects playground controls that drift from the documented API', () => {
+    function X() {
+      return null
+    }
+    const component = X
+    const api = {
+      parts: [
+        {
+          name: 'X',
+          props: [
+            { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Size.' },
+            { name: 'tone', type: 'string', description: 'Tone.' },
+            { name: 'open', type: 'boolean', default: 'true', description: 'Open.' },
+          ],
+        },
+      ],
+    } as const
+    const issues = messages([
+      implemented('a', {
+        api,
+        playground: {
+          part: 'X',
+          component,
+          controls: [
+            { kind: 'select', prop: 'size', options: ['sm', 'xl'], default: 'sm' },
+            { kind: 'select', prop: 'tone', options: ['info'], default: 'info' },
+            { kind: 'boolean', prop: 'open', default: true },
+            { kind: 'text', prop: 'placeholder', default: '' },
+          ],
+          staticProps: { size: 'md' },
+        },
+      }),
+      implemented('b', {
+        api,
+        playground: { part: 'Nope', component, controls: [] },
+      }),
+      implemented('c', {
+        api,
+        playground: {
+          part: 'X',
+          component: Example,
+          controls: [{ kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' }],
+        },
+      }),
+    ])
+    expect(issues).toEqual([
+      'a playground: sets "size" more than once',
+      'a playground: control "size" defaults to "sm" but the docs say \'md\'',
+      'a playground: control "size" offers "xl", which \'sm\' | \'md\' does not allow',
+      'a playground: control "tone" needs a documented default',
+      'a playground: control "open" is left out when false, but the docs default it to true',
+      'a playground: control "placeholder" is not a documented prop of X',
+      'b playground: part "Nope" is not documented in api.parts',
+      'c playground: renders Example but generates <X>',
+    ])
+  })
+
   it('rejects a planned entry that carries implementation fields', () => {
     const disguised = { ...planned('a'), source: 'export {}' } as RegistryEntry
     expect(messages([disguised])).toContain(
