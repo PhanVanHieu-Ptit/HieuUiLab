@@ -34,6 +34,11 @@ export const badgeEntry: ImplementedEntry = {
     },
     { id: 'sizes', title: 'Sizes', component: BadgeSizesDemo, code: demoCode('BadgeSizesDemo') },
   ],
+  guidelines: [
+    'Badges are static text, not buttons. For removable or clickable chips, use a Button.',
+    'The text must name the status ("Failed", "3 new"); status colour alone carries no meaning for some readers.',
+    'For counts announced to screen readers, include the noun in sr-only text, for example "3 unread messages".',
+  ],
   api: {
     parts: [
       {

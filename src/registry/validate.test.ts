@@ -74,6 +74,12 @@ describe('validateRegistry', () => {
     }).not.toThrow()
   })
 
+  it('rejects empty guidelines', () => {
+    expect(messages([implemented('a', { guidelines: ['Use it.', ' '] })])).toEqual([
+      'a guidelines: guideline #1 is empty',
+    ])
+  })
+
   it('accepts valid fixtures', () => {
     expect(messages([implemented('a'), planned('b')])).toEqual([])
   })

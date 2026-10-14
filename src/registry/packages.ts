@@ -7,7 +7,10 @@ export const registryPackages = {
   'class-variance-authority': { purpose: 'Typed variant and size class maps.' },
   clsx: { purpose: 'Conditional class names (used by the cn helper).' },
   'tailwind-merge': { purpose: 'Resolves conflicting Tailwind classes (used by the cn helper).' },
-  'radix-ui': { purpose: 'Accessible primitives: Slot, Dialog, Tabs, Separator.' },
+  'radix-ui': {
+    purpose:
+      'Accessible primitives: Slot, Dialog, Tabs, Select, Tooltip, Checkbox, Switch, Label, Separator.',
+  },
   'lucide-react': { purpose: 'Icons.' },
 } as const satisfies Record<string, { purpose: string }>
 

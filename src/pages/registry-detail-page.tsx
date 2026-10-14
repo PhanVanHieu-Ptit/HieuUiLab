@@ -9,6 +9,7 @@ import { PropsTable } from '@/components/site/props-table'
 import { StatusBadge } from '@/components/site/status-badge'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/cn'
 import { getRegistryEntry, kindBasePath, registry, registryHref } from '@/registry'
 import { resolveInstallPlan } from '@/registry/install'
 import { registryPackages, registryRequirements } from '@/registry/packages'
@@ -22,6 +23,19 @@ import {
 
 const inlineCode = 'rounded-sm bg-muted px-1 py-0.5 font-mono text-xs'
 const proseLink = 'rounded-sm font-medium text-foreground underline underline-offset-4 focus-ring'
+
+/** Renders `backticked` spans of a guideline as inline code. */
+function withInlineCode(text: string) {
+  return text.split(/`([^`]+)`/).map((part, index) =>
+    index % 2 === 1 ? (
+      <code key={index} className={cn(inlineCode, 'text-foreground')}>
+        {part}
+      </code>
+    ) : (
+      part
+    ),
+  )
+}
 
 /** Detail page for one registry entry, loaded by the route's `registryLoader`. */
 export function RegistryDetailPage() {
@@ -71,6 +85,17 @@ function ImplementedDetail({ entry }: { entry: ImplementedEntry }) {
           <ComponentPreview key={example.id} example={example} />
         ))}
       </section>
+
+      {entry.guidelines && entry.guidelines.length > 0 ? (
+        <section aria-labelledby="usage" className="flex flex-col gap-4">
+          <SectionHeader id="usage" title="Usage" anchorLabel="Usage" />
+          <ul className="flex max-w-prose list-disc flex-col gap-2 pl-5 text-sm text-muted-foreground marker:text-border">
+            {entry.guidelines.map((guideline) => (
+              <li key={guideline}>{withInlineCode(guideline)}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section aria-labelledby="installation" className="flex flex-col gap-4">
         <SectionHeader

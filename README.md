@@ -5,22 +5,23 @@ copyable source, props documentation, and tests.
 
 ## Status
 
-| Area                                                                                           | State                                                                   |
-| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu             | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
-| Design tokens (color, status, elevation, type, layout) and shared state utilities              | Implemented, contrast-tested                                            |
-| Registry model, validation, catalog search/filter/sort, detail pages                           | Implemented, unit + e2e tested                                          |
-| `Button`, `Badge`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`     | Implemented, unit tested                                                |
-| `Dialog`, `Sheet`                                                                              | Experimental, unit + e2e tested                                         |
-| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer | Implemented, unit + e2e tested (incl. internal link integrity)          |
-| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                  | Implemented, unit tested                                                |
-| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states       | Experimental, unit + e2e tested; no map or 3D library                   |
-| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)      | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
-| `/templates`, `/playground`; registry entries `Tooltip`, `Combobox`, `Data table`              | Planned — pages exist and say so; nothing built                         |
-| Projects (case studies) and notes                                                              | Typed local data in `src/content/`; content describes work in this repo |
-| Form controls, form patterns (RHF + Zod), MapLibre, MDX content                                | Planned — not implemented                                               |
-| CI (GitHub Actions)                                                                            | Workflow present; not yet run on GitHub                                 |
-| Deployment                                                                                     | Not set up                                                              |
+| Area                                                                                                                            | State                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu                                              | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
+| Design tokens (color, status, elevation, type, layout) and shared state utilities                                               | Implemented, contrast-tested                                            |
+| Registry model, validation, catalog search/filter/sort, detail pages                                                            | Implemented, unit + e2e tested                                          |
+| Actions, display, feedback: `Button`, `Badge`, `Alert`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs` | Implemented, unit tested                                                |
+| Form controls: `Input`, `Label`, `Checkbox`, `Switch`, `Select`                                                                 | Implemented, unit + e2e tested                                          |
+| Overlays: `Dialog`, `Tooltip` (stable), `Sheet` (experimental)                                                                  | Implemented, unit + e2e tested                                          |
+| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer                                  | Implemented, unit + e2e tested (incl. internal link integrity)          |
+| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                                                   | Implemented, unit tested                                                |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                        | Experimental, unit + e2e tested; no map or 3D library                   |
+| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                       | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
+| `/templates`, `/playground`; registry entries `Combobox`, `Data table`                                                          | Planned — pages exist and say so; nothing built                         |
+| Projects (case studies) and notes                                                                                               | Typed local data in `src/content/`; content describes work in this repo |
+| Form patterns (RHF + Zod), MapLibre, MDX content                                                                                | Planned — not implemented                                               |
+| CI (GitHub Actions)                                                                                                             | Workflow present; not yet run on GitHub                                 |
+| Deployment                                                                                                                      | Not set up                                                              |
 
 ## Stack
 
@@ -175,8 +176,10 @@ e2e/                  Playwright tests
    next to it.
 2. Create `src/registry/<slug>/demos.tsx` and `meta.ts` (see `button/` for the pattern). The entry
    is an `ImplementedEntry` (`src/registry/types.ts`): `id`, `slug`, `kind`, `category`, `tags`,
-   `status` (`stable` or `experimental`), `installation`, `source`, `examples`, and `api`.
-   Categories and tags come from `src/registry/taxonomy.ts`; packages and setup requirements from
+   `status` (`stable` or `experimental`), `installation`, `source`, `examples`, and `api`, plus
+   optional `guidelines` (usage notes and behavioural constraints, shown in a Usage section;
+   backticks render as inline code). Each demo is an `export function` whose body is self-contained,
+   because the Code tab shows exactly that function. Categories and tags come from `src/registry/taxonomy.ts`; packages and setup requirements from
    `src/registry/packages.ts`.
 3. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, catalog, landing cards,
    About counts, and detail route all read from that one array.

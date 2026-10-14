@@ -186,6 +186,10 @@ function validateImplemented(
       report(`examples.${example.id}`, 'has no component')
   }
 
+  for (const [index, guideline] of (entry.guidelines ?? []).entries()) {
+    if (isBlank(guideline)) report('guidelines', `guideline #${String(index)} is empty`)
+  }
+
   if (api.parts.length === 0) report('api', 'needs at least one part')
   for (const name of duplicates(api.parts.map((part) => part.name))) {
     report('api', `part "${name}" is documented more than once`)
@@ -273,7 +277,7 @@ export function validateRegistry(entries: readonly RegistryEntry[]): RegistryIss
 
     if (entry.status === 'planned') {
       if (isBlank(entry.plannedScope)) report('plannedScope', 'is empty')
-      for (const field of implementedOnlyFields) {
+      for (const field of [...implementedOnlyFields, 'guidelines']) {
         if (field in entry) report(field, 'a planned entry must not have implementation fields')
       }
     } else {

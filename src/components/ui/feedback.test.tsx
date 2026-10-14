@@ -18,6 +18,18 @@ describe('Skeleton', () => {
     expect(container.firstElementChild).toHaveAttribute('aria-hidden', 'true')
     expect(container.firstElementChild).toHaveClass('animate-pulse', 'h-4')
   })
+
+  it('leaves the loading announcement to the region around it', () => {
+    render(
+      <div aria-busy="true" aria-label="Loading posts" role="region">
+        <Skeleton className="h-4" />
+        <span className="sr-only">Loading…</span>
+      </div>,
+    )
+    const region = screen.getByRole('region', { name: 'Loading posts' })
+    expect(region).toHaveAttribute('aria-busy', 'true')
+    expect(region).toHaveTextContent('Loading…')
+  })
 })
 
 describe('Spinner', () => {

@@ -6,7 +6,7 @@ export const registryCategories = {
   actions: { label: 'Actions', description: 'Buttons and confirmations that trigger work.' },
   overlays: {
     label: 'Overlays',
-    description: 'Content layered above the page: dialogs and drawers.',
+    description: 'Content layered above the page: dialogs, drawers, and tooltips.',
   },
   navigation: { label: 'Navigation', description: 'Moving between pages and views.' },
   feedback: { label: 'Feedback', description: 'Loading, empty, and status signals.' },
@@ -25,6 +25,7 @@ export const registryTags = [
   'async',
   'composition',
   'focus-trap',
+  'form',
   'keyboard',
   'loading',
   'modal',

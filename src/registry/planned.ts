@@ -1,19 +1,6 @@
 import type { PlannedEntry } from './types'
 
 /** Entries that are not built yet. They have no source, examples, or install steps. */
-export const tooltipEntry: PlannedEntry = {
-  id: 'tooltip',
-  slug: 'tooltip',
-  name: 'Tooltip',
-  description: 'A short, non-interactive hint shown on hover and keyboard focus.',
-  kind: 'component',
-  category: 'overlays',
-  tags: ['a11y', 'keyboard', 'radix'],
-  status: 'planned',
-  plannedScope:
-    'Radix Tooltip with a delay group, shown on focus as well as hover, dismissed with Escape, and never the only place important information lives.',
-}
-
 export const comboboxEntry: PlannedEntry = {
   id: 'combobox',
   slug: 'combobox',

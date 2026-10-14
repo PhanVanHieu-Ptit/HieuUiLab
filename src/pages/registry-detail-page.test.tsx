@@ -24,6 +24,25 @@ describe('RegistryDetailPage', () => {
     expect(screen.getByRole('link', { name: 'Button' })).toHaveAttribute('aria-current', 'page')
   })
 
+  it('lists usage guidelines with inline code before the installation steps', async () => {
+    await renderRoute('/components/tooltip')
+
+    const usage = screen.getByRole('region', { name: 'Usage' })
+    const items = within(usage).getAllByRole('listitem')
+    expect(items.length).toBeGreaterThan(1)
+    expect(within(usage).getByText('aria-label', { selector: 'code' })).toBeInTheDocument()
+
+    const installation = screen.getByRole('region', { name: 'Installation' })
+    expect(usage.compareDocumentPosition(installation) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+
+  it('omits the Usage section for entries without guidelines', async () => {
+    await renderRoute('/components/kbd')
+    expect(screen.queryByRole('region', { name: 'Usage' })).not.toBeInTheDocument()
+  })
+
   it('switches a demo from Preview to Code', async () => {
     const user = userEvent.setup()
     await renderRoute('/components/button')

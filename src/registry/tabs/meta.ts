@@ -2,7 +2,7 @@ import tabsSource from '@/components/ui/tabs.tsx?raw'
 
 import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
-import { TabsLineDemo, TabsPillDemo } from './demos'
+import { TabsControlledDemo, TabsLineDemo, TabsPillDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
@@ -33,6 +33,19 @@ export const tabsEntry: ImplementedEntry = {
       code: demoCode('TabsLineDemo'),
     },
     { id: 'pill', title: 'Pill', component: TabsPillDemo, code: demoCode('TabsPillDemo') },
+    {
+      id: 'controlled',
+      title: 'Controlled',
+      description: 'The selected tab is state the Back and Next buttons also change.',
+      component: TabsControlledDemo,
+      code: demoCode('TabsControlledDemo'),
+    },
+  ],
+  guidelines: [
+    'Name the group with `aria-label` (or `aria-labelledby`) on `TabsList`.',
+    'Tab moves into the list and then to the panel; arrow keys move between tabs, and Home and End jump to the ends. Disabled tabs are skipped.',
+    'By default a tab is selected as soon as it receives focus. Set `activationMode="manual"` when showing a panel is slow, so people can arrow past tabs and press Enter or Space to choose.',
+    'Tabs switch views within a page. For navigation between URLs, use links in a nav instead.',
   ],
   api: {
     parts: [
@@ -50,6 +63,23 @@ export const tabsEntry: ImplementedEntry = {
             name: 'defaultValue / value',
             type: 'string',
             description: 'Initially selected (uncontrolled) or selected (controlled) tab.',
+          },
+          {
+            name: 'onValueChange',
+            type: '(value: string) => void',
+            description: 'Called when the selected tab changes; pair with value to control it.',
+          },
+          {
+            name: 'activationMode',
+            type: "'automatic' | 'manual'",
+            default: "'automatic'",
+            description: 'Select on focus, or only on Enter or Space.',
+          },
+          {
+            name: 'orientation',
+            type: "'horizontal' | 'vertical'",
+            default: "'horizontal'",
+            description: 'Which arrow keys move between tabs.',
           },
         ],
       },
@@ -71,6 +101,28 @@ export const tabsEntry: ImplementedEntry = {
             type: 'boolean',
             default: 'false',
             description: 'Prevents selection.',
+          },
+          {
+            name: 'value',
+            type: 'string',
+            required: true,
+            description: 'Matches the TabsContent it controls.',
+          },
+        ],
+      },
+      {
+        name: 'TabsContent',
+        props: [
+          {
+            name: 'value',
+            type: 'string',
+            required: true,
+            description: 'Matches its TabsTrigger.',
+          },
+          {
+            name: 'forceMount',
+            type: 'true',
+            description: 'Keep the panel mounted while inactive (hidden), e.g. to preserve state.',
           },
         ],
       },
