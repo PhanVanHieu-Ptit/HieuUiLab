@@ -1,7 +1,22 @@
 import { screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { renderRoute } from '@/test/render'
+
+// Hold the lazily loaded map demo until the test has seen the loading state;
+// otherwise the chunk can resolve before the first assertion runs.
+const mapDemoGate = vi.hoisted(() => {
+  let release: (() => void) | undefined
+  const ready = new Promise<void>((resolve) => {
+    release = resolve
+  })
+  return { ready, release: () => release?.() }
+})
+
+vi.mock('@/lab/map-projections/map-projections-demo', async (importOriginal) => {
+  await mapDemoGate.ready
+  return importOriginal()
+})
 
 describe('Lab pages', () => {
   it('lists the experiments', async () => {
@@ -23,6 +38,7 @@ describe('Lab pages', () => {
       screen.getByRole('heading', { level: 1, name: 'Map projection explorer' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('status')).toHaveTextContent('Loading experiment')
+    mapDemoGate.release()
     expect(await screen.findByRole('tab', { name: 'Orthographic' })).toBeInTheDocument()
     expect(screen.queryByText('Loading experiment')).not.toBeInTheDocument()
   })

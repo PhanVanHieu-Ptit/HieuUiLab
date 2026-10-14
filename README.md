@@ -5,28 +5,29 @@ copyable source, props documentation, and tests.
 
 ## Status
 
-| Area                                                                                                                            | State                                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu                                              | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
-| Design tokens (color, status, elevation, type, layout) and shared state utilities                                               | Implemented, contrast-tested                                            |
-| Registry model, validation, catalog search/filter/sort, detail pages                                                            | Implemented, unit + e2e tested                                          |
-| Actions, display, feedback: `Button`, `Badge`, `Alert`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs` | Implemented, unit tested                                                |
-| Form controls: `Input`, `Label`, `Checkbox`, `Switch`, `Select`                                                                 | Implemented, unit + e2e tested                                          |
-| Overlays: `Dialog`, `Tooltip` (stable), `Sheet` (experimental)                                                                  | Implemented, unit + e2e tested                                          |
-| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer                                  | Implemented, unit + e2e tested (incl. internal link integrity)          |
-| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                                                   | Implemented, unit tested                                                |
-| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                        | Experimental, unit + e2e tested; no map or 3D library                   |
-| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                       | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
-| `/templates`, `/playground`; registry entries `Combobox`, `Data table`                                                          | Planned — pages exist and say so; nothing built                         |
-| Projects (case studies) and notes                                                                                               | Typed local data in `src/content/`; content describes work in this repo |
-| Form patterns (RHF + Zod), MapLibre, MDX content                                                                                | Planned — not implemented                                               |
-| CI (GitHub Actions)                                                                                                             | Workflow present; not yet run on GitHub                                 |
-| Deployment                                                                                                                      | Not set up                                                              |
+| Area                                                                                                                                                                | State                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu                                                                                  | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
+| Design tokens (color, status, elevation, type, layout) and shared state utilities                                                                                   | Implemented, contrast-tested                                            |
+| Registry model, validation, catalog search/filter/sort, detail pages                                                                                                | Implemented, unit + e2e tested                                          |
+| Actions, display, feedback: `Button`, `Badge`, `Alert`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`                                     | Implemented, unit tested                                                |
+| Form controls: `Input`, `Textarea`, `PasswordInput`, `SearchInput`, `Label`, `Checkbox`, `Switch`, `Select`, `Field`                                                | Implemented, unit + e2e tested                                          |
+| Forms: `FormField` + `useFormSubmit` (React Hook Form adapter), `FormFeedback`; blocks `ProfileForm`, `SearchFilterForm` (Zod schemas, mock handlers in demos only) | Experimental, unit + e2e tested                                         |
+| Overlays: `Dialog`, `Tooltip` (stable), `Sheet` (experimental)                                                                                                      | Implemented, unit + e2e tested                                          |
+| Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer                                                                      | Implemented, unit + e2e tested (incl. internal link integrity)          |
+| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                                                                                       | Implemented, unit tested                                                |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                                                            | Experimental, unit + e2e tested; no map or 3D library                   |
+| Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                                                           | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
+| `/templates`, `/playground`; registry entries `Combobox`, `Data table`                                                                                              | Planned — pages exist and say so; nothing built                         |
+| Projects (case studies) and notes                                                                                                                                   | Typed local data in `src/content/`; content describes work in this repo |
+| MapLibre, MDX content                                                                                                                                               | Planned — not implemented                                               |
+| CI (GitHub Actions)                                                                                                                                                 | Workflow present; not yet run on GitHub                                 |
+| Deployment                                                                                                                                                          | Not set up                                                              |
 
 ## Stack
 
 React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 with semantic tokens · Radix UI ·
-Lucide · React Router · Shiki (lazy-loaded) · Vitest + Testing Library · Playwright · ESLint +
+Lucide · React Router · React Hook Form + Zod · Shiki (lazy-loaded) · Vitest + Testing Library · Playwright · ESLint +
 Prettier · pnpm.
 
 TypeScript is pinned to 6.0.x and ESLint to 9.x because `typescript-eslint` and

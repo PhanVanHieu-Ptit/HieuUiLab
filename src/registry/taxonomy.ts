@@ -33,6 +33,7 @@ export const registryTags = [
   'radix',
   'responsive',
   'status',
+  'validation',
   'variants',
 ] as const
 
