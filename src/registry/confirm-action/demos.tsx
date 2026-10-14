@@ -31,3 +31,16 @@ export function ConfirmActionFailureDemo() {
     />
   )
 }
+
+export function ConfirmActionDefaultDemo() {
+  return (
+    <ConfirmAction
+      trigger={<Button>Publish changes</Button>}
+      title="Publish 4 changes?"
+      description="The changes go live for every visitor. You can roll back from the history page."
+      confirmLabel="Publish"
+      confirmVariant="default"
+      onConfirm={() => wait(800)}
+    />
+  )
+}

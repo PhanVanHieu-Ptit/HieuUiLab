@@ -1,11 +1,13 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Button } from '@/components/ui/button'
 
+import { ActivityList } from './activity-list'
 import { ConfirmAction } from './confirm-action'
 import { EmptyState } from './empty-state'
+import { ErrorState } from './error-state'
 import { ResourceList, type ResourceState } from './resource-list'
 
 describe('EmptyState', () => {
@@ -120,5 +122,119 @@ describe('ConfirmAction', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
     expect(onConfirm).not.toHaveBeenCalled()
+  })
+
+  it('styles the confirm button by confirmVariant, destructive by default', async () => {
+    const user = userEvent.setup()
+    render(
+      <ConfirmAction
+        trigger={<Button>Publish</Button>}
+        title="Publish 4 changes?"
+        description="They go live for every visitor."
+        confirmLabel="Publish now"
+        confirmVariant="default"
+        onConfirm={vi.fn()}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Publish' }))
+    const confirm = await screen.findByRole('button', { name: 'Publish now' })
+    expect(confirm).toHaveClass('bg-primary')
+    expect(confirm).not.toHaveClass('bg-destructive')
+  })
+
+  it('does not open when the trigger prevents its click', async () => {
+    const user = userEvent.setup()
+    render(
+      <ConfirmAction
+        trigger={
+          <Button
+            aria-disabled
+            onClick={(event) => {
+              event.preventDefault()
+            }}
+          >
+            Cancel orders
+          </Button>
+        }
+        title="Cancel 0 orders?"
+        description="Nothing is selected."
+        confirmLabel="Cancel orders"
+        onConfirm={vi.fn()}
+      />,
+    )
+    await user.click(screen.getByRole('button', { name: 'Cancel orders' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+  })
+})
+
+describe('ErrorState', () => {
+  it('is announced as an alert with a default message', () => {
+    render(<ErrorState />)
+    const alert = screen.getByRole('alert')
+    expect(alert).toHaveTextContent('Something went wrong')
+    expect(alert).toHaveTextContent('Check your connection, then try again.')
+    expect(screen.queryByRole('button')).toBeNull()
+  })
+
+  it('puts retry before other actions', async () => {
+    const user = userEvent.setup()
+    const onRetry = vi.fn()
+    render(
+      <ErrorState
+        title="Couldn’t load invoices"
+        onRetry={onRetry}
+        retryLabel="Reload invoices"
+        actions={<Button>Contact support</Button>}
+      />,
+    )
+    expect(screen.getAllByRole('button').map((button) => button.textContent)).toEqual([
+      'Reload invoices',
+      'Contact support',
+    ])
+    await user.click(screen.getByRole('button', { name: 'Reload invoices' }))
+    expect(onRetry).toHaveBeenCalledOnce()
+  })
+})
+
+describe('ActivityList', () => {
+  const items = [
+    {
+      id: '2',
+      actor: 'Mai Tran',
+      action: 'marked as shipped',
+      target: 'order #1052',
+      timestamp: '2026-10-12T16:42:00Z',
+    },
+    {
+      id: '1',
+      actor: 'Warehouse sync',
+      action: 'imported 128 products',
+      timestamp: '2026-10-11T08:00:00Z',
+    },
+  ]
+
+  it('renders an ordered list of sentences with machine-readable times', () => {
+    render(
+      <ActivityList
+        label="Recent activity"
+        items={items}
+        formatTimestamp={(iso) => `at ${iso.slice(0, 10)}`}
+      />,
+    )
+    const list = screen.getByRole('list', { name: 'Recent activity' })
+    expect(list.tagName).toBe('OL')
+    const entries = within(list).getAllByRole('listitem')
+    expect(entries[0]).toHaveTextContent('Mai Tran marked as shipped order #1052')
+    expect(entries[1]).toHaveTextContent('Warehouse sync imported 128 products')
+    expect(within(list).getByText('at 2026-10-12')).toHaveAttribute(
+      'datetime',
+      '2026-10-12T16:42:00Z',
+    )
+  })
+
+  it('shows a message instead of an empty list', () => {
+    render(<ActivityList label="Recent activity" items={[]} emptyMessage="Nothing yet." />)
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(screen.getByText('Nothing yet.')).toBeInTheDocument()
   })
 })

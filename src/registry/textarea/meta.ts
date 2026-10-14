@@ -1,5 +1,7 @@
+import { Textarea } from '@/components/ui/textarea'
 import textareaSource from '@/components/ui/textarea.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor, nativeProps } from '../utils'
 import { TextareaDemo, TextareaStatesDemo } from './demos'
@@ -58,4 +60,13 @@ export const textareaEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Textarea, {
+    part: 'Textarea',
+    controls: [
+      { kind: 'text', prop: 'placeholder', default: 'Describe the change' },
+      { kind: 'select', prop: 'size', options: ['sm', 'md', 'lg'], default: 'md' },
+      { kind: 'boolean', prop: 'disabled', default: false },
+    ],
+    staticProps: { 'aria-label': 'Summary' },
+  }),
 }

@@ -1,5 +1,7 @@
+import { Badge } from '@/components/ui/badge'
 import badgeSource from '@/components/ui/badge.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor, nativeProps } from '../utils'
 import { BadgeSizesDemo, BadgeVariantsDemo } from './demos'
@@ -61,4 +63,17 @@ export const badgeEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Badge, {
+    part: 'Badge',
+    controls: [
+      { kind: 'text', prop: 'children', label: 'Label', default: 'Beta' },
+      {
+        kind: 'select',
+        prop: 'variant',
+        options: ['neutral', 'primary', 'outline', 'success', 'warning', 'info', 'destructive'],
+        default: 'neutral',
+      },
+      { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },
+    ],
+  }),
 }

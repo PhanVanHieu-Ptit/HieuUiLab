@@ -65,9 +65,9 @@ describe('HomePage', () => {
   it('links featured cards to their detail pages', async () => {
     await renderRoute('/')
 
-    expect(screen.getByRole('link', { name: 'Resource list' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Orders dashboard' })).toHaveAttribute(
       'href',
-      '/blocks/resource-list',
+      '/blocks/orders-dashboard',
     )
     expect(screen.getByRole('link', { name: 'Map projection explorer' })).toHaveAttribute(
       'href',

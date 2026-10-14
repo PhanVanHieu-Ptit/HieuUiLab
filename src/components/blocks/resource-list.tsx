@@ -1,8 +1,8 @@
-import { CircleAlert, Inbox, RotateCw } from 'lucide-react'
+import { Inbox } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { EmptyState } from '@/components/blocks/empty-state'
-import { Button } from '@/components/ui/button'
+import { ErrorState } from '@/components/blocks/error-state'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/cn'
 
@@ -51,21 +51,12 @@ export function ResourceList<T>({
 
   if (state.status === 'error') {
     return (
-      <div role="alert" className={className}>
-        <EmptyState
-          icon={<CircleAlert />}
-          title={`Couldn’t load ${label}`}
-          description={state.message ?? 'Check your connection, then try again.'}
-          actions={
-            onRetry ? (
-              <Button variant="outline" size="sm" onClick={onRetry}>
-                <RotateCw aria-hidden="true" />
-                Try again
-              </Button>
-            ) : null
-          }
-        />
-      </div>
+      <ErrorState
+        className={className}
+        title={`Couldn’t load ${label}`}
+        description={state.message ?? 'Check your connection, then try again.'}
+        {...(onRetry ? { onRetry } : {})}
+      />
     )
   }
 

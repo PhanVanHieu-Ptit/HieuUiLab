@@ -1,5 +1,7 @@
+import { Spinner } from '@/components/ui/spinner'
 import spinnerSource from '@/components/ui/spinner.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor, nativeProps } from '../utils'
 import { SpinnerDemo } from './demos'
@@ -42,4 +44,8 @@ export const spinnerEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Spinner, {
+    part: 'Spinner',
+    controls: [{ kind: 'text', prop: 'label', default: 'Loading' }],
+  }),
 }

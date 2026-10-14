@@ -63,7 +63,7 @@ describe('breadcrumbs', () => {
     ['/labs/maps', ['Home', 'Labs'], 'Maps'],
     ['/notes/theme-without-flash', ['Home', 'Notes'], note?.title],
     ['/docs/installation', ['Home', 'Docs'], 'Installation'],
-    ['/blocks/empty-state', ['Home', 'Blocks'], 'Empty state'],
+    ['/blocks/empty-state', ['Home', 'Blocks', 'Feedback'], 'Empty state'],
     ['/about', ['Home'], 'About'],
   ] as const)('%s follows the URL', async (path, links, current) => {
     await renderRoute(path)

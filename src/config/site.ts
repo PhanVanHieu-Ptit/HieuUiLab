@@ -155,7 +155,8 @@ export const docsNav: readonly NavSection[] = [
       {
         title: 'Playground',
         href: '/playground',
-        description: 'Try a component’s props live and copy the resulting code.',
+        description:
+          'A standalone sandbox for composing several components. Prop controls for single components are on their detail pages.',
         status: 'planned',
       },
     ],

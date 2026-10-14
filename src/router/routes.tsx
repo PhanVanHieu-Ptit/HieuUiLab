@@ -11,6 +11,8 @@ import { HomePage } from '@/pages/home-page'
 import { NotFoundPage, RootErrorPage, RouteErrorPage } from '@/pages/not-found-page'
 import { PlannedPage } from '@/pages/planned-page'
 import { RegistryIndexPage } from '@/pages/registry-index-page'
+import { catalogHref } from '@/registry'
+import { registryCategories } from '@/registry/taxonomy'
 import type { RegistryEntry } from '@/registry/types'
 
 import {
@@ -55,6 +57,13 @@ const aboutPage = () => import('@/pages/about-page')
 const registryHandle = handle(
   metaFromData<RegistryEntry>((entry) => ({
     title: entry.name,
+    // The category links back to the catalog, filtered to it.
+    parents: [
+      {
+        title: registryCategories[entry.category].label,
+        href: catalogHref(entry.kind, { category: entry.category }),
+      },
+    ],
     description: entry.description,
     // A planned entry has no content worth indexing yet.
     noindex: entry.status === 'planned',

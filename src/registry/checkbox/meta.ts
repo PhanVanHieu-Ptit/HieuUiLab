@@ -1,5 +1,7 @@
+import { Checkbox } from '@/components/ui/checkbox'
 import checkboxSource from '@/components/ui/checkbox.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
 import { CheckboxDemo, CheckboxSelectAllDemo } from './demos'
@@ -90,4 +92,13 @@ export const checkboxEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Checkbox, {
+    part: 'Checkbox',
+    controls: [
+      { kind: 'boolean', prop: 'defaultChecked', label: 'Checked by default', default: false },
+      { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },
+      { kind: 'boolean', prop: 'disabled', default: false },
+    ],
+    staticProps: { 'aria-label': 'Accept the terms' },
+  }),
 }

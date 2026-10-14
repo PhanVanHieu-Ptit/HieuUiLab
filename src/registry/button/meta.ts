@@ -1,5 +1,7 @@
+import { Button } from '@/components/ui/button'
 import buttonSource from '@/components/ui/button.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor, nativeProps } from '../utils'
 import { ButtonSizesDemo, ButtonStatesDemo, ButtonVariantsDemo } from './demos'
@@ -101,4 +103,20 @@ export const buttonEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Button, {
+    part: 'Button',
+    controls: [
+      { kind: 'text', prop: 'children', label: 'Label', default: 'Save changes' },
+      {
+        kind: 'select',
+        prop: 'variant',
+        options: ['default', 'secondary', 'outline', 'ghost', 'destructive', 'link'],
+        default: 'default',
+      },
+      // icon is left out: a square button needs an icon child, not a text label.
+      { kind: 'select', prop: 'size', options: ['sm', 'md', 'lg'], default: 'md' },
+      { kind: 'boolean', prop: 'loading', default: false },
+      { kind: 'boolean', prop: 'disabled', default: false },
+    ],
+  }),
 }

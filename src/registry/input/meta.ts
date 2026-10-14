@@ -1,5 +1,7 @@
+import { Input } from '@/components/ui/input'
 import inputSource from '@/components/ui/input.tsx?raw'
 
+import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
 import { InputFieldDemo, InputSizesDemo, InputStatesDemo, InputValidationDemo } from './demos'
@@ -91,4 +93,15 @@ export const inputEntry: ImplementedEntry = {
       },
     ],
   },
+  playground: definePlayground(Input, {
+    part: 'Input',
+    controls: [
+      { kind: 'text', prop: 'placeholder', default: 'you@example.com' },
+      { kind: 'select', prop: 'size', options: ['sm', 'md', 'lg'], default: 'md' },
+      { kind: 'boolean', prop: 'aria-invalid', label: 'Invalid', default: false },
+      { kind: 'boolean', prop: 'disabled', default: false },
+    ],
+    // A bare input has no visible label; real forms should use Field instead.
+    staticProps: { 'aria-label': 'Email' },
+  }),
 }

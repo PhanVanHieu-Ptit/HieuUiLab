@@ -20,7 +20,7 @@ export const resourceListEntry: ImplementedEntry = {
   installation: {
     targetPath: 'components/blocks/resource-list.tsx',
     packages: ['lucide-react'],
-    registryDependencies: ['empty-state', 'button', 'skeleton'],
+    registryDependencies: ['empty-state', 'error-state', 'skeleton'],
     requirements: ['cn-helper', 'design-tokens'],
   },
   source: resourceListSource,

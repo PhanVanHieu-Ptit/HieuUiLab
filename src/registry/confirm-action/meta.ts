@@ -2,7 +2,7 @@ import confirmActionSource from '@/components/blocks/confirm-action.tsx?raw'
 
 import type { ImplementedEntry } from '../types'
 import { demoExtractor } from '../utils'
-import { ConfirmActionDemo, ConfirmActionFailureDemo } from './demos'
+import { ConfirmActionDefaultDemo, ConfirmActionDemo, ConfirmActionFailureDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
@@ -12,7 +12,7 @@ export const confirmActionEntry: ImplementedEntry = {
   slug: 'confirm-action',
   name: 'Confirm action',
   description:
-    'A destructive-action confirmation on Dialog. Async work keeps it open and busy; failures are shown inline so the user can retry.',
+    'A confirmation on Dialog, destructive by default. Async work keeps it open and busy; failures are shown inline so the user can retry.',
   kind: 'block',
   category: 'actions',
   tags: ['async', 'composition', 'focus-trap', 'modal'],
@@ -38,6 +38,13 @@ export const confirmActionEntry: ImplementedEntry = {
       description: 'A rejected promise keeps the dialog open and announces the error.',
       component: ConfirmActionFailureDemo,
       code: demoCode('ConfirmActionFailureDemo'),
+    },
+    {
+      id: 'non-destructive',
+      title: 'Non-destructive',
+      description: 'confirmVariant="default" for consequential actions that do not destroy data.',
+      component: ConfirmActionDefaultDemo,
+      code: demoCode('ConfirmActionDefaultDemo'),
     },
   ],
   api: {
@@ -67,7 +74,13 @@ export const confirmActionEntry: ImplementedEntry = {
             name: 'confirmLabel',
             type: 'string',
             required: true,
-            description: 'Label of the destructive button.',
+            description: 'Label of the confirm button.',
+          },
+          {
+            name: 'confirmVariant',
+            type: "'destructive' | 'default'",
+            default: "'destructive'",
+            description: 'Style of the confirm button.',
           },
           {
             name: 'cancelLabel',

@@ -13,16 +13,3 @@ export const comboboxEntry: PlannedEntry = {
   plannedScope:
     'The ARIA combobox pattern with aria-activedescendant, keyboard navigation, an announced result count, and support for options loaded asynchronously.',
 }
-
-export const dataTableEntry: PlannedEntry = {
-  id: 'data-table',
-  slug: 'data-table',
-  name: 'Data table',
-  description: 'A sortable table for remote data with loading, empty, and error states.',
-  kind: 'block',
-  category: 'data-display',
-  tags: ['async', 'composition', 'loading'],
-  status: 'planned',
-  plannedScope:
-    'A semantic table with sortable column headers (aria-sort), the same explicit states as Resource list, and a horizontal scroll container on narrow screens.',
-}

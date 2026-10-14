@@ -12,8 +12,7 @@ import {
 } from '@/registry/catalog'
 import { isRegistryCategory, registryCategories, type RegistryTag } from '@/registry/taxonomy'
 
-const fieldClass =
-  'h-9 rounded-md border bg-background px-3 text-sm text-foreground focus-ring disabled-state'
+import { nativeFieldClass } from './native-field'
 
 interface RegistryFiltersProps {
   query: CatalogQuery
@@ -24,6 +23,49 @@ interface RegistryFiltersProps {
   noun: string
   resultCount: number
   total: number
+  /** Id of the results list the search box filters. */
+  resultsId?: string
+}
+
+interface ActiveFilter {
+  key: string
+  /** Visible text of the chip. */
+  text: string
+  /** Completes "Remove …" for the accessible name. */
+  label: string
+  remove: (query: CatalogQuery) => CatalogQuery
+}
+
+/** One removable chip per active filter: the search text, the category, each tag. */
+function activeFilters(query: CatalogQuery): ActiveFilter[] {
+  const filters: ActiveFilter[] = []
+  const q = query.q.trim()
+  if (q) {
+    filters.push({
+      key: 'q',
+      text: `“${q}”`,
+      label: `search “${q}”`,
+      remove: (current) => ({ ...current, q: '' }),
+    })
+  }
+  if (query.category) {
+    const { label } = registryCategories[query.category]
+    filters.push({
+      key: 'category',
+      text: label,
+      label: `category ${label}`,
+      remove: (current) => ({ ...current, category: undefined }),
+    })
+  }
+  for (const tag of query.tags) {
+    filters.push({
+      key: `tag-${tag}`,
+      text: tag,
+      label: `tag ${tag}`,
+      remove: (current) => ({ ...current, tags: current.tags.filter((each) => each !== tag) }),
+    })
+  }
+  return filters
 }
 
 /** Search, category, tag, and sort controls for a registry index page. */
@@ -34,6 +76,7 @@ export function RegistryFilters({
   noun,
   resultCount,
   total,
+  resultsId,
 }: RegistryFiltersProps) {
   const id = useId()
   const active = isCatalogQueryActive(query)
@@ -64,10 +107,18 @@ export function RegistryFilters({
               placeholder="Name, description, or tag"
               autoComplete="off"
               spellCheck={false}
+              aria-controls={resultsId}
               onChange={(event) => {
                 onChange({ ...query, q: event.target.value }, { typing: true })
               }}
-              className={cn(fieldClass, 'w-full pl-9')}
+              onKeyDown={(event) => {
+                // Not every browser clears a search field on Escape; make it consistent.
+                if (event.key === 'Escape' && query.q !== '') {
+                  event.preventDefault()
+                  onChange({ ...query, q: '' })
+                }
+              }}
+              className={cn(nativeFieldClass, 'w-full pl-9')}
             />
           </div>
         </div>
@@ -83,7 +134,7 @@ export function RegistryFilters({
                 const { value } = event.target
                 onChange({ ...query, category: isRegistryCategory(value) ? value : undefined })
               }}
-              className={fieldClass}
+              className={nativeFieldClass}
             >
               <option value="">All categories</option>
               {facets.categories.map((category) => (
@@ -103,7 +154,7 @@ export function RegistryFilters({
               onChange={(event) => {
                 onChange({ ...query, sort: event.target.value as CatalogSort })
               }}
-              className={fieldClass}
+              className={nativeFieldClass}
             >
               {Object.entries(catalogSorts).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -144,23 +195,42 @@ export function RegistryFilters({
         </div>
       ) : null}
 
-      <div className="flex min-h-8 flex-wrap items-center justify-between gap-2">
-        <p role="status" className="text-sm text-muted-foreground">
+      <div className="flex min-h-8 flex-wrap items-center gap-2">
+        <p role="status" className="mr-auto text-sm text-muted-foreground">
           {active
             ? `${String(resultCount)} of ${String(total)} ${noun}`
             : `${String(total)} ${noun}`}
         </p>
         {active ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              onChange({ ...query, q: '', category: undefined, tags: [] })
-            }}
-          >
-            <X aria-hidden="true" />
-            Clear filters
-          </Button>
+          <>
+            <ul aria-label="Active filters" className="flex flex-wrap gap-2">
+              {activeFilters(query).map((filter) => (
+                <li key={filter.key}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    aria-label={`Remove ${filter.label}`}
+                    onClick={() => {
+                      onChange(filter.remove(query))
+                    }}
+                    className="h-7 rounded-full px-2.5"
+                  >
+                    {filter.text}
+                    <X aria-hidden="true" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                onChange({ ...query, q: '', category: undefined, tags: [] })
+              }}
+            >
+              Clear filters
+            </Button>
+          </>
         ) : null}
       </div>
     </div>
