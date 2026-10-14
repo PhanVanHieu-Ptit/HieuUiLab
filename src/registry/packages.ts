@@ -12,6 +12,11 @@ export const registryPackages = {
       'Accessible primitives: Slot, Dialog, Tabs, Select, Tooltip, Checkbox, Switch, Label, Separator.',
   },
   'lucide-react': { purpose: 'Icons.' },
+  'react-hook-form': {
+    purpose: 'Form state, submission, and focusing the first invalid field (form adapter only).',
+  },
+  zod: { purpose: 'Schemas that hold every validation rule and type the form values.' },
+  '@hookform/resolvers': { purpose: 'Connects a Zod schema to React Hook Form.' },
 } as const satisfies Record<string, { purpose: string }>
 
 export type PackageName = keyof typeof registryPackages

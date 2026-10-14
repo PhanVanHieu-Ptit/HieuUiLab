@@ -33,8 +33,18 @@ export default tseslint.config(
       ...jsxA11y.flatConfigs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
-        // cva variant helpers are part of a component's public API.
-        { allowConstantExport: true, allowExportNames: ['buttonVariants', 'badgeVariants'] },
+        // cva variant helpers, form hooks, and example schemas are part of a component's public API.
+        {
+          allowConstantExport: true,
+          allowExportNames: [
+            'buttonVariants',
+            'badgeVariants',
+            'useFieldControlProps',
+            'useFormSubmit',
+            'profileSchema',
+            'searchFilterSchema',
+          ],
+        },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',

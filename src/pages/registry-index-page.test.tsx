@@ -42,7 +42,7 @@ describe('RegistryIndexPage', () => {
     await renderRoute('/components?category=feedback&sort=name')
 
     expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('feedback')
-    expect(cardTitles()).toEqual(['Alert', 'Skeleton', 'Spinner'])
+    expect(cardTitles()).toEqual(['Alert', 'Form feedback', 'Skeleton', 'Spinner'])
   })
 
   it('filters by category and tag', async () => {

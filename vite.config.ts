@@ -21,6 +21,10 @@ export default defineConfig({
               test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
             },
             { name: 'radix', test: /node_modules[\\/](radix-ui|@radix-ui|@floating-ui)[\\/]/ },
+            {
+              name: 'forms',
+              test: /node_modules[\\/](react-hook-form|zod|@hookform[\\/]resolvers)[\\/]/,
+            },
           ],
         },
       },

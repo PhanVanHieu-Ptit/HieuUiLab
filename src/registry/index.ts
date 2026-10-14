@@ -7,11 +7,18 @@ import { checkboxEntry } from './checkbox/meta'
 import { confirmActionEntry } from './confirm-action/meta'
 import { dialogEntry } from './dialog/meta'
 import { emptyStateEntry } from './empty-state/meta'
+import { fieldEntry } from './field/meta'
+import { formEntry } from './form/meta'
+import { formFeedbackEntry } from './form-feedback/meta'
 import { inputEntry } from './input/meta'
 import { kbdEntry } from './kbd/meta'
 import { labelEntry } from './label/meta'
+import { passwordInputEntry } from './password-input/meta'
 import { comboboxEntry, dataTableEntry } from './planned'
+import { profileFormEntry } from './profile-form/meta'
 import { resourceListEntry } from './resource-list/meta'
+import { searchFilterFormEntry } from './search-filter-form/meta'
+import { searchInputEntry } from './search-input/meta'
 import { selectEntry } from './select/meta'
 import { separatorEntry } from './separator/meta'
 import { sheetEntry } from './sheet/meta'
@@ -19,6 +26,7 @@ import { skeletonEntry } from './skeleton/meta'
 import { spinnerEntry } from './spinner/meta'
 import { switchEntry } from './switch/meta'
 import { tabsEntry } from './tabs/meta'
+import { textareaEntry } from './textarea/meta'
 import { tooltipEntry } from './tooltip/meta'
 import {
   isImplemented,
@@ -45,10 +53,17 @@ export const registry: readonly RegistryEntry[] = [
   dataTableEntry,
   dialogEntry,
   emptyStateEntry,
+  fieldEntry,
+  formEntry,
+  formFeedbackEntry,
   inputEntry,
   kbdEntry,
   labelEntry,
+  passwordInputEntry,
+  profileFormEntry,
   resourceListEntry,
+  searchFilterFormEntry,
+  searchInputEntry,
   selectEntry,
   separatorEntry,
   sheetEntry,
@@ -56,6 +71,7 @@ export const registry: readonly RegistryEntry[] = [
   spinnerEntry,
   switchEntry,
   tabsEntry,
+  textareaEntry,
   tooltipEntry,
 ]
 
