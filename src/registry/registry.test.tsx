@@ -73,7 +73,7 @@ describe('installation data', () => {
   })
 
   it('does not resolve a planned entry as implemented', () => {
-    expect(getImplementedEntry('tooltip')).toBeUndefined()
-    expect(getRegistryEntry('tooltip')?.status).toBe('planned')
+    expect(getImplementedEntry('combobox')).toBeUndefined()
+    expect(getRegistryEntry('combobox')?.status).toBe('planned')
   })
 })

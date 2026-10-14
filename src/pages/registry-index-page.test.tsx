@@ -19,9 +19,9 @@ describe('RegistryIndexPage', () => {
     await renderRoute('/components')
 
     expect(screen.getByRole('status')).toHaveTextContent(`${String(components.length)} components`)
-    const tooltip = screen.getByRole('link', { name: 'Tooltip' })
-    expect(tooltip).toHaveAttribute('href', '/components/tooltip')
-    const card = tooltip.closest('h2')?.parentElement
+    const combobox = screen.getByRole('link', { name: 'Combobox' })
+    expect(combobox).toHaveAttribute('href', '/components/combobox')
+    const card = combobox.closest('h2')?.parentElement
     expect(card && within(card).getByText('Planned')).toBeInTheDocument()
   })
 
@@ -42,7 +42,7 @@ describe('RegistryIndexPage', () => {
     await renderRoute('/components?category=feedback&sort=name')
 
     expect(screen.getByRole('combobox', { name: 'Category' })).toHaveValue('feedback')
-    expect(cardTitles()).toEqual(['Skeleton', 'Spinner'])
+    expect(cardTitles()).toEqual(['Alert', 'Skeleton', 'Spinner'])
   })
 
   it('filters by category and tag', async () => {
@@ -63,7 +63,8 @@ describe('RegistryIndexPage', () => {
 
     await user.selectOptions(screen.getByRole('combobox', { name: 'Sort by' }), 'status')
 
-    expect(cardTitles().slice(-2)).toEqual(['Combobox', 'Tooltip'])
+    // Stable first, then experimental, then planned.
+    expect(cardTitles().slice(-2)).toEqual(['Sheet', 'Combobox'])
   })
 
   it('shows an empty state with a way to clear the filters', async () => {

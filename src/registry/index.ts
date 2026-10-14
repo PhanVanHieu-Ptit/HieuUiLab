@@ -1,18 +1,25 @@
+import { alertEntry } from './alert/meta'
 import { badgeEntry } from './badge/meta'
 import { breadcrumbEntry } from './breadcrumb/meta'
 import { buttonEntry } from './button/meta'
 import { cardEntry } from './card/meta'
+import { checkboxEntry } from './checkbox/meta'
 import { confirmActionEntry } from './confirm-action/meta'
 import { dialogEntry } from './dialog/meta'
 import { emptyStateEntry } from './empty-state/meta'
+import { inputEntry } from './input/meta'
 import { kbdEntry } from './kbd/meta'
-import { comboboxEntry, dataTableEntry, tooltipEntry } from './planned'
+import { labelEntry } from './label/meta'
+import { comboboxEntry, dataTableEntry } from './planned'
 import { resourceListEntry } from './resource-list/meta'
+import { selectEntry } from './select/meta'
 import { separatorEntry } from './separator/meta'
 import { sheetEntry } from './sheet/meta'
 import { skeletonEntry } from './skeleton/meta'
 import { spinnerEntry } from './spinner/meta'
+import { switchEntry } from './switch/meta'
 import { tabsEntry } from './tabs/meta'
+import { tooltipEntry } from './tooltip/meta'
 import {
   isImplemented,
   type ImplementedEntry,
@@ -27,21 +34,27 @@ import { assertValidRegistry } from './validate'
  * Alphabetical; navigation follows this order.
  */
 export const registry: readonly RegistryEntry[] = [
+  alertEntry,
   badgeEntry,
   breadcrumbEntry,
   buttonEntry,
   cardEntry,
+  checkboxEntry,
   comboboxEntry,
   confirmActionEntry,
   dataTableEntry,
   dialogEntry,
   emptyStateEntry,
+  inputEntry,
   kbdEntry,
+  labelEntry,
   resourceListEntry,
+  selectEntry,
   separatorEntry,
   sheetEntry,
   skeletonEntry,
   spinnerEntry,
+  switchEntry,
   tabsEntry,
   tooltipEntry,
 ]

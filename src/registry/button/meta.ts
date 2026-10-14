@@ -47,6 +47,13 @@ export const buttonEntry: ImplementedEntry = {
       code: demoCode('ButtonStatesDemo'),
     },
   ],
+  guidelines: [
+    'Use one default (primary) button per view; secondary, outline, and ghost for the rest.',
+    'Icon-only buttons (`size="icon"`) need an `aria-label`; add a Tooltip for sighted mouse users.',
+    'Use `asChild` with a link for navigation, so it is announced and behaves as a link.',
+    'Buttons default to `type="button"`; set `type="submit"` explicitly in forms.',
+    '`loading` disables the button and sets `aria-busy`. Keep the label (for example "Saving") so the purpose stays clear.',
+  ],
   api: {
     parts: [
       {
@@ -76,6 +83,12 @@ export const buttonEntry: ImplementedEntry = {
             default: 'false',
             description:
               'Merges button props and styles onto its single child (e.g. a router link) instead of rendering a <button>.',
+          },
+          {
+            name: 'disabled',
+            type: 'boolean',
+            default: 'false',
+            description: 'Native disabled: not focusable and not clickable.',
           },
           {
             name: 'type',

@@ -1,8 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it } from 'vitest'
+import { useState, type SyntheticEvent } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
-import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from './dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './dialog'
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from './sheet'
 
 describe('Dialog', () => {
@@ -45,6 +56,82 @@ describe('Dialog', () => {
     await user.click(screen.getByRole('button', { name: 'Open' }))
     await screen.findByRole('dialog')
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
+  })
+
+  it('can be controlled and closed from outside', async () => {
+    const user = userEvent.setup()
+    const onOpenChange = vi.fn()
+    function Controlled() {
+      const [open, setOpen] = useState(false)
+      return (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(true)
+            }}
+          >
+            Rename
+          </button>
+          <Dialog
+            open={open}
+            onOpenChange={(next) => {
+              onOpenChange(next)
+              setOpen(next)
+            }}
+          >
+            <DialogContent aria-describedby={undefined}>
+              <DialogHeader>
+                <DialogTitle>Rename</DialogTitle>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </>
+      )
+    }
+    render(<Controlled />)
+    await user.click(screen.getByRole('button', { name: 'Rename' }))
+    expect(await screen.findByRole('dialog', { name: 'Rename' })).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+    expect(onOpenChange).toHaveBeenLastCalledWith(false)
+  })
+
+  it('submits a form from the footer and keeps Tab inside the dialog', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn((event: SyntheticEvent<HTMLFormElement>) => {
+      event.preventDefault()
+      return new FormData(event.currentTarget).get('name')
+    })
+    render(
+      <Dialog defaultOpen>
+        <DialogContent aria-describedby={undefined}>
+          <form onSubmit={onSubmit} className="contents">
+            <DialogHeader>
+              <DialogTitle>New project</DialogTitle>
+            </DialogHeader>
+            <DialogBody>
+              <input aria-label="Name" name="name" defaultValue="Lab" />
+            </DialogBody>
+            <DialogFooter>
+              <DialogClose type="button">Cancel</DialogClose>
+              <button type="submit">Create</button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>,
+    )
+    const dialog = await screen.findByRole('dialog', { name: 'New project' })
+    // Tab cycles through the fields and the close button without leaving the dialog.
+    for (let step = 0; step < 6; step += 1) {
+      await user.tab()
+      expect(dialog).toContainElement(document.activeElement as HTMLElement)
+    }
+    await user.click(screen.getByRole('button', { name: 'Create' }))
+    expect(onSubmit).toHaveReturnedWith('Lab')
   })
 })
 

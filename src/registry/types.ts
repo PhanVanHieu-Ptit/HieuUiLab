@@ -87,6 +87,11 @@ export interface ImplementedEntry extends RegistryEntryBase {
   /** Full source of the component file. */
   source: string
   examples: readonly [RegistryExample, ...RegistryExample[]]
+  /**
+   * Usage notes and behavioural constraints, shown before the install steps:
+   * when to use it, what it must not be used for, and accessibility caveats.
+   */
+  guidelines?: readonly string[]
   api: RegistryApi
 }
 

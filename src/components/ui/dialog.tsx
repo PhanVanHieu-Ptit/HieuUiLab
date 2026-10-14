@@ -76,3 +76,21 @@ export function DialogDescription({
     />
   )
 }
+
+/** Scrolls when the content is taller than the panel, keeping header and footer in view. */
+export function DialogBody({ className, ...props }: ComponentProps<'div'>) {
+  return <div className={cn('min-h-0 flex-1 overflow-y-auto px-5 pb-5', className)} {...props} />
+}
+
+/** Actions row. Stacks on narrow screens with the primary action (last child) on top. */
+export function DialogFooter({ className, ...props }: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'flex flex-col-reverse gap-2 border-t px-5 py-4 sm:flex-row sm:justify-end',
+        className,
+      )}
+      {...props}
+    />
+  )
+}

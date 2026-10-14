@@ -183,7 +183,7 @@ test.describe('registry catalog', () => {
   })
 
   test('a planned entry has no source or install steps and is not indexed', async ({ page }) => {
-    await page.goto('/components/tooltip')
+    await page.goto('/components/combobox')
     await expect(page.getByRole('heading', { name: 'Not implemented yet' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Installation' })).toHaveCount(0)
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
