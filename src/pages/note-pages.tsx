@@ -1,24 +1,23 @@
 import { NotebookPen } from 'lucide-react'
-import { useParams } from 'react-router'
+import { useLoaderData } from 'react-router'
 
 import { EmptyState } from '@/components/blocks/empty-state'
 import { ContentSections } from '@/components/site/content-article'
 import { NoteCard } from '@/components/site/content-cards'
-import { CrumbTrail } from '@/components/site/crumb-trail'
 import { PageContainer, PageHeader } from '@/components/site/page'
 import { Badge } from '@/components/ui/badge'
-import { getNote, notes } from '@/content/notes'
+import { sections } from '@/config/site'
+import { notes } from '@/content/notes'
+import type { Note } from '@/content/types'
 import { formatDate } from '@/lib/format-date'
-
-import { NotFoundContent } from './not-found-page'
 
 export function NotesIndexPage() {
   return (
-    <PageContainer className="flex flex-col gap-10 py-section">
+    <PageContainer className="flex flex-col gap-10 pt-6 pb-section">
       <PageHeader
-        eyebrow="Notes"
-        title="Technical notes"
-        description="Short write-ups of decisions made while building the lab: the problem, the approach, and its limits."
+        eyebrow={sections.notes.title}
+        title={sections.notes.heading}
+        description={sections.notes.description}
       />
       {notes.length === 0 ? (
         <EmptyState
@@ -41,22 +40,10 @@ export function NotesIndexPage() {
 }
 
 export function NoteDetailPage() {
-  const { slug = '' } = useParams()
-  const note = getNote(slug)
-  if (!note) {
-    return (
-      <PageContainer>
-        <NotFoundContent />
-      </PageContainer>
-    )
-  }
+  const note = useLoaderData<Note>()
 
   return (
-    <PageContainer className="py-section">
-      <CrumbTrail
-        crumbs={[{ title: 'Notes', href: '/notes' }, { title: note.title }]}
-        className="mb-6"
-      />
+    <PageContainer className="pt-6 pb-section">
       <article className="flex flex-col gap-12">
         <PageHeader
           eyebrow={<time dateTime={note.date}>{formatDate(note.date)}</time>}

@@ -1,0 +1,67 @@
+import { data, replace, type LoaderFunctionArgs } from 'react-router'
+
+import {
+  experimentHref,
+  experimentKinds,
+  getExperiment,
+  getExperimentKind,
+} from '@/content/experiments'
+import { getNote } from '@/content/notes'
+import { getProject } from '@/content/projects'
+import { getRegistryEntry, registryHref } from '@/registry'
+import type { RegistryCategory } from '@/registry/types'
+
+// Loaders only look up local, typed content. They run before a lazy page chunk
+// downloads, so unknown slugs resolve to a 404 and moved URLs redirect without it.
+// Redirects use `replace` so the old URL does not stay in history (Back would bounce).
+
+function notFound(): never {
+  // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router renders thrown data as a route error response.
+  throw data(null, { status: 404, statusText: 'Not Found' })
+}
+
+function slugParam(params: LoaderFunctionArgs['params'], key = 'slug'): string {
+  return params[key] ?? ''
+}
+
+export function noteLoader({ params }: LoaderFunctionArgs) {
+  return getNote(slugParam(params)) ?? notFound()
+}
+
+export function projectLoader({ params }: LoaderFunctionArgs) {
+  return getProject(slugParam(params)) ?? notFound()
+}
+
+/** An entry of `category`; a slug from another category redirects to its own page. */
+export function registryLoader(category: RegistryCategory) {
+  return ({ params }: LoaderFunctionArgs) => {
+    const slug = slugParam(params)
+    const entry = getRegistryEntry(slug, category)
+    if (entry) return entry
+    const elsewhere = getRegistryEntry(slug)
+    if (elsewhere) return replace(registryHref(elsewhere))
+    return notFound()
+  }
+}
+
+/** Route id of `/labs/:kind`; its category page reads this route's loader data. */
+export const LAB_KIND_ROUTE_ID = 'lab-kind'
+
+export function experimentKindLoader({ params }: LoaderFunctionArgs) {
+  return getExperimentKind(slugParam(params, 'kind')) ?? notFound()
+}
+
+/** An experiment; one requested under the wrong category redirects to its own URL. */
+export function experimentLoader({ params }: LoaderFunctionArgs) {
+  const experiment = getExperiment(slugParam(params)) ?? notFound()
+  if (experimentKinds[experiment.kind].path !== params.kind) {
+    return replace(experimentHref(experiment))
+  }
+  return experiment
+}
+
+/** `/lab/:slug` moved to `/labs/:kind/:slug`. */
+export function legacyLabLoader({ params }: LoaderFunctionArgs) {
+  const experiment = getExperiment(slugParam(params)) ?? notFound()
+  return replace(experimentHref(experiment))
+}

@@ -1,25 +1,24 @@
 import { ArrowUpRight, Briefcase } from 'lucide-react'
-import { useParams } from 'react-router'
+import { useLoaderData } from 'react-router'
 
 import { EmptyState } from '@/components/blocks/empty-state'
 import { ContentSections } from '@/components/site/content-article'
 import { ProjectCard } from '@/components/site/content-cards'
-import { CrumbTrail } from '@/components/site/crumb-trail'
 import { PageContainer, PageHeader } from '@/components/site/page'
 import { SmartLink } from '@/components/site/smart-link'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
-import { getProject, projects } from '@/content/projects'
-
-import { NotFoundContent } from './not-found-page'
+import { sections } from '@/config/site'
+import { projects } from '@/content/projects'
+import type { Project } from '@/content/types'
 
 export function ProjectsIndexPage() {
   return (
-    <PageContainer className="flex flex-col gap-10 py-section">
+    <PageContainer className="flex flex-col gap-10 pt-6 pb-section">
       <PageHeader
-        eyebrow="Projects"
-        title="Engineering case studies"
-        description="How parts of this lab were designed, built, and verified — the context, the approach, and the trade-offs that remain."
+        eyebrow={sections.projects.title}
+        title={sections.projects.heading}
+        description={sections.projects.description}
       />
       {projects.length === 0 ? (
         <EmptyState
@@ -42,22 +41,10 @@ export function ProjectsIndexPage() {
 }
 
 export function ProjectDetailPage() {
-  const { slug = '' } = useParams()
-  const project = getProject(slug)
-  if (!project) {
-    return (
-      <PageContainer>
-        <NotFoundContent />
-      </PageContainer>
-    )
-  }
+  const project = useLoaderData<Project>()
 
   return (
-    <PageContainer className="py-section">
-      <CrumbTrail
-        crumbs={[{ title: 'Projects', href: '/projects' }, { title: project.title }]}
-        className="mb-6"
-      />
+    <PageContainer className="pt-6 pb-section">
       <article className="flex flex-col gap-12">
         <PageHeader
           eyebrow="Case study"

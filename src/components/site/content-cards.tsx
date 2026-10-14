@@ -11,7 +11,7 @@ import {
   CardLink,
   CardTitle,
 } from '@/components/ui/card'
-import { experimentKindLabel } from '@/content/experiments'
+import { experimentHref, experimentKinds } from '@/content/experiments'
 import type { Experiment, Note, Project } from '@/content/types'
 import { formatDate } from '@/lib/format-date'
 
@@ -99,13 +99,13 @@ export function ExperimentCard({
       <CardHeader>
         <div className="flex items-center gap-2">
           <Badge size="sm" variant="primary">
-            {experimentKindLabel[experiment.kind]}
+            {experimentKinds[experiment.kind].label}
           </Badge>
           <StatusBadge status={experiment.status} size="sm" />
         </div>
         <CardTitle as={headingLevel}>
           <CardLink asChild>
-            <Link to={`/lab/${experiment.slug}`}>{experiment.title}</Link>
+            <Link to={experimentHref(experiment)}>{experiment.title}</Link>
           </CardLink>
         </CardTitle>
         <CardDescription>{experiment.summary}</CardDescription>

@@ -7,7 +7,7 @@ import { renderRoute } from '@/test/render'
 describe('MobileNav', () => {
   it('opens a labelled drawer with the docs navigation', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     await user.click(screen.getByRole('button', { name: 'Open navigation' }))
 
     const drawer = await screen.findByRole('dialog', { name: 'Hieu UI Lab' })
@@ -19,9 +19,14 @@ describe('MobileNav', () => {
       '/blocks/resource-list',
     )
     for (const [name, href] of [
-      ['Lab', '/lab'],
+      ['All experiments', '/labs'],
+      ['Maps', '/labs/maps'],
+      ['3D', '/labs/3d'],
       ['Projects', '/projects'],
       ['Notes', '/notes'],
+      ['About', '/about'],
+      [/^Templates/, '/templates'],
+      [/^Playground/, '/playground'],
     ] as const) {
       expect(within(nav).getByRole('link', { name })).toHaveAttribute('href', href)
     }
@@ -30,7 +35,7 @@ describe('MobileNav', () => {
 
   it('closes on Escape and returns focus to the trigger', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     const trigger = screen.getByRole('button', { name: 'Open navigation' })
     await user.click(trigger)
     await screen.findByRole('dialog')
@@ -44,13 +49,15 @@ describe('MobileNav', () => {
 
   it('navigates and closes when a link is chosen', async () => {
     const user = userEvent.setup()
-    const { router } = renderRoute('/')
+    const { router } = await renderRoute('/')
     await user.click(screen.getByRole('button', { name: 'Open navigation' }))
     const drawer = await screen.findByRole('dialog')
 
     await user.click(within(drawer).getByRole('link', { name: 'Card' }))
 
-    expect(router.state.location.pathname).toBe('/components/card')
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/components/card')
+    })
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })

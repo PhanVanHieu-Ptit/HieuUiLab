@@ -81,7 +81,7 @@ test('the WebGL scene starts still under reduced motion, or explains why it cann
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.goto('/lab/webgl-scene')
+  await page.goto('/labs/3d/webgl-scene')
   const paused = page.getByText('Paused because your system asks for reduced motion.')
   const unavailable = page.getByRole('heading', { name: 'WebGL is unavailable' })
   await expect(paused.or(unavailable)).toBeVisible()

@@ -7,7 +7,7 @@ import { renderRoute } from '@/test/render'
 describe('CommandMenu', () => {
   it('opens with Ctrl+K and lists docs pages and components', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     await user.keyboard('{Control>}k{/Control}')
 
     const dialog = await screen.findByRole('dialog', { name: 'Search documentation' })
@@ -20,14 +20,14 @@ describe('CommandMenu', () => {
 
   it('opens from the header trigger', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     await user.click(screen.getByRole('button', { name: 'Search docs' }))
     expect(await screen.findByRole('combobox')).toHaveFocus()
   })
 
   it('filters, moves with the arrow keys, and navigates on Enter', async () => {
     const user = userEvent.setup()
-    const { router } = renderRoute('/')
+    const { router } = await renderRoute('/')
     await user.click(screen.getByRole('button', { name: 'Search docs' }))
     const input = await screen.findByRole('combobox')
 
@@ -45,7 +45,9 @@ describe('CommandMenu', () => {
     await user.clear(input)
     await user.type(input, 'tabs{Enter}')
 
-    expect(router.state.location.pathname).toBe('/components/tabs')
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/components/tabs')
+    })
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
@@ -53,7 +55,7 @@ describe('CommandMenu', () => {
 
   it('shows an empty state when nothing matches', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     await user.click(screen.getByRole('button', { name: 'Search docs' }))
     await user.type(await screen.findByRole('combobox'), 'zzzz')
 
@@ -63,7 +65,7 @@ describe('CommandMenu', () => {
 
   it('opens with "/" but not while typing in a field', async () => {
     const user = userEvent.setup()
-    renderRoute('/')
+    await renderRoute('/')
     await user.keyboard('/')
     const input = await screen.findByRole('combobox')
     await user.type(input, '/')

@@ -1,44 +1,85 @@
 import { FlaskConical } from 'lucide-react'
 import { Suspense } from 'react'
-import { useParams } from 'react-router'
+import { useLoaderData, useRouteLoaderData } from 'react-router'
 
 import { EmptyState } from '@/components/blocks/empty-state'
+import { LandingSection } from '@/components/landing/landing-section'
 import { ContentSections } from '@/components/site/content-article'
 import { ExperimentCard } from '@/components/site/content-cards'
-import { CrumbTrail } from '@/components/site/crumb-trail'
 import { DemoErrorBoundary } from '@/components/site/demo-error-boundary'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/site/page'
 import { StatusBadge } from '@/components/site/status-badge'
 import { Spinner } from '@/components/ui/spinner'
-import { experimentKindLabel, experiments, getExperiment } from '@/content/experiments'
+import { sections } from '@/config/site'
+import {
+  experimentKindHref,
+  experimentKinds,
+  getExperimentsOfKind,
+  type ExperimentKindInfo,
+} from '@/content/experiments'
+import type { Experiment } from '@/content/types'
 import { labDemos } from '@/lab'
+import { LAB_KIND_ROUTE_ID } from '@/router/loaders'
 
-import { NotFoundContent } from './not-found-page'
+function ExperimentList({
+  experiments,
+  headingLevel,
+}: {
+  experiments: readonly Experiment[]
+  headingLevel: 'h2' | 'h3'
+}) {
+  if (experiments.length === 0) {
+    return (
+      <EmptyState
+        icon={<FlaskConical />}
+        headingLevel={headingLevel}
+        title="No experiments yet"
+        description="Experiments appear here once they run in the browser."
+      />
+    )
+  }
+  return (
+    <ul className="grid gap-4 md:grid-cols-2">
+      {experiments.map((experiment) => (
+        <li key={experiment.slug} className="flex">
+          <ExperimentCard experiment={experiment} headingLevel={headingLevel} />
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 export function LabIndexPage() {
   return (
-    <PageContainer className="flex flex-col gap-10 py-section">
+    <PageContainer className="flex flex-col gap-12 pt-6 pb-section">
       <PageHeader
-        eyebrow="Lab"
-        title="Geospatial and 3D experiments"
-        description="Small, working experiments with maps and graphics, written from first principles. Each one runs in the page, respects reduced motion, and explains how it works."
+        eyebrow={sections.labs.title}
+        title={sections.labs.heading}
+        description={sections.labs.description}
       />
-      {experiments.length === 0 ? (
-        <EmptyState
-          icon={<FlaskConical />}
-          headingLevel="h2"
-          title="No experiments yet"
-          description="Experiments appear here once they run in the browser."
-        />
-      ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {experiments.map((experiment) => (
-            <li key={experiment.slug} className="flex">
-              <ExperimentCard experiment={experiment} headingLevel="h2" />
-            </li>
-          ))}
-        </ul>
-      )}
+      {Object.values(experimentKinds).map((kind) => (
+        <LandingSection
+          key={kind.kind}
+          id={`kind-${kind.path}`}
+          title={kind.title}
+          description={kind.description}
+          more={{ label: `All ${kind.title} experiments`, href: experimentKindHref(kind.path) }}
+        >
+          <ExperimentList experiments={getExperimentsOfKind(kind.kind)} headingLevel="h3" />
+        </LandingSection>
+      ))}
+    </PageContainer>
+  )
+}
+
+export function LabCategoryPage() {
+  const kind = useRouteLoaderData<ExperimentKindInfo>(LAB_KIND_ROUTE_ID)
+  if (!kind) return null
+
+  return (
+    <PageContainer className="flex flex-col gap-10 pt-6 pb-section">
+      <PageHeader eyebrow={sections.labs.title} title={kind.title} description={kind.description} />
+      <ExperimentList experiments={getExperimentsOfKind(kind.kind)} headingLevel="h2" />
     </PageContainer>
   )
 }
@@ -52,27 +93,14 @@ function DemoFallback() {
 }
 
 export function LabDetailPage() {
-  const { slug = '' } = useParams()
-  const experiment = getExperiment(slug)
-  if (!experiment) {
-    return (
-      <PageContainer>
-        <NotFoundContent />
-      </PageContainer>
-    )
-  }
-
+  const experiment = useLoaderData<Experiment>()
   const Demo = labDemos[experiment.slug]
 
   return (
-    <PageContainer className="py-section">
-      <CrumbTrail
-        crumbs={[{ title: 'Lab', href: '/lab' }, { title: experiment.title }]}
-        className="mb-6"
-      />
+    <PageContainer className="pt-6 pb-section">
       <article className="flex flex-col gap-12">
         <PageHeader
-          eyebrow={experimentKindLabel[experiment.kind]}
+          eyebrow={experimentKinds[experiment.kind].label}
           title={experiment.title}
           meta={<StatusBadge status={experiment.status} />}
           description={experiment.summary}

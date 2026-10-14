@@ -36,7 +36,7 @@ export const registry: readonly RegistryEntry[] = [
 export const categoryBasePath: Record<RegistryCategory, string> = {
   component: '/components',
   block: '/blocks',
-  experiment: '/lab',
+  experiment: '/labs',
 }
 
 export function getRegistryEntry(
