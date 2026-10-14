@@ -11,33 +11,37 @@ import { experiments } from '@/content/experiments'
 import { notes } from '@/content/notes'
 import { projects } from '@/content/projects'
 import { getRegistryEntries } from '@/registry'
-import type { RegistryStatus } from '@/registry/types'
+import { isImplemented, type RegistryKind, type RegistryStatus } from '@/registry/types'
 
 const linkClass =
   'rounded-sm font-medium text-primary underline-offset-4 hover:underline focus-ring'
 
+/** "3 stable, 1 experimental". Planned entries are not counted; they are listed below. */
 function statusSummary(statuses: readonly RegistryStatus[]): string {
   const stable = statuses.filter((status) => status === 'stable').length
-  const beta = statuses.filter((status) => status === 'beta').length
-  return [stable ? `${String(stable)} stable` : '', beta ? `${String(beta)} beta` : '']
+  const experimental = statuses.filter((status) => status === 'experimental').length
+  return [
+    stable ? `${String(stable)} stable` : '',
+    experimental ? `${String(experimental)} experimental` : '',
+  ]
     .filter(Boolean)
     .join(', ')
 }
 
+function implementedInventory(title: string, href: string, kind: RegistryKind) {
+  const implemented = getRegistryEntries(kind).filter(isImplemented)
+  return {
+    title,
+    href,
+    detail: statusSummary(implemented.map((entry) => entry.status)),
+    count: implemented.length,
+  }
+}
+
 // Counted from the registry and content modules, so the page cannot overstate what exists.
 const inventory = [
-  {
-    title: 'Components',
-    href: '/components',
-    detail: statusSummary(getRegistryEntries('component').map((entry) => entry.status)),
-    count: getRegistryEntries('component').length,
-  },
-  {
-    title: 'Blocks',
-    href: '/blocks',
-    detail: statusSummary(getRegistryEntries('block').map((entry) => entry.status)),
-    count: getRegistryEntries('block').length,
-  },
+  implementedInventory('Components', '/components', 'component'),
+  implementedInventory('Blocks', '/blocks', 'block'),
   {
     title: 'Experiments',
     href: '/labs',
@@ -103,7 +107,7 @@ export function AboutPage() {
             id="planned"
             title="Planned"
             anchorLabel="Planned"
-            description="Reserved sections that are not built yet. Their pages say so rather than showing placeholder content."
+            description="Sections and registry entries that are not built yet. Their pages say so rather than showing placeholder content."
           />
           <ul className="flex flex-col divide-y rounded-lg border">
             {planned.map((item) => (

@@ -40,7 +40,7 @@ const tokenGroups: readonly TokenGroup[] = [
       { name: 'primary', usage: 'The one accent: primary actions, links' },
       { name: 'primary-subtle', usage: 'Active navigation, selection' },
       { name: 'success', usage: 'Stable, positive status' },
-      { name: 'warning', usage: 'Beta, caution' },
+      { name: 'warning', usage: 'Experimental, caution' },
       { name: 'info', usage: 'Neutral notices' },
       { name: 'destructive', usage: 'Errors, irreversible actions' },
     ],

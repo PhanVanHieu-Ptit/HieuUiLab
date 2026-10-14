@@ -19,7 +19,7 @@ const structure = `src/
   content/     # typed notes, case studies, experiments, and landing data
   lab/         # geospatial and 3D experiments, lazy-loaded per route
   pages/       # route components
-  registry/    # one folder per entry: demos.tsx + meta.ts
+  registry/    # one folder per entry (demos.tsx + meta.ts), types, validation, catalog
   router/
     routes.tsx # the route tree
     loaders.ts # slug lookups: 404s and redirects
@@ -63,9 +63,23 @@ export function DocsArchitecturePage() {
         <SectionHeader id="registry" title="The registry" anchorLabel="The registry" />
         <Paragraph>
           Each entry has a folder in <code className={inlineCode}>src/registry/</code> with its
-          metadata, demos, and props, and imports its own source as raw text so the docs show
-          exactly the file you copy. The sidebar, mobile drawer, search, index pages, and detail
-          routes are all derived from the registry, so adding an entry needs no navigation changes.
+          metadata, examples, and API reference, and imports its own source as raw text so the docs
+          show exactly the file you copy. The sidebar, mobile drawer, search, catalog pages, landing
+          cards, and detail routes are all derived from one typed array, so adding an entry needs no
+          navigation changes.
+        </Paragraph>
+        <Paragraph>
+          An entry is either implemented (<code className={inlineCode}>stable</code> or{' '}
+          <code className={inlineCode}>experimental</code>), with source, examples, and explicit
+          installation data, or <code className={inlineCode}>planned</code>, with only a description
+          of its scope. The two are separate types, so a planned entry cannot be rendered with code
+          or install steps. A validator checks the registry at startup and in tests: duplicate ids
+          or slugs, unknown categories or tags, broken or planned dependencies, cycles, and install
+          steps that no longer match the source&apos;s imports.
+        </Paragraph>
+        <Paragraph>
+          The catalog&apos;s search, category and tag filters, and sort live in the URL query, so a
+          filtered view can be shared and Back undoes a filter change.
         </Paragraph>
       </section>
 

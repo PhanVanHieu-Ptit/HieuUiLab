@@ -20,10 +20,10 @@ function ItemLabel({ item }: { item: NavItem }) {
       {item.status && item.status !== 'stable' ? (
         <Badge
           size="sm"
-          variant={item.status === 'beta' ? 'warning' : 'neutral'}
+          variant={item.status === 'experimental' ? 'warning' : 'neutral'}
           className="ml-auto"
         >
-          {item.status === 'beta' ? 'Beta' : 'Planned'}
+          {item.status === 'experimental' ? 'Experimental' : 'Planned'}
         </Badge>
       ) : null}
       {item.label ? (

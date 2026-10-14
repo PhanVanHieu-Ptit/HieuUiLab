@@ -1,23 +1,30 @@
 import skeletonSource from '@/components/ui/skeleton.tsx?raw'
 
-import type { RegistryEntry } from '../types'
+import type { ImplementedEntry } from '../types'
 import { demoExtractor, nativeProps } from '../utils'
 import { SkeletonDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
 
-export const skeletonEntry: RegistryEntry = {
+export const skeletonEntry: ImplementedEntry = {
+  id: 'skeleton',
   slug: 'skeleton',
   name: 'Skeleton',
   description:
     'A pulsing placeholder that reserves layout while content loads. Hidden from assistive tech; mark the region aria-busy instead.',
-  category: 'component',
+  kind: 'component',
+  category: 'feedback',
+  tags: ['loading'],
   status: 'stable',
-  dependencies: ['clsx', 'tailwind-merge'],
-  targetPath: 'components/ui/skeleton.tsx',
+  installation: {
+    targetPath: 'components/ui/skeleton.tsx',
+    packages: [],
+    registryDependencies: [],
+    requirements: ['cn-helper', 'design-tokens'],
+  },
   source: skeletonSource,
-  demos: [
+  examples: [
     {
       id: 'basic',
       title: 'Loading layout',
@@ -25,5 +32,5 @@ export const skeletonEntry: RegistryEntry = {
       code: demoCode('SkeletonDemo'),
     },
   ],
-  props: [nativeProps('div')],
+  api: { parts: [{ name: 'Skeleton', props: [nativeProps('div')] }] },
 }

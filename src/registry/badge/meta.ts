@@ -1,23 +1,30 @@
 import badgeSource from '@/components/ui/badge.tsx?raw'
 
-import type { RegistryEntry } from '../types'
-import { baseDependencies, demoExtractor, nativeProps } from '../utils'
+import type { ImplementedEntry } from '../types'
+import { demoExtractor, nativeProps } from '../utils'
 import { BadgeSizesDemo, BadgeVariantsDemo } from './demos'
 import demosSource from './demos.tsx?raw'
 
 const demoCode = demoExtractor(demosSource)
 
-export const badgeEntry: RegistryEntry = {
+export const badgeEntry: ImplementedEntry = {
+  id: 'badge',
   slug: 'badge',
   name: 'Badge',
   description:
     'A compact, non-interactive label for status, counts, and metadata. Status variants use status tokens only.',
-  category: 'component',
+  kind: 'component',
+  category: 'data-display',
+  tags: ['status', 'variants'],
   status: 'stable',
-  dependencies: [...baseDependencies],
-  targetPath: 'components/ui/badge.tsx',
+  installation: {
+    targetPath: 'components/ui/badge.tsx',
+    packages: ['class-variance-authority'],
+    registryDependencies: [],
+    requirements: ['cn-helper', 'design-tokens'],
+  },
   source: badgeSource,
-  demos: [
+  examples: [
     {
       id: 'variants',
       title: 'Variants',
@@ -27,14 +34,26 @@ export const badgeEntry: RegistryEntry = {
     },
     { id: 'sizes', title: 'Sizes', component: BadgeSizesDemo, code: demoCode('BadgeSizesDemo') },
   ],
-  props: [
-    {
-      name: 'variant',
-      type: "'neutral' | 'primary' | 'outline' | 'success' | 'warning' | 'info' | 'destructive'",
-      default: "'neutral'",
-      description: 'Visual style.',
-    },
-    { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Height and padding.' },
-    nativeProps('span'),
-  ],
+  api: {
+    parts: [
+      {
+        name: 'Badge',
+        props: [
+          {
+            name: 'variant',
+            type: "'neutral' | 'primary' | 'outline' | 'success' | 'warning' | 'info' | 'destructive'",
+            default: "'neutral'",
+            description: 'Visual style.',
+          },
+          {
+            name: 'size',
+            type: "'sm' | 'md'",
+            default: "'md'",
+            description: 'Height and padding.',
+          },
+          nativeProps('span'),
+        ],
+      },
+    ],
+  },
 }

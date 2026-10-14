@@ -1,21 +1,46 @@
-import { Inbox } from 'lucide-react'
-import { Link } from 'react-router'
+import { Inbox, SearchX } from 'lucide-react'
+import { useSearchParams } from 'react-router'
 
 import { EmptyState } from '@/components/blocks/empty-state'
 import { PageHeader } from '@/components/site/page'
-import { StatusBadge } from '@/components/site/status-badge'
-import { Card, CardDescription, CardHeader, CardLink, CardTitle } from '@/components/ui/card'
-import { getRegistryEntries, registryHref } from '@/registry'
-import type { RegistryCategory } from '@/registry/types'
+import { RegistryCard } from '@/components/site/registry-card'
+import { RegistryFilters } from '@/components/site/registry-filters'
+import { Button } from '@/components/ui/button'
+import { getRegistryEntries } from '@/registry'
+import {
+  facetsFor,
+  filterRegistry,
+  parseCatalogQuery,
+  toSearchParams,
+  type CatalogQuery,
+} from '@/registry/catalog'
+import type { RegistryKind } from '@/registry/types'
 
 interface RegistryIndexPageProps {
-  category: RegistryCategory
+  kind: RegistryKind
   title: string
   description: string
 }
 
-export function RegistryIndexPage({ category, title, description }: RegistryIndexPageProps) {
-  const entries = getRegistryEntries(category)
+/** A kind's catalog. Search, filters, and sort live in the URL so results can be shared. */
+export function RegistryIndexPage({ kind, title, description }: RegistryIndexPageProps) {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const entries = getRegistryEntries(kind)
+  const query = parseCatalogQuery(searchParams)
+  const results = filterRegistry(entries, query)
+  const noun = title.toLowerCase()
+
+  function update(next: CatalogQuery, options?: { typing?: boolean }) {
+    // Typing replaces the history entry; each discrete filter change can be undone with Back.
+    setSearchParams(toSearchParams(next), {
+      replace: options?.typing === true,
+      preventScrollReset: true,
+    })
+  }
+
+  function clearFilters() {
+    update({ ...query, q: '', category: undefined, tags: [] })
+  }
 
   return (
     <article className="flex flex-col gap-8">
@@ -24,27 +49,48 @@ export function RegistryIndexPage({ category, title, description }: RegistryInde
         <EmptyState
           icon={<Inbox />}
           headingLevel="h2"
-          title={`No ${title.toLowerCase()} yet`}
-          description="Entries appear here once they are implemented and documented."
+          title={`No ${noun} yet`}
+          description="Entries appear here once they are added to the registry."
         />
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {entries.map((entry) => (
-            <li key={entry.slug} className="flex">
-              <Card variant="interactive" className="flex-1">
-                <CardHeader>
-                  <CardTitle as="h2" className="justify-between">
-                    <CardLink asChild>
-                      <Link to={registryHref(entry)}>{entry.name}</Link>
-                    </CardLink>
-                    <StatusBadge status={entry.status} size="sm" />
-                  </CardTitle>
-                  <CardDescription className="line-clamp-3">{entry.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            </li>
-          ))}
-        </ul>
+        <>
+          <RegistryFilters
+            query={query}
+            facets={facetsFor(entries)}
+            onChange={update}
+            noun={noun}
+            resultCount={results.length}
+            total={entries.length}
+          />
+          {results.length === 0 ? (
+            <EmptyState
+              icon={<SearchX />}
+              headingLevel="h2"
+              title={`No ${noun} match these filters`}
+              description={
+                query.q.trim()
+                  ? `Nothing matches “${query.q.trim()}” with the selected filters. Try fewer words or tags.`
+                  : 'No entry has every selected filter. Try removing a tag or the category.'
+              }
+              actions={
+                <Button variant="outline" onClick={clearFilters}>
+                  Clear filters
+                </Button>
+              }
+            />
+          ) : (
+            <ul
+              aria-label={`${title} results`}
+              className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+            >
+              {results.map((entry) => (
+                <li key={entry.id} className="flex">
+                  <RegistryCard entry={entry} headingLevel="h2" showTaxonomy />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
     </article>
   )

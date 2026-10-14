@@ -9,14 +9,14 @@ copyable source, props documentation, and tests.
 | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | App shell: header, docs sidebar, mobile drawer, breadcrumbs, ⌘K search, theme menu             | Implemented, unit + e2e tested (incl. 360/768/1280 overflow checks)     |
 | Design tokens (color, status, elevation, type, layout) and shared state utilities              | Implemented, contrast-tested                                            |
-| Registry model + component docs page                                                           | Implemented                                                             |
+| Registry model, validation, catalog search/filter/sort, detail pages                           | Implemented, unit + e2e tested                                          |
 | `Button`, `Badge`, `Breadcrumb`, `Card`, `Kbd`, `Separator`, `Skeleton`, `Spinner`, `Tabs`     | Implemented, unit tested                                                |
-| `Dialog`, `Sheet`                                                                              | Beta, unit + e2e tested                                                 |
+| `Dialog`, `Sheet`                                                                              | Experimental, unit + e2e tested                                         |
 | Landing page: hero, live component and block previews, lab, case studies, notes, stack, footer | Implemented, unit + e2e tested (incl. internal link integrity)          |
-| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (beta)                          | Implemented, unit tested                                                |
-| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states       | Beta, unit + e2e tested; no map or 3D library                           |
+| Blocks: `EmptyState` (stable), `ResourceList`, `ConfirmAction` (experimental)                  | Implemented, unit tested                                                |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states       | Experimental, unit + e2e tested; no map or 3D library                   |
 | Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)      | Implemented, unit + e2e tested (direct load, refresh, back/forward)     |
-| `/templates`, `/playground`                                                                    | Planned — routes exist and say so; nothing built                        |
+| `/templates`, `/playground`; registry entries `Tooltip`, `Combobox`, `Data table`              | Planned — pages exist and say so; nothing built                         |
 | Projects (case studies) and notes                                                              | Typed local data in `src/content/`; content describes work in this repo |
 | Form controls, form patterns (RHF + Zod), MapLibre, MDX content                                | Planned — not implemented                                               |
 | CI (GitHub Actions)                                                                            | Workflow present; not yet run on GitHub                                 |
@@ -171,10 +171,23 @@ e2e/                  Playwright tests
 
 ## Adding a component
 
-1. Add the component to `src/components/ui/` with tests next to it.
-2. Create `src/registry/<slug>/demos.tsx` and `meta.ts` (see `button/` for the pattern).
-3. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, index, and route pick it
-   up automatically.
+1. Add the component to `src/components/ui/` (or a block to `src/components/blocks/`) with tests
+   next to it.
+2. Create `src/registry/<slug>/demos.tsx` and `meta.ts` (see `button/` for the pattern). The entry
+   is an `ImplementedEntry` (`src/registry/types.ts`): `id`, `slug`, `kind`, `category`, `tags`,
+   `status` (`stable` or `experimental`), `installation`, `source`, `examples`, and `api`.
+   Categories and tags come from `src/registry/taxonomy.ts`; packages and setup requirements from
+   `src/registry/packages.ts`.
+3. Add the entry to `src/registry/index.ts`. The sidebar, drawer, search, catalog, landing cards,
+   About counts, and detail route all read from that one array.
+
+A planned entry is a `PlannedEntry` (see `src/registry/planned.ts`): metadata and a
+`plannedScope`, with no source, examples, or install steps, so it cannot render as implemented.
+
+`validateRegistry` (`src/registry/validate.ts`) runs at startup in development and in the test
+suite. It rejects duplicate ids or slugs, unknown categories, tags, packages, or requirements,
+missing or planned registry dependencies, dependency cycles, duplicate examples or props, and
+install steps that drift from what the source actually imports.
 
 To add a docs page, add an item to `docsNav` in `src/config/site.ts` and a lazy route under `docs`
 in `src/router/routes.tsx` with `handle: docsHandle('/docs/<page>')`. The title, description,

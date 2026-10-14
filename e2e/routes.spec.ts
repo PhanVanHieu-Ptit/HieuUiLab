@@ -8,6 +8,7 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/components/button', 'Button', 'Button · Hieu UI Lab'],
   ['/blocks', 'Blocks', 'Blocks · Hieu UI Lab'],
   ['/blocks/resource-list', 'Resource list', 'Resource list · Hieu UI Lab'],
+  ['/components/tooltip', 'Tooltip', 'Tooltip · Hieu UI Lab'],
   ['/templates', 'Templates', 'Templates · Hieu UI Lab'],
   ['/playground', 'Playground', 'Playground · Hieu UI Lab'],
   ['/labs', 'Geospatial and 3D experiments', 'Labs · Hieu UI Lab'],
@@ -158,5 +159,43 @@ test.describe('mobile navigation', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Technical notes')
     await page.goForward()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('About the lab')
+  })
+})
+
+test.describe('registry catalog', () => {
+  test('filters from the URL and from the controls, and Back restores the filter', async ({
+    page,
+  }) => {
+    await page.goto('/components?tag=modal')
+    const results = page.getByRole('list', { name: 'Components results' })
+    await expect(results.getByRole('heading', { level: 2 })).toHaveCount(2)
+
+    await page.getByRole('combobox', { name: 'Category' }).selectOption('overlays')
+    await expect(page).toHaveURL(/\?category=overlays&tag=modal$/)
+
+    await page.getByRole('button', { name: 'modal', pressed: true }).click()
+    await expect(page).toHaveURL(/\?category=overlays$/)
+    await expect(results.getByRole('link', { name: 'Tooltip' })).toBeVisible()
+
+    await page.goBack()
+    await expect(page).toHaveURL(/\?category=overlays&tag=modal$/)
+    await expect(results.getByRole('link', { name: 'Tooltip' })).toHaveCount(0)
+  })
+
+  test('a planned entry has no source or install steps and is not indexed', async ({ page }) => {
+    await page.goto('/components/tooltip')
+    await expect(page.getByRole('heading', { name: 'Not implemented yet' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Installation' })).toHaveCount(0)
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
+  })
+
+  test('a mistyped slug suggests the closest entry', async ({ page }) => {
+    await page.goto('/components/buton')
+    await page
+      .getByRole('navigation', { name: 'Suggestions' })
+      .getByRole('link', { name: 'Button' })
+      .click()
+    await expect(page).toHaveURL(/\/components\/button$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Button')
   })
 })

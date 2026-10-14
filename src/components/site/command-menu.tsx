@@ -7,6 +7,8 @@ import { Kbd } from '@/components/ui/kbd'
 import { docsNav, type NavItem } from '@/config/site'
 import { cn } from '@/lib/cn'
 
+import { StatusBadge } from './status-badge'
+
 interface SearchGroup {
   title: string
   items: readonly NavItem[]
@@ -24,7 +26,9 @@ function filterGroups(query: string): SearchGroup[] {
       title: group.title,
       items: needle
         ? group.items.filter((item) =>
-            `${item.title} ${item.description ?? ''}`.toLowerCase().includes(needle),
+            `${item.title} ${item.description ?? ''} ${item.keywords?.join(' ') ?? ''}`
+              .toLowerCase()
+              .includes(needle),
           )
         : group.items,
     }))
@@ -168,6 +172,9 @@ function CommandPalette({ onSelect }: { onSelect: () => void }) {
                       </span>
                     ) : null}
                   </span>
+                  {item.status && item.status !== 'stable' ? (
+                    <StatusBadge status={item.status} size="sm" />
+                  ) : null}
                   {isActive ? (
                     <CornerDownLeft
                       aria-hidden="true"

@@ -1,6 +1,7 @@
 import { experimentKinds, experimentKindHref } from '@/content/experiments'
 import { getRegistryEntries, registryHref } from '@/registry'
-import type { RegistryStatus } from '@/registry/types'
+import { registryCategories } from '@/registry/taxonomy'
+import type { RegistryKind, RegistryStatus } from '@/registry/types'
 
 export interface NavItem {
   title: string
@@ -15,6 +16,8 @@ export interface NavItem {
   matchNested?: boolean
   /** Hide from the header below `lg`, where it would crowd the bar. Still in the drawer and footer. */
   headerFromLg?: boolean
+  /** Extra terms the search palette matches, e.g. a registry entry's category and tags. */
+  keywords?: readonly string[]
 }
 
 export interface NavSection {
@@ -93,12 +96,13 @@ export const mainNav: readonly NavItem[] = [
   { title: 'About', href: '/about', description: 'What the lab is.', headerFromLg: true },
 ]
 
-function registryNavItems(category: 'component' | 'block'): NavItem[] {
-  return getRegistryEntries(category).map((entry) => ({
+function registryNavItems(kind: RegistryKind): NavItem[] {
+  return getRegistryEntries(kind).map((entry) => ({
     title: entry.name,
     href: registryHref(entry),
     description: entry.description,
     status: entry.status,
+    keywords: [registryCategories[entry.category].label, ...entry.tags],
   }))
 }
 
