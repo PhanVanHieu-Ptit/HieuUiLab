@@ -29,13 +29,13 @@ export const projects: readonly Project[] = [
       {
         heading: 'Approach',
         paragraphs: [
-          'All raw values live in one stylesheet. Light values sit on :root and dark overrides on .dark; a Tailwind v4 @theme inline block maps each one to a utility such as bg-surface or text-muted-foreground. Components never reference palette colours directly.',
+          'All raw values live in one stylesheet. Light values sit on :root (and a .light class, so a region can stay light inside a dark page) and dark overrides on .dark; a Tailwind v4 @theme inline block maps each one to a utility such as bg-surface or text-muted-foreground. Components never reference palette colours directly.',
           'Colours are written in OKLCH so lightness can be tuned independently of hue. Shared interaction states — focus-ring, focus-ring-inset, and disabled-state — are defined once as utilities, so every interactive element behaves the same way.',
         ],
         code: {
           language: 'text',
           title: 'src/styles/globals.css (excerpt)',
-          code: '@theme inline {\n  --color-surface: var(--surface);\n  --color-muted-foreground: var(--muted-foreground);\n  --color-ring: var(--ring);\n}\n\n@utility focus-ring {\n  outline: 2px none var(--color-ring);\n  outline-offset: 2px;\n\n  &:focus-visible {\n    outline-style: solid;\n  }\n}',
+          code: '@theme inline {\n  --color-surface: var(--surface);\n  --color-muted-foreground: var(--muted-foreground);\n  --color-ring: var(--ring);\n}\n\n@utility focus-ring {\n  outline: 2px none var(--ring);\n  outline-offset: 2px;\n\n  &:focus-visible {\n    outline-style: solid;\n  }\n}',
         },
       },
       {

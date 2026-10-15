@@ -83,7 +83,7 @@ describe('breadcrumbs', () => {
 })
 
 describe('planned routes', () => {
-  it.each(['/templates', '/playground'])(
+  it.each(['/templates'])(
     '%s is labelled as planned and kept out of search indexes',
     async (path) => {
       await renderRoute(path)
@@ -101,6 +101,24 @@ describe('planned routes', () => {
       ).toHaveAttribute('href', path)
     },
   )
+})
+
+describe('the playground route', () => {
+  it('is a built page: indexable, not labelled planned, and current in the sidebar', async () => {
+    await renderRoute('/playground')
+    const main = screen.getByRole('main')
+    expect(within(main).getByRole('heading', { level: 1, name: 'Playground' })).toBeInTheDocument()
+    expect(within(main).queryByText('Planned')).toBeNull()
+    expect(within(main).queryByText('Not implemented yet')).toBeNull()
+    await waitFor(() => {
+      expect(document.title).toBe('Playground · Hieu UI Lab')
+    })
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+    const sidebar = screen.getByRole('navigation', { name: 'Registry' })
+    expect(
+      within(sidebar).getByRole('link', { name: 'Playground', current: 'page' }),
+    ).toHaveAttribute('href', '/playground')
+  })
 })
 
 describe('invalid URLs', () => {

@@ -58,6 +58,45 @@ describe('Dialog', () => {
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
   })
 
+  it('portals into a given container, without passing it on to the DOM', async () => {
+    const user = userEvent.setup()
+    const host = document.createElement('div')
+    host.dataset.testid = 'host'
+    document.body.append(host)
+    try {
+      render(
+        <Dialog>
+          <DialogTrigger>Open</DialogTrigger>
+          <DialogContent container={host} aria-describedby={undefined}>
+            <DialogTitle>Contained</DialogTitle>
+          </DialogContent>
+        </Dialog>,
+      )
+      await user.click(screen.getByRole('button', { name: 'Open' }))
+      const dialog = await screen.findByRole('dialog', { name: 'Contained' })
+      expect(host).toContainElement(dialog)
+      expect(dialog).not.toHaveAttribute('container')
+    } finally {
+      host.remove()
+    }
+  })
+
+  it('portals into document.body without a container', async () => {
+    const user = userEvent.setup()
+    const { container } = render(
+      <Dialog>
+        <DialogTrigger>Open</DialogTrigger>
+        <DialogContent aria-describedby={undefined}>
+          <DialogTitle>Loose</DialogTitle>
+        </DialogContent>
+      </Dialog>,
+    )
+    await user.click(screen.getByRole('button', { name: 'Open' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Loose' })
+    expect(container).not.toContainElement(dialog)
+    expect(document.body).toContainElement(dialog)
+  })
+
   it('can be controlled and closed from outside', async () => {
     const user = userEvent.setup()
     const onOpenChange = vi.fn()

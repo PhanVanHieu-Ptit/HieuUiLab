@@ -125,7 +125,8 @@ test.describe('mobile navigation', () => {
       await expect(drawer.getByRole('link', { name, exact: true })).toBeVisible()
     }
     await expect(drawer.getByRole('link', { name: 'Templates Planned' })).toBeVisible()
-    await expect(drawer.getByRole('link', { name: 'Playground Planned' })).toBeVisible()
+    // Built, so it carries no "Planned" label.
+    await expect(drawer.getByRole('link', { name: 'Playground', exact: true })).toBeVisible()
   })
 
   test('navigates to a nested route, closes, and marks it active', async ({ page }) => {

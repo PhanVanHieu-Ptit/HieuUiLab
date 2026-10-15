@@ -19,6 +19,7 @@ const structure = `src/
   content/     # typed notes, case studies, experiments, and landing data
   lab/         # geospatial and 3D experiments, lazy-loaded per route
   pages/       # route components
+  playground/  # playground examples (an allowlist), control schemas, validation, workbench UI
   registry/    # one folder per entry (demos.tsx + meta.ts), types, validation, catalog
   router/
     routes.tsx # the route tree
@@ -104,10 +105,10 @@ export function DocsArchitecturePage() {
         <SectionHeader id="code-splitting" title="Code splitting" anchorLabel="Code splitting" />
         <Paragraph>
           The shell, the home page, and the component and block indexes load up front. Docs pages,
-          registry detail pages, the labs, notes, case studies, and the about page are lazy routes,
-          each its own chunk. Loaders and route metadata are not lazy, so a 404 or redirect resolves
-          before any page code downloads. Shiki and each lab demo are loaded on demand inside their
-          pages.
+          registry detail pages, the playground, the labs, notes, case studies, and the about page
+          are lazy routes, each its own chunk. Loaders and route metadata are not lazy, so a 404 or
+          redirect resolves before any page code downloads. Shiki and each lab demo are loaded on
+          demand inside their pages.
         </Paragraph>
         <Paragraph>
           The registry itself is still in the main bundle, because the navigation lists every entry
