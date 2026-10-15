@@ -53,6 +53,28 @@ export default tseslint.config(
       ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // Nothing in the app builds code from strings.
+      'no-eval': 'error',
+      'no-new-func': 'error',
+    },
+  },
+  {
+    // The playground runs only the components its allowlist names. These keep it that way: no
+    // module is imported by a runtime string, and no markup is injected.
+    files: ['src/playground/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportExpression',
+          message:
+            'The playground never imports a module at runtime. Add the example to the allowlist in src/playground/index.ts.',
+        },
+        {
+          selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+          message: 'The playground renders React elements only; it never injects markup.',
+        },
+      ],
     },
   },
   {

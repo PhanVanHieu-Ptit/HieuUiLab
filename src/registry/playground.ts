@@ -89,13 +89,21 @@ export function resolvePlaygroundProps(
   return resolved
 }
 
-function jsxAttribute(prop: string, value: PlaygroundValue): string {
+/**
+ * JSX decodes an entity such as `&amp;` in an attribute or in text, but a string handed to React
+ * as a prop or a child is shown as written. Such text must be written as an expression.
+ */
+const htmlEntity = /&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);/i
+
+export function jsxAttribute(prop: string, value: PlaygroundValue): string {
   if (typeof value === 'boolean') return value ? prop : `${prop}={false}`
-  return /["\n]/.test(value) ? `${prop}={${JSON.stringify(value)}}` : `${prop}="${value}"`
+  return /["\n]/.test(value) || htmlEntity.test(value)
+    ? `${prop}={${JSON.stringify(value)}}`
+    : `${prop}="${value}"`
 }
 
-function jsxText(text: string): string {
-  return /[{}<>\n]|^\s|\s$/.test(text) ? `{${JSON.stringify(text)}}` : text
+export function jsxText(text: string): string {
+  return /[{}<>\n]|^\s|\s$/.test(text) || htmlEntity.test(text) ? `{${JSON.stringify(text)}}` : text
 }
 
 /** The JSX for `props`, formatted the way Prettier would at a 100-column width. */

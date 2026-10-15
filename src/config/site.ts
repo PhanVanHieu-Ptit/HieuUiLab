@@ -144,19 +144,24 @@ export const docsNav: readonly NavSection[] = [
     items: registryNavItems('block'),
   },
   {
+    title: 'Tools',
+    items: [
+      {
+        title: 'Playground',
+        href: '/playground',
+        description:
+          'Try Button, Input, Badge, Dialog, and Data table with typed controls, a light or dark preview, and a chosen width. Pre-defined examples only; it is not a code editor.',
+        keywords: ['controls', 'props', 'sandbox', 'preview', 'theme', 'viewport'],
+      },
+    ],
+  },
+  {
     title: 'Planned',
     items: [
       {
         title: 'Templates',
         href: '/templates',
         description: 'Full pages composed from the registry’s blocks and components.',
-        status: 'planned',
-      },
-      {
-        title: 'Playground',
-        href: '/playground',
-        description:
-          'A standalone sandbox for composing several components. Prop controls for single components are on their detail pages.',
         status: 'planned',
       },
     ],

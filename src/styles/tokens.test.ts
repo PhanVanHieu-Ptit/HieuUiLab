@@ -37,7 +37,8 @@ function contrast(x: Oklch, y: Oklch): number {
   return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05)
 }
 
-const light = readTokens(':root')
+// The light tokens are declared on `:root, .light`; the block ends in `.light {`.
+const light = readTokens('.light')
 const themes = { light, dark: { ...light, ...readTokens('.dark') } }
 
 // [foreground, background] pairs used for text.

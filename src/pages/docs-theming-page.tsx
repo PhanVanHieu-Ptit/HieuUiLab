@@ -7,6 +7,8 @@ import { Separator } from '@/components/ui/separator'
 import { useTheme, type Theme } from '@/hooks/use-theme'
 import { cn } from '@/lib/cn'
 
+const inlineCode = 'rounded-sm bg-muted px-1 py-0.5 font-mono text-xs'
+
 interface TokenGroup {
   title: string
   tokens: readonly { name: string; usage: string }[]
@@ -101,6 +103,11 @@ export function DocsThemingPage() {
             </p>
           </CardContent>
         </Card>
+        <p className="max-w-prose text-sm text-muted-foreground">
+          Themes also work on a single element: <code className={inlineCode}>.dark</code> and{' '}
+          <code className={inlineCode}>.light</code> each re-declare the tokens, so a region can be
+          light inside a dark page. The playground preview uses this.
+        </p>
       </section>
 
       <section aria-labelledby="color-tokens" className="flex flex-col gap-6">

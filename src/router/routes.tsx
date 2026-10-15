@@ -49,6 +49,7 @@ const docsInstallation = () => import('@/pages/docs-installation-page')
 const docsArchitecture = () => import('@/pages/docs-architecture-page')
 const docsTheming = () => import('@/pages/docs-theming-page')
 const registryDetail = () => import('@/pages/registry-detail-page')
+const playgroundPage = () => import('@/pages/playground-page')
 const labPages = () => import('@/pages/lab-pages')
 const notePages = () => import('@/pages/note-pages')
 const projectPages = () => import('@/pages/project-pages')
@@ -165,7 +166,7 @@ export function createRoutes(): RouteObject[] {
                 {
                   path: 'playground',
                   handle: docsHandle('/playground'),
-                  element: <PlannedPage href="/playground" />,
+                  lazy: { Component: async () => (await playgroundPage()).PlaygroundPage },
                 },
               ],
             },

@@ -104,6 +104,13 @@ export const dialogEntry: ImplementedEntry = {
             description: 'Render the top-right close button.',
           },
           {
+            name: 'container',
+            type: 'HTMLElement | null',
+            default: 'document.body',
+            description:
+              'Portal into this element instead of the page body, e.g. to keep a dialog inside a preview frame.',
+          },
+          {
             name: 'onOpenAutoFocus / onCloseAutoFocus',
             type: '(event: Event) => void',
             description: 'Call event.preventDefault() to manage focus yourself.',

@@ -26,6 +26,8 @@ export function DialogOverlay({
 export interface DialogContentProps extends ComponentProps<typeof DialogPrimitive.Content> {
   /** Render the top-right close button. */
   showClose?: boolean
+  /** Portal into this element instead of `document.body`, e.g. to contain the dialog in a preview. */
+  container?: HTMLElement | null
 }
 
 /** A centered modal panel with overlay, focus trap, and Escape to close. */
@@ -33,10 +35,11 @@ export function DialogContent({
   className,
   children,
   showClose = true,
+  container,
   ...props
 }: DialogContentProps) {
   return (
-    <DialogPrimitive.Portal>
+    <DialogPrimitive.Portal {...(container ? { container } : {})}>
       <DialogOverlay />
       <DialogPrimitive.Content
         className={cn(

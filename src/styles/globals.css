@@ -13,8 +13,12 @@
  * Text pairs (each *-foreground on its fill, muted/status text on
  * background, surface, and muted) must keep a WCAG AA contrast of 4.5:1;
  * tokens.test.ts enforces this for both themes.
+ *
+ * Light is also available as a class, so a region can be light inside a dark
+ * page (the playground preview). Dark already scopes the same way.
  */
-:root {
+:root,
+.light {
   --radius: 0.5rem;
 
   /* Stacking layers, used as z-(--z-header) etc. */
@@ -230,8 +234,12 @@
  * box-shadow) so it survives forced-colors mode.
  */
 @utility focus-ring {
-  /* Ring color and size are set at rest so color transitions never animate the outline in. */
-  outline: 2px none var(--color-ring);
+  /*
+   * Ring color and size are set at rest so color transitions never animate the outline in.
+   * Reads --ring, not --color-ring: the latter is resolved once on :root, so a nested
+   * light or dark scope would keep the page's ring color.
+   */
+  outline: 2px none var(--ring);
   outline-offset: 2px;
 
   &:focus-visible {
@@ -241,7 +249,7 @@
 
 /* For items inside scroll containers, where an outside outline would be clipped. */
 @utility focus-ring-inset {
-  outline: 2px none var(--color-ring);
+  outline: 2px none var(--ring);
   outline-offset: -2px;
 
   &:focus-visible {
@@ -269,6 +277,15 @@
   }
 
   html.dark {
+    color-scheme: dark;
+  }
+
+  /* Native controls and scrollbars follow a scoped theme too. */
+  .light {
+    color-scheme: light;
+  }
+
+  .dark {
     color-scheme: dark;
   }
 

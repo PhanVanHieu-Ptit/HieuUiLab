@@ -44,7 +44,8 @@ export function importPath(entry: ImplementedEntry): string {
   return `@/${entry.installation.targetPath.replace(/\.tsx$/, '')}`
 }
 
-function formatImport(names: readonly string[], from: string): string {
+/** One import statement, wrapped to one name per line when it passes 100 columns. */
+export function formatImport(names: readonly string[], from: string): string {
   const inline = `import { ${names.join(', ')} } from '${from}'`
   if (inline.length <= 100) return inline
   return `import {\n${names.map((name) => `  ${name},`).join('\n')}\n} from '${from}'`
