@@ -148,8 +148,13 @@ export function ProfileForm({ onSubmit, defaultValues, disabled = false }: Profi
   const bio = useWatch({ control, name: 'bio' })
 
   return (
-    <form noValidate onSubmit={submit} aria-label="Edit profile" className="grid w-full gap-6">
-      <fieldset disabled={disabled || pending} className="grid min-w-0 gap-5 sm:grid-cols-2">
+    <form
+      noValidate
+      onSubmit={submit}
+      aria-label="Edit profile"
+      className="@container grid w-full gap-6"
+    >
+      <fieldset disabled={disabled || pending} className="grid min-w-0 gap-5 @xl:grid-cols-2">
         <FormField
           control={control}
           name="displayName"
@@ -234,14 +239,14 @@ export function ProfileForm({ onSubmit, defaultValues, disabled = false }: Profi
           label="Bio"
           description={`${String(bio.length)} of ${String(limits.bioMax)} characters.`}
           required={requiredFields.has('bio')}
-          className="sm:col-span-2"
+          className="@xl:col-span-2"
           render={({ field }) => (
             <FieldControl>
               <Textarea {...field} />
             </FieldControl>
           )}
         />
-        <div className="grid gap-3 sm:col-span-2">
+        <div className="grid gap-3 @xl:col-span-2">
           <FormField
             control={control}
             name="marketingEmails"
@@ -285,14 +290,14 @@ export function ProfileForm({ onSubmit, defaultValues, disabled = false }: Profi
           label="Current password"
           description="Needed to confirm changes to your profile."
           required={requiredFields.has('currentPassword')}
-          className="sm:col-span-2 sm:max-w-[calc(50%-0.625rem)]"
+          className="@xl:col-span-2 @xl:max-w-[calc(50%-0.625rem)]"
           render={({ field }) => (
             <FieldControl>
               <PasswordInput autoComplete="current-password" {...field} />
             </FieldControl>
           )}
         />
-        <div className="flex justify-end sm:col-span-2">
+        <div className="flex justify-end @xl:col-span-2">
           <Button type="submit" loading={pending}>
             {pending ? 'Saving…' : 'Save profile'}
           </Button>

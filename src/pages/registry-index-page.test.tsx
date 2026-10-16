@@ -149,11 +149,15 @@ describe('RegistryIndexPage', () => {
     const user = userEvent.setup()
     const { router } = await renderRoute('/components?q=dashboard')
     const suggestions = screen.getByRole('navigation', { name: 'Search suggestions' })
-    await user.click(within(suggestions).getByRole('link', { name: '1 block matches “dashboard”' }))
+    await user.click(within(suggestions).getByRole('link', { name: '3 blocks match “dashboard”' }))
 
     expect(router.state.location.pathname).toBe('/blocks')
     expect(router.state.location.search).toBe('?q=dashboard')
-    expect(cardTitles('Blocks results')).toEqual(['Orders dashboard'])
+    expect(cardTitles('Blocks results')).toEqual([
+      'Dashboard overview',
+      'Monitoring dashboard',
+      'Orders dashboard',
+    ])
   })
 
   it('opens an entry from its card', async () => {

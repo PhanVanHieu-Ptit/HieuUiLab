@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { nativeFieldClass } from '@/components/site/native-field'
+import { SegmentedControl } from '@/components/site/segmented-control'
 
 import {
   checkNumberDraft,
@@ -15,7 +16,6 @@ import {
   type ControlValues,
 } from '../controls'
 import { DraftField } from './draft-field'
-import { SegmentedControl } from './segmented-control'
 
 interface ControlFieldProps {
   control: ControlDef

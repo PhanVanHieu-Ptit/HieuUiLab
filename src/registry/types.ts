@@ -43,6 +43,11 @@ export interface PreviewConfig {
   layout?: 'centered' | 'fill'
   /** Minimum frame height. */
   height?: 'sm' | 'md' | 'lg'
+  /**
+   * Adds a Full / Tablet / Mobile width switch and keeps the example mounted when the Code tab is
+   * shown. Only container queries follow the chosen width, so use it for examples built with them.
+   */
+  responsive?: boolean
 }
 
 export interface RegistryExample {

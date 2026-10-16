@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import { DemoErrorBoundary } from '@/components/site/demo-error-boundary'
+import { viewportWidthClass } from '@/components/site/preview-viewport'
+import { useHorizontalOverflow } from '@/hooks/use-horizontal-overflow'
 import { cn } from '@/lib/cn'
 
 import type { PlaygroundExample, ResolvedExample, StageHeight } from '../example'
@@ -12,38 +14,10 @@ const heights: Record<StageHeight, string> = {
   lg: 'min-h-[28rem]',
 }
 
-// Written out in full so Tailwind can see them.
-const widths: Record<StageViewport, string> = {
-  full: 'w-full',
-  tablet: 'w-[768px]',
-  mobile: 'w-[375px]',
-}
-
 const themes: Record<StageTheme, string> = {
   site: '',
   light: 'light',
   dark: 'dark',
-}
-
-/** True while the element is wider inside than out, i.e. it scrolls sideways. */
-function useHorizontalOverflow<E extends HTMLElement>() {
-  const ref = useRef<E>(null)
-  const [overflowing, setOverflowing] = useState(false)
-  useEffect(() => {
-    const node = ref.current
-    if (!node) return
-    const update = () => {
-      setOverflowing(node.scrollWidth > node.clientWidth + 1)
-    }
-    update()
-    const observer = new ResizeObserver(update)
-    observer.observe(node)
-    if (node.firstElementChild) observer.observe(node.firstElementChild)
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-  return [ref, overflowing] as const
 }
 
 interface StageFrameProps {
@@ -87,7 +61,7 @@ export function StageFrame({ example, resolved, theme, viewport, generation }: S
             ? 'items-center justify-center-safe'
             : 'flex-col justify-center *:w-full',
           heights[example.height],
-          widths[viewport],
+          viewportWidthClass[viewport],
           themes[theme],
         )}
       >

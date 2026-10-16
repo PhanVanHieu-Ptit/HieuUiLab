@@ -1,10 +1,12 @@
+import { previewViewports, type PreviewViewport } from '@/components/site/preview-viewport'
+
 import { defaultValues, sanitizeValue, type ControlSchema, type ControlValues } from './controls'
 
 /** `site` follows the site's theme; the others force the preview to one theme. */
 export type StageTheme = 'site' | 'light' | 'dark'
 
 /** Width of the preview frame; `full` fills the available width. */
-export type StageViewport = 'full' | 'tablet' | 'mobile'
+export type StageViewport = PreviewViewport
 
 export const stageThemes: readonly { value: StageTheme; label: string }[] = [
   { value: 'site', label: 'Site' },
@@ -12,11 +14,7 @@ export const stageThemes: readonly { value: StageTheme; label: string }[] = [
   { value: 'dark', label: 'Dark' },
 ]
 
-export const stageViewports: readonly { value: StageViewport; label: string; width?: number }[] = [
-  { value: 'full', label: 'Full' },
-  { value: 'tablet', label: 'Tablet', width: 768 },
-  { value: 'mobile', label: 'Mobile', width: 375 },
-]
+export const stageViewports = previewViewports
 
 export const defaultTheme: StageTheme = 'site'
 export const defaultViewport: StageViewport = 'full'
