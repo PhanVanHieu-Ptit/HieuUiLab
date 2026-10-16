@@ -15,7 +15,7 @@ export const ordersDashboardEntry: ImplementedEntry = {
     'An order operations view: metrics derived from the data, a filterable table with bulk actions, a responsive detail panel, notifications, and an activity feed.',
   kind: 'block',
   category: 'data-display',
-  tags: ['composition', 'pagination', 'responsive', 'selection', 'sorting', 'status'],
+  tags: ['composition', 'dashboard', 'pagination', 'responsive', 'selection', 'sorting', 'status'],
   status: 'experimental',
   installation: {
     targetPath: 'components/blocks/orders-dashboard.tsx',

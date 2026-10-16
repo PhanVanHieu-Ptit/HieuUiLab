@@ -3,6 +3,8 @@ import { useId, useMemo, useReducer } from 'react'
 import { Link } from 'react-router'
 
 import { CodeBlock } from '@/components/site/code-block'
+import { previewViewportOptions } from '@/components/site/preview-viewport'
+import { SegmentedControl } from '@/components/site/segmented-control'
 import { Button } from '@/components/ui/button'
 
 import type { PlaygroundExample } from '../example'
@@ -11,18 +13,11 @@ import {
   reduceWorkbench,
   serializeConfiguration,
   stageThemes,
-  stageViewports,
   type WorkbenchAction,
   type WorkbenchState,
 } from '../state'
 import { ControlPanel } from './control-panel'
-import { SegmentedControl } from './segmented-control'
 import { StageFrame } from './stage-frame'
-
-const widthOptions = stageViewports.map(({ value, label, width }) => ({
-  value,
-  label: width === undefined ? label : `${label} ${String(width)}px`,
-}))
 
 const subheading = 'text-sm font-semibold'
 
@@ -69,7 +64,7 @@ export function Workbench({ example }: { example: PlaygroundExample }) {
         />
         <SegmentedControl
           legend="Preview width"
-          options={widthOptions}
+          options={previewViewportOptions}
           value={state.viewport}
           onChange={(viewport) => {
             dispatch({ type: 'viewport', viewport })

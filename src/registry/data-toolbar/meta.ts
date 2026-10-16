@@ -39,7 +39,7 @@ export const dataToolbarEntry: ImplementedEntry = {
     'The toolbar holds no state. Keep the search and filter values in your component (or the URL), filter the data with them, and pass the count back.',
     'Give every filter a value that means “not filtered” (defaultValue); Clear filters is shown only while something differs from it.',
     'Filters apply as soon as they change. For a form that applies on submit, with validation, use Search filter form.',
-    'Every control has a visible label. Controls stack vertically below the sm breakpoint.',
+    'Every control has a visible label. Controls stack vertically while the toolbar is narrower than 36rem; it follows its own width, not the window.',
     'For large data sets, filter with useDeferredValue on the query so typing stays responsive.',
   ],
   api: {

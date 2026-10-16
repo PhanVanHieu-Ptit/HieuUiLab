@@ -53,7 +53,7 @@ export interface DataToolbarProps extends Omit<ComponentProps<'div'>, 'children'
 /**
  * Search, filter selects, a live result count, and an actions slot for a
  * collection. Fully controlled: the toolbar renders state and reports changes;
- * the caller filters the data. Controls stack below `sm`.
+ * the caller filters the data. Controls stack while the toolbar is narrower than 36rem.
  */
 export function DataToolbar({
   search,
@@ -71,10 +71,10 @@ export function DataToolbar({
     filters.some((filter) => filter.value !== filter.defaultValue)
 
   return (
-    <div className={cn('flex flex-col gap-3', className)} {...props}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+    <div className={cn('@container flex flex-col gap-3', className)} {...props}>
+      <div className="flex flex-col gap-3 @xl:flex-row @xl:flex-wrap @xl:items-end">
         {search ? (
-          <div className="flex min-w-0 flex-col gap-1.5 sm:max-w-xs sm:flex-1">
+          <div className="flex min-w-0 flex-col gap-1.5 @xl:max-w-xs @xl:flex-1">
             <Label htmlFor={`${id}-search`}>{search.label}</Label>
             <SearchInput
               id={`${id}-search`}
@@ -90,7 +90,7 @@ export function DataToolbar({
           </div>
         ) : null}
         {filters.map((filter) => (
-          <div key={filter.id} className="flex flex-col gap-1.5 sm:w-40">
+          <div key={filter.id} className="flex flex-col gap-1.5 @xl:w-40">
             <Label htmlFor={`${id}-${filter.id}`}>{filter.label}</Label>
             <Select value={filter.value} onValueChange={filter.onChange}>
               <SelectTrigger id={`${id}-${filter.id}`}>
@@ -107,7 +107,7 @@ export function DataToolbar({
           </div>
         ))}
         {onReset && active ? (
-          <Button variant="ghost" onClick={onReset} className="self-start sm:self-auto">
+          <Button variant="ghost" onClick={onReset} className="self-start @xl:self-auto">
             <X aria-hidden="true" />
             Clear filters
           </Button>

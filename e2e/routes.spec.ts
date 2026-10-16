@@ -8,6 +8,8 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/components/button', 'Button', 'Button · Hieu UI Lab'],
   ['/blocks', 'Blocks', 'Blocks · Hieu UI Lab'],
   ['/blocks/resource-list', 'Resource list', 'Resource list · Hieu UI Lab'],
+  ['/blocks/sign-in-page', 'Sign-in page', 'Sign-in page · Hieu UI Lab'],
+  ['/blocks/monitoring-dashboard', 'Monitoring dashboard', 'Monitoring dashboard · Hieu UI Lab'],
   ['/components/tooltip', 'Tooltip', 'Tooltip · Hieu UI Lab'],
   ['/templates', 'Templates', 'Templates · Hieu UI Lab'],
   ['/playground', 'Playground', 'Playground · Hieu UI Lab'],

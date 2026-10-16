@@ -13,6 +13,7 @@ export const registryCategories = {
   layout: { label: 'Layout', description: 'Surfaces and dividers that structure content.' },
   'data-display': { label: 'Data display', description: 'Labels, keys, and collections of data.' },
   inputs: { label: 'Inputs', description: 'Controls that collect values from the user.' },
+  pages: { label: 'Pages', description: 'Full page layouts assembled from the registry.' },
 } as const satisfies Record<string, { label: string; description: string }>
 
 export type RegistryCategory = keyof typeof registryCategories
@@ -23,7 +24,10 @@ export const registryCategoryIds = Object.keys(registryCategories) as RegistryCa
 export const registryTags = [
   'a11y',
   'async',
+  'auth',
+  'charts',
   'composition',
+  'dashboard',
   'focus-trap',
   'form',
   'keyboard',
@@ -38,6 +42,7 @@ export const registryTags = [
   'status',
   'validation',
   'variants',
+  'wizard',
 ] as const
 
 export type RegistryTag = (typeof registryTags)[number]
