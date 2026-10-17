@@ -1,5 +1,6 @@
 import { experimentKinds, experimentKindHref } from '@/content/experiments'
-import { getRegistryEntries, registryHref } from '@/registry'
+import { templateBlocks, templateHref, templates } from '@/content/templates'
+import { getRegistryEntries, getRegistryEntry, registryHref } from '@/registry'
 import { registryCategories } from '@/registry/taxonomy'
 import type { RegistryKind, RegistryStatus } from '@/registry/types'
 
@@ -14,8 +15,11 @@ export interface NavItem {
   label?: string
   /** Also mark the item active on nested routes, e.g. a section on its detail pages. */
   matchNested?: boolean
-  /** Hide from the header below `lg`, where it would crowd the bar. Still in the drawer and footer. */
-  headerFromLg?: boolean
+  /**
+   * Hide from the header below this breakpoint, where it would crowd the bar. Still in the drawer
+   * and footer.
+   */
+  headerFrom?: 'lg' | 'xl'
   /** Extra terms the search palette matches, e.g. a registry entry's category and tags. */
   keywords?: readonly string[]
 }
@@ -55,6 +59,11 @@ export const sections = {
     description:
       'Components composed into patterns, with loading, empty, error, and success states handled.',
   },
+  templates: {
+    title: 'Templates',
+    description:
+      'Example apps built by combining the lab’s blocks: each one runs in the page, with invented data, and shows the source it is made from.',
+  },
   labs: {
     title: 'Labs',
     heading: 'Geospatial and 3D experiments',
@@ -69,9 +78,9 @@ export const sections = {
   },
   projects: {
     title: 'Projects',
-    heading: 'Engineering case studies',
+    heading: 'Projects and case studies',
     description:
-      'How parts of this lab were designed, built, and verified — the context, the approach, and the trade-offs that remain.',
+      'Public projects with their source, what each one set out to solve, the decisions behind it, and its known limits, followed by deeper case studies of parts of this lab.',
   },
   docs: {
     title: 'Docs',
@@ -89,11 +98,17 @@ export const sections = {
 export const mainNav: readonly NavItem[] = [
   { title: 'Components', href: '/components' },
   { title: 'Blocks', href: '/blocks' },
+  {
+    title: 'Templates',
+    href: '/templates',
+    description: 'Example apps built from the blocks.',
+    headerFrom: 'lg',
+  },
   { title: 'Labs', href: '/labs', description: 'Geospatial and 3D experiments.' },
-  { title: 'Projects', href: '/projects', description: 'Engineering case studies.' },
+  { title: 'Projects', href: '/projects', description: 'Projects and case studies.' },
   { title: 'Notes', href: '/notes', description: 'Short technical write-ups.' },
   { title: 'Docs', href: '/docs' },
-  { title: 'About', href: '/about', description: 'What the lab is.', headerFromLg: true },
+  { title: 'About', href: '/about', description: 'What the lab is.', headerFrom: 'xl' },
 ]
 
 function registryNavItems(kind: RegistryKind): NavItem[] {
@@ -103,6 +118,21 @@ function registryNavItems(kind: RegistryKind): NavItem[] {
     description: entry.description,
     status: entry.status,
     keywords: [registryCategories[entry.category].label, ...entry.tags],
+  }))
+}
+
+function templateNavItems(): NavItem[] {
+  return templates.map((template) => ({
+    title: template.title,
+    href: templateHref(template),
+    description: template.summary,
+    status: template.status,
+    keywords: [
+      'template',
+      'example app',
+      ...template.tags,
+      ...templateBlocks(template).map((slug) => getRegistryEntry(slug, 'block')?.name ?? slug),
+    ],
   }))
 }
 
@@ -144,6 +174,19 @@ export const docsNav: readonly NavSection[] = [
     items: registryNavItems('block'),
   },
   {
+    title: 'Templates',
+    href: '/templates',
+    items: [
+      {
+        title: 'All templates',
+        href: '/templates',
+        description: sections.templates.description,
+        keywords: ['example apps', 'gallery'],
+      },
+      ...templateNavItems(),
+    ],
+  },
+  {
     title: 'Tools',
     items: [
       {
@@ -152,17 +195,6 @@ export const docsNav: readonly NavSection[] = [
         description:
           'Try Button, Input, Badge, Dialog, and Data table with typed controls, a light or dark preview, and a chosen width. Pre-defined examples only; it is not a code editor.',
         keywords: ['controls', 'props', 'sandbox', 'preview', 'theme', 'viewport'],
-      },
-    ],
-  },
-  {
-    title: 'Planned',
-    items: [
-      {
-        title: 'Templates',
-        href: '/templates',
-        description: 'Full pages composed from the registry’s blocks and components.',
-        status: 'planned',
       },
     ],
   },

@@ -25,7 +25,10 @@ describe('MobileNav', () => {
       ['Projects', '/projects'],
       ['Notes', '/notes'],
       ['About', '/about'],
-      [/^Templates/, '/templates'],
+      ['All templates', '/templates'],
+      [/^Admin dashboard/, '/templates/admin-dashboard'],
+      [/^Operations monitoring/, '/templates/operations-monitoring'],
+      [/^Data management workspace/, '/templates/data-management-workspace'],
       [/^Playground/, '/playground'],
     ] as const) {
       expect(within(nav).getByRole('link', { name })).toHaveAttribute('href', href)

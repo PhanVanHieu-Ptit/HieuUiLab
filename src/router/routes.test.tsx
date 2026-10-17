@@ -3,10 +3,12 @@ import { describe, expect, it } from 'vitest'
 
 import { getNote } from '@/content/notes'
 import { getProject } from '@/content/projects'
+import { getTemplate } from '@/content/templates'
 import { renderRoute } from '@/test/render'
 
 const note = getNote('theme-without-flash')
 const project = getProject('contrast-tested-design-system')
+const template = getTemplate('admin-dashboard')
 
 /** Every required route, with its expected page title (before " · Hieu UI Lab"). */
 const requiredRoutes: readonly [path: string, title: string | null][] = [
@@ -16,6 +18,9 @@ const requiredRoutes: readonly [path: string, title: string | null][] = [
   ['/blocks', 'Blocks'],
   ['/blocks/resource-list', 'Resource list'],
   ['/templates', 'Templates'],
+  ['/templates/admin-dashboard', 'Admin dashboard'],
+  ['/templates/operations-monitoring', 'Operations monitoring'],
+  ['/templates/data-management-workspace', 'Data management workspace'],
   ['/playground', 'Playground'],
   ['/labs', 'Labs'],
   ['/labs/maps', 'Maps'],
@@ -64,6 +69,7 @@ describe('breadcrumbs', () => {
     ['/notes/theme-without-flash', ['Home', 'Notes'], note?.title],
     ['/docs/installation', ['Home', 'Docs'], 'Installation'],
     ['/blocks/empty-state', ['Home', 'Blocks', 'Feedback'], 'Empty state'],
+    ['/templates/operations-monitoring', ['Home', 'Templates'], 'Operations monitoring'],
     ['/about', ['Home'], 'About'],
   ] as const)('%s follows the URL', async (path, links, current) => {
     await renderRoute(path)
@@ -82,25 +88,47 @@ describe('breadcrumbs', () => {
   })
 })
 
-describe('planned routes', () => {
-  it.each(['/templates'])(
-    '%s is labelled as planned and kept out of search indexes',
-    async (path) => {
-      await renderRoute(path)
-      const main = screen.getByRole('main')
-      expect(within(main).getByText('Planned')).toBeInTheDocument()
-      expect(
-        within(main).getByRole('heading', { level: 2, name: 'Not implemented yet' }),
-      ).toBeInTheDocument()
-      await waitFor(() => {
-        expect(metaContent('meta[name="robots"]')).toBe('noindex')
-      })
-      const sidebar = screen.getByRole('navigation', { name: 'Registry' })
-      expect(
-        within(sidebar).getByRole('link', { name: /Planned$/, current: 'page' }),
-      ).toHaveAttribute('href', path)
-    },
-  )
+describe('the templates routes', () => {
+  it('are built pages: indexable, not labelled planned, and current in the sidebar', async () => {
+    await renderRoute('/templates')
+    const main = screen.getByRole('main')
+    expect(within(main).getByRole('heading', { level: 1, name: 'Templates' })).toBeInTheDocument()
+    expect(within(main).queryByText('Planned')).toBeNull()
+    expect(within(main).queryByText('Not implemented yet')).toBeNull()
+    await waitFor(() => {
+      expect(document.title).toBe('Templates · Hieu UI Lab')
+    })
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+    const sidebar = screen.getByRole('navigation', { name: 'Registry' })
+    expect(
+      within(sidebar).getByRole('link', { name: 'All templates', current: 'page' }),
+    ).toHaveAttribute('href', '/templates')
+  })
+
+  it('describe a template with its own summary and mark it in the sidebar', async () => {
+    await renderRoute('/templates/admin-dashboard')
+    await waitFor(() => {
+      expect(metaContent('meta[name="description"]')).toBe(template?.summary)
+    })
+    expect(document.head.querySelector('meta[name="robots"]')).toBeNull()
+    const sidebar = screen.getByRole('navigation', { name: 'Registry' })
+    expect(
+      within(sidebar).getByRole('link', { name: /^Admin dashboard/, current: 'page' }),
+    ).toHaveAttribute('href', '/templates/admin-dashboard')
+    expect(within(sidebar).getByRole('link', { name: 'All templates' })).not.toHaveAttribute(
+      'aria-current',
+    )
+  })
+
+  it('keep Templates active in the header on a template page', async () => {
+    await renderRoute('/templates/data-management-workspace')
+    const header = screen.getByRole('navigation', { name: 'Main' })
+    expect(within(header).getByRole('link', { name: 'Templates' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    expect(within(header).getByRole('link', { name: 'Blocks' })).not.toHaveAttribute('aria-current')
+  })
 })
 
 describe('the playground route', () => {
@@ -125,6 +153,7 @@ describe('invalid URLs', () => {
   it.each([
     ['/components/nope', 'Components'],
     ['/blocks/nope', 'Blocks'],
+    ['/templates/nope', 'Templates'],
     ['/notes/nope', 'Notes'],
     ['/projects/nope', 'Projects'],
     ['/labs/nope', 'Labs'],

@@ -41,6 +41,9 @@ const routes = [
   '/docs/installation',
   '/docs/architecture',
   '/templates',
+  '/templates/admin-dashboard',
+  '/templates/operations-monitoring',
+  '/templates/data-management-workspace',
   '/playground',
   '/labs',
   '/labs/maps',
@@ -49,6 +52,9 @@ const routes = [
   '/labs/3d/webgl-scene',
   '/projects',
   '/projects/contrast-tested-design-system',
+  '/projects/hieu-ui-lab-platform',
+  '/projects/hieu-ui-lab-component-library',
+  '/projects/geospatial-3d-experiments',
   '/notes',
   '/notes/theme-without-flash',
   '/about',
@@ -72,6 +78,8 @@ test.describe('responsive layout', () => {
   for (const viewport of viewports) {
     for (const theme of themes) {
       test(`${viewport.name} ${theme}: no horizontal overflow`, async ({ page }) => {
+        // Every documented route is loaded in turn, so the default 30 seconds is not enough.
+        test.setTimeout(180_000)
         await page.setViewportSize(viewport)
         await useTheme(page, theme)
         for (const route of routes) {
@@ -91,6 +99,43 @@ test.describe('responsive layout', () => {
       })
     }
   }
+
+  test('the header fits at every width, and shows only the links that fit', async ({ page }) => {
+    // Templates joins the bar from `lg` and About from `xl`; below `md` the drawer holds them all.
+    const widths = [
+      { width: 768, templates: false, about: false },
+      { width: 900, templates: false, about: false },
+      { width: 1024, templates: true, about: false },
+      { width: 1100, templates: true, about: false },
+      { width: 1279, templates: true, about: false },
+      { width: 1280, templates: true, about: true },
+      { width: 1440, templates: true, about: true },
+    ]
+    for (const { width, templates, about } of widths) {
+      await page.setViewportSize({ width, height: 800 })
+      await page.goto('/')
+      const nav = page.getByRole('navigation', { name: 'Main' })
+      await expect(nav.getByRole('link', { name: 'Components' })).toBeVisible()
+      await expect(
+        nav.getByRole('link', { name: 'Templates' }),
+        `Templates at ${String(width)}`,
+      ).toBeVisible({ visible: templates })
+      await expect(
+        nav.getByRole('link', { name: 'About' }),
+        `About at ${String(width)}`,
+      ).toBeVisible({ visible: about })
+
+      const overflow = await page.evaluate(() => {
+        const bar = document.querySelector('header > div')
+        return bar ? bar.scrollWidth - bar.clientWidth : -1
+      })
+      expect(overflow, `header overflow at ${String(width)}`).toBeLessThanOrEqual(0)
+      expect(
+        await horizontalOverflow(page),
+        `page overflow at ${String(width)}`,
+      ).toBeLessThanOrEqual(0)
+    }
+  })
 
   test('mobile hides the sidebar and header nav; desktop shows them', async ({ page }) => {
     await page.setViewportSize(viewports[0])
@@ -197,6 +242,7 @@ test.describe('keyboard and focus', () => {
       'Hieu UI Lab',
       'Components',
       'Blocks',
+      'Templates',
       'Labs',
       'Projects',
       'Notes',
@@ -235,7 +281,16 @@ test.describe('keyboard and focus', () => {
 
   test('every main nav item navigates to a page with its own heading', async ({ page }) => {
     await page.setViewportSize(viewports[2])
-    for (const name of ['Components', 'Blocks', 'Labs', 'Projects', 'Notes', 'Docs', 'About']) {
+    for (const name of [
+      'Components',
+      'Blocks',
+      'Templates',
+      'Labs',
+      'Projects',
+      'Notes',
+      'Docs',
+      'About',
+    ]) {
       await page.goto('/')
       await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name }).click()
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()

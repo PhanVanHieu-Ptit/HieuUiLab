@@ -1,15 +1,13 @@
 import { FlaskConical } from 'lucide-react'
-import { Suspense } from 'react'
 import { useLoaderData, useRouteLoaderData } from 'react-router'
 
 import { EmptyState } from '@/components/blocks/empty-state'
 import { LandingSection } from '@/components/landing/landing-section'
 import { ContentSections } from '@/components/site/content-article'
 import { ExperimentCard } from '@/components/site/content-cards'
-import { DemoErrorBoundary } from '@/components/site/demo-error-boundary'
+import { DemoSlot } from '@/components/site/demo-slot'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/site/page'
 import { StatusBadge } from '@/components/site/status-badge'
-import { Spinner } from '@/components/ui/spinner'
 import { sections } from '@/config/site'
 import {
   experimentKindHref,
@@ -18,7 +16,6 @@ import {
   type ExperimentKindInfo,
 } from '@/content/experiments'
 import type { Experiment } from '@/content/types'
-import { labDemos } from '@/lab'
 import { LAB_KIND_ROUTE_ID } from '@/router/loaders'
 
 function ExperimentList({
@@ -84,17 +81,8 @@ export function LabCategoryPage() {
   )
 }
 
-function DemoFallback() {
-  return (
-    <div className="flex aspect-video w-full items-center justify-center rounded-lg border bg-muted/40">
-      <Spinner label="Loading experiment" />
-    </div>
-  )
-}
-
 export function LabDetailPage() {
   const experiment = useLoaderData<Experiment>()
-  const Demo = labDemos[experiment.slug]
 
   return (
     <PageContainer className="pt-6 pb-section">
@@ -108,19 +96,7 @@ export function LabDetailPage() {
 
         <section aria-labelledby="demo" className="flex flex-col gap-4">
           <SectionHeader id="demo" title="Live demo" anchorLabel="Live demo" />
-          {Demo ? (
-            <DemoErrorBoundary>
-              <Suspense fallback={<DemoFallback />}>
-                <Demo />
-              </Suspense>
-            </DemoErrorBoundary>
-          ) : (
-            <EmptyState
-              icon={<FlaskConical />}
-              title="Demo not available yet"
-              description="This experiment is documented but its interactive demo has not been built."
-            />
-          )}
+          <DemoSlot slug={experiment.slug} />
         </section>
 
         <section aria-labelledby="demonstrates" className="flex flex-col gap-4">
