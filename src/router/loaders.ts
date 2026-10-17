@@ -7,7 +7,8 @@ import {
   getExperimentKind,
 } from '@/content/experiments'
 import { getNote } from '@/content/notes'
-import { getProject } from '@/content/projects'
+import { getProjectEntry } from '@/content/project-entries'
+import { getTemplate } from '@/content/templates'
 import { getRegistryEntry, registry, registryHref } from '@/registry'
 import { suggestEntries } from '@/registry/catalog'
 import type { RegistryKind } from '@/registry/types'
@@ -36,7 +37,11 @@ export function noteLoader({ params }: LoaderFunctionArgs) {
 }
 
 export function projectLoader({ params }: LoaderFunctionArgs) {
-  return getProject(slugParam(params)) ?? notFound()
+  return getProjectEntry(slugParam(params)) ?? notFound()
+}
+
+export function templateLoader({ params }: LoaderFunctionArgs) {
+  return getTemplate(slugParam(params)) ?? notFound()
 }
 
 /**

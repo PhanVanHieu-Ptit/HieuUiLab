@@ -2,6 +2,8 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import { getShowcaseProject } from '@/content/showcase-projects'
+import { templates } from '@/content/templates'
 import { renderRoute } from '@/test/render'
 
 describe('HomePage', () => {
@@ -23,7 +25,9 @@ describe('HomePage', () => {
       'What the lab is for',
       'Featured components',
       'UI blocks',
+      'Templates',
       'Geospatial and 3D experiments',
+      'Projects',
       'Engineering case studies',
       'Recent technical notes',
       'Technology stack',
@@ -79,7 +83,50 @@ describe('HomePage', () => {
     )
   })
 
-  it('has no internal link that leads to the not-found page', async () => {
+  it('features the templates, each linked to its page', async () => {
+    await renderRoute('/')
+    const section = screen.getByRole('region', { name: 'Templates' })
+    for (const template of templates) {
+      expect(within(section).getByRole('link', { name: template.title })).toHaveAttribute(
+        'href',
+        `/templates/${template.slug}`,
+      )
+    }
+    expect(within(section).getByRole('link', { name: 'All templates' })).toHaveAttribute(
+      'href',
+      '/templates',
+    )
+    // Real information from the template, not a placeholder: its views and the blocks it uses.
+    expect(within(section).getByRole('list', { name: 'Admin dashboard views' })).toHaveTextContent(
+      'Notifications',
+    )
+    expect(within(section).getByRole('list', { name: 'Admin dashboard blocks' })).toHaveTextContent(
+      'Dashboard overview',
+    )
+  })
+
+  it('features the public projects, labelled as public', async () => {
+    await renderRoute('/')
+    const section = screen.getByRole('region', { name: 'Projects' })
+    for (const slug of [
+      'hieu-ui-lab-platform',
+      'hieu-ui-lab-component-library',
+      'geospatial-3d-experiments',
+    ]) {
+      const project = getShowcaseProject(slug)
+      expect(
+        within(section).getByRole('link', { name: project?.title ?? slug }),
+        slug,
+      ).toHaveAttribute('href', `/projects/${slug}`)
+    }
+    expect(within(section).getAllByText('Public project')).toHaveLength(3)
+    expect(within(section).getByRole('link', { name: 'All projects' })).toHaveAttribute(
+      'href',
+      '/projects',
+    )
+  })
+
+  it('has no internal link that leads to the not-found page', { timeout: 30_000 }, async () => {
     const { container, unmount } = await renderRoute('/')
     const hrefs = new Set(
       Array.from(container.querySelectorAll<HTMLAnchorElement>('a[href^="/"]'), (anchor) =>

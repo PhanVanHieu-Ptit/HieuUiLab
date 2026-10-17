@@ -13,6 +13,12 @@ import { ThemeMenu } from './theme-menu'
 
 const isApple = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent)
 
+// Literal class names, so Tailwind can see them.
+const headerFromClass = {
+  lg: 'hidden lg:inline-flex',
+  xl: 'hidden xl:inline-flex',
+} as const
+
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   cn(
     'inline-flex h-8 items-center rounded-md px-2.5 text-sm focus-ring transition-colors',
@@ -48,7 +54,7 @@ export function SiteHeader({ onOpenSearch }: { onOpenSearch: () => void }) {
                 key={item.href}
                 to={item.href}
                 className={(state) =>
-                  cn(navLinkClass(state), item.headerFromLg && 'hidden lg:inline-flex')
+                  cn(navLinkClass(state), item.headerFrom && headerFromClass[item.headerFrom])
                 }
               >
                 {item.title}

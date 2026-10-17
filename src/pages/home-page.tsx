@@ -1,4 +1,4 @@
-import { Briefcase, NotebookPen } from 'lucide-react'
+import { Briefcase, LayoutTemplate, NotebookPen } from 'lucide-react'
 
 import { EmptyState } from '@/components/blocks/empty-state'
 import { CapabilityGrid } from '@/components/landing/capability-grid'
@@ -6,17 +6,28 @@ import { LandingHero } from '@/components/landing/hero'
 import { LandingSection } from '@/components/landing/landing-section'
 import { RegistryShowcase } from '@/components/landing/registry-showcase'
 import { TechStackList } from '@/components/landing/tech-stack-list'
-import { ExperimentCard, NoteCard, ProjectCard } from '@/components/site/content-cards'
+import {
+  ExperimentCard,
+  NoteCard,
+  ProjectCard,
+  ShowcaseProjectCard,
+  TemplateCard,
+} from '@/components/site/content-cards'
 import { PageContainer } from '@/components/site/page'
 import { experiments } from '@/content/experiments'
 import {
   featuredBlockSlugs,
   featuredComponentSlugs,
   featuredProjectSlugs,
+  featuredShowcaseSlugs,
+  featuredTemplateSlugs,
   recentNotesCount,
 } from '@/content/landing'
 import { notes } from '@/content/notes'
 import { getProject } from '@/content/projects'
+import { getShowcaseProject } from '@/content/showcase-projects'
+import type { ShowcaseProject } from '@/content/showcase-types'
+import { getTemplate, type Template } from '@/content/templates'
 import type { Project } from '@/content/types'
 import { cities } from '@/lab/map-projections/cities'
 import { MapSvg } from '@/lab/map-projections/map-svg'
@@ -28,6 +39,12 @@ export function HomePage() {
   const featuredProjects = featuredProjectSlugs
     .map((slug) => getProject(slug))
     .filter((project): project is Project => project !== undefined)
+  const featuredTemplates = featuredTemplateSlugs
+    .map((slug) => getTemplate(slug))
+    .filter((template): template is Template => template !== undefined)
+  const featuredShowcase = featuredShowcaseSlugs
+    .map((slug) => getShowcaseProject(slug))
+    .filter((project): project is ShowcaseProject => project !== undefined)
   const recentNotes = notes.slice(0, recentNotesCount)
 
   return (
@@ -65,6 +82,29 @@ export function HomePage() {
       </LandingSection>
 
       <LandingSection
+        id="templates"
+        title="Templates"
+        description="Example apps built by combining the blocks. Each one runs in the page with invented data, and shows the source it is made from."
+        more={{ label: 'All templates', href: '/templates' }}
+      >
+        {featuredTemplates.length === 0 ? (
+          <EmptyState
+            icon={<LayoutTemplate />}
+            title="No templates yet"
+            description="Templates appear here once they run in the browser."
+          />
+        ) : (
+          <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {featuredTemplates.map((template) => (
+              <li key={template.slug} className="flex">
+                <TemplateCard template={template} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </LandingSection>
+
+      <LandingSection
         id="lab"
         title="Geospatial and 3D experiments"
         description="Maps and graphics written from first principles, without a map or 3D library."
@@ -84,6 +124,29 @@ export function HomePage() {
             </li>
           ))}
         </ul>
+      </LandingSection>
+
+      <LandingSection
+        id="projects"
+        title="Projects"
+        description="Public projects with their source: what each set out to solve, the decisions behind it, and where it falls short."
+        more={{ label: 'All projects', href: '/projects' }}
+      >
+        {featuredShowcase.length === 0 ? (
+          <EmptyState
+            icon={<Briefcase />}
+            title="No projects yet"
+            description="Projects are published once their source and demos are public."
+          />
+        ) : (
+          <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {featuredShowcase.map((project) => (
+              <li key={project.slug} className="flex">
+                <ShowcaseProjectCard project={project} />
+              </li>
+            ))}
+          </ul>
+        )}
       </LandingSection>
 
       <LandingSection

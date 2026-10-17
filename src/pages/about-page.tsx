@@ -10,6 +10,8 @@ import { docsNav, sections, siteConfig } from '@/config/site'
 import { experiments } from '@/content/experiments'
 import { notes } from '@/content/notes'
 import { projects } from '@/content/projects'
+import { showcaseProjects } from '@/content/showcase-projects'
+import { templates } from '@/content/templates'
 import { getRegistryEntries } from '@/registry'
 import { isImplemented, type RegistryKind, type RegistryStatus } from '@/registry/types'
 
@@ -43,12 +45,23 @@ const inventory = [
   implementedInventory('Components', '/components', 'component'),
   implementedInventory('Blocks', '/blocks', 'block'),
   {
+    title: 'Templates',
+    href: '/templates',
+    detail: statusSummary(templates.map((template) => template.status)),
+    count: templates.length,
+  },
+  {
     title: 'Experiments',
     href: '/labs',
     detail: statusSummary(experiments.map((experiment) => experiment.status)),
     count: experiments.length,
   },
-  { title: 'Case studies', href: '/projects', detail: '', count: projects.length },
+  {
+    title: 'Projects',
+    href: '/projects',
+    detail: `${String(showcaseProjects.length)} public, ${String(projects.length)} case studies`,
+    count: showcaseProjects.length + projects.length,
+  },
   { title: 'Notes', href: '/notes', detail: '', count: notes.length },
 ]
 
@@ -69,8 +82,8 @@ export function AboutPage() {
         <SectionHeader id="what-it-is" title="What it is" anchorLabel="What it is" />
         <p className="leading-7 text-pretty">
           A personal UI registry and frontend engineering lab: reusable React components with live
-          previews, copyable source, props documentation, and tests, alongside experiments with maps
-          and 3D graphics and write-ups of how they were built.
+          previews, copyable source, props documentation, and tests, example apps built from them,
+          and experiments with maps and 3D graphics, alongside write-ups of how they were built.
         </p>
         <p className="leading-7 text-pretty">
           There is no package to install. Each entry is a single file you copy into your own
@@ -84,7 +97,7 @@ export function AboutPage() {
 
       <section aria-labelledby="whats-here" className="flex flex-col gap-4">
         <SectionHeader id="whats-here" title="What’s here" anchorLabel="What’s here" />
-        <dl className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-5">
+        <dl className="grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 lg:grid-cols-6">
           {inventory.map((item) => (
             <div key={item.title} className="flex flex-col gap-1 bg-surface p-4">
               <dt className="text-sm text-muted-foreground">

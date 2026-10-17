@@ -60,7 +60,7 @@ describe('Project pages', () => {
   it('lists case studies and opens one', async () => {
     await renderRoute('/projects')
     expect(
-      screen.getByRole('heading', { level: 1, name: 'Engineering case studies' }),
+      screen.getByRole('heading', { level: 1, name: 'Projects and case studies' }),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'A contrast-tested design system' })).toHaveAttribute(
       'href',

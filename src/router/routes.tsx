@@ -6,10 +6,11 @@ import { RouteFallback } from '@/components/site/route-fallback'
 import { SiteLayout } from '@/components/site/site-layout'
 import { findDocsNavItem, sections, siteConfig } from '@/config/site'
 import type { ExperimentKindInfo } from '@/content/experiments'
-import type { Experiment, Note, Project } from '@/content/types'
+import type { ProjectEntry } from '@/content/project-entries'
+import type { Template } from '@/content/templates'
+import type { Experiment, Note } from '@/content/types'
 import { HomePage } from '@/pages/home-page'
 import { NotFoundPage, RootErrorPage, RouteErrorPage } from '@/pages/not-found-page'
-import { PlannedPage } from '@/pages/planned-page'
 import { RegistryIndexPage } from '@/pages/registry-index-page'
 import { catalogHref } from '@/registry'
 import { registryCategories } from '@/registry/taxonomy'
@@ -23,6 +24,7 @@ import {
   noteLoader,
   projectLoader,
   registryLoader,
+  templateLoader,
 } from './loaders'
 import { metaFromData, type PageMeta, type RouteHandle } from './meta'
 
@@ -49,6 +51,7 @@ const docsInstallation = () => import('@/pages/docs-installation-page')
 const docsArchitecture = () => import('@/pages/docs-architecture-page')
 const docsTheming = () => import('@/pages/docs-theming-page')
 const registryDetail = () => import('@/pages/registry-detail-page')
+const templatePages = () => import('@/pages/template-pages')
 const playgroundPage = () => import('@/pages/playground-page')
 const labPages = () => import('@/pages/lab-pages')
 const notePages = () => import('@/pages/note-pages')
@@ -160,8 +163,24 @@ export function createRoutes(): RouteObject[] {
                 },
                 {
                   path: 'templates',
-                  handle: docsHandle('/templates'),
-                  element: <PlannedPage href="/templates" />,
+                  handle: sectionHandle(sections.templates),
+                  children: [
+                    {
+                      index: true,
+                      lazy: { Component: async () => (await templatePages()).TemplatesIndexPage },
+                    },
+                    {
+                      path: ':slug',
+                      loader: templateLoader,
+                      handle: handle(
+                        metaFromData<Template>((template) => ({
+                          title: template.title,
+                          description: template.summary,
+                        })),
+                      ),
+                      lazy: { Component: async () => (await templatePages()).TemplateDetailPage },
+                    },
+                  ],
                 },
                 {
                   path: 'playground',
@@ -230,7 +249,7 @@ export function createRoutes(): RouteObject[] {
                       path: ':slug',
                       loader: projectLoader,
                       handle: handle(
-                        metaFromData<Project>((project) => ({
+                        metaFromData<ProjectEntry>(({ project }) => ({
                           title: project.title,
                           description: project.summary,
                         })),

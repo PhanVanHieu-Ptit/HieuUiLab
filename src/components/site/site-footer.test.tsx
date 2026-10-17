@@ -21,6 +21,7 @@ describe('SiteFooter', () => {
     for (const [name, href] of [
       ['Components', '/components'],
       ['Blocks', '/blocks'],
+      ['Templates', '/templates'],
       ['Labs', '/labs'],
       ['Projects', '/projects'],
       ['Notes', '/notes'],

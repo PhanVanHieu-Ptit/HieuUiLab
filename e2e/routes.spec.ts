@@ -12,6 +12,17 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/blocks/monitoring-dashboard', 'Monitoring dashboard', 'Monitoring dashboard · Hieu UI Lab'],
   ['/components/tooltip', 'Tooltip', 'Tooltip · Hieu UI Lab'],
   ['/templates', 'Templates', 'Templates · Hieu UI Lab'],
+  ['/templates/admin-dashboard', 'Admin dashboard', 'Admin dashboard · Hieu UI Lab'],
+  [
+    '/templates/operations-monitoring',
+    'Operations monitoring',
+    'Operations monitoring · Hieu UI Lab',
+  ],
+  [
+    '/templates/data-management-workspace',
+    'Data management workspace',
+    'Data management workspace · Hieu UI Lab',
+  ],
   ['/playground', 'Playground', 'Playground · Hieu UI Lab'],
   ['/labs', 'Geospatial and 3D experiments', 'Labs · Hieu UI Lab'],
   ['/labs/maps', 'Maps', 'Maps · Hieu UI Lab'],
@@ -21,7 +32,22 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/docs/architecture', 'Architecture', 'Architecture · Hieu UI Lab'],
   ['/notes', 'Technical notes', 'Notes · Hieu UI Lab'],
   ['/notes/theme-without-flash', /.+/, ' · Hieu UI Lab'],
-  ['/projects', 'Engineering case studies', 'Projects · Hieu UI Lab'],
+  ['/projects', 'Projects and case studies', 'Projects · Hieu UI Lab'],
+  [
+    '/projects/hieu-ui-lab-platform',
+    'Hieu UI Lab: a documentation site built on one typed registry',
+    'Hieu UI Lab: a documentation site built on one typed registry · Hieu UI Lab',
+  ],
+  [
+    '/projects/hieu-ui-lab-component-library',
+    'Hieu UI Lab component library and design system',
+    'Hieu UI Lab component library and design system · Hieu UI Lab',
+  ],
+  [
+    '/projects/geospatial-3d-experiments',
+    'Map projections and a WebGL scene, written from first principles',
+    'Map projections and a WebGL scene, written from first principles · Hieu UI Lab',
+  ],
   [
     '/projects/contrast-tested-design-system',
     'A contrast-tested design system',
@@ -86,6 +112,8 @@ test('back and forward restore the page, title, and scroll position', async ({ p
 test.describe('invalid URLs', () => {
   for (const [path, section] of [
     ['/components/nope', 'Components'],
+    ['/templates/nope', 'Templates'],
+    ['/projects/nope', 'Projects'],
     ['/notes/nope', 'Notes'],
     ['/labs/maps/nope', 'Maps'],
   ] as const) {
@@ -119,14 +147,24 @@ test.describe('mobile navigation', () => {
     await page.setViewportSize({ width: 360, height: 740 })
   })
 
-  test('the drawer lists every section and marks planned ones', async ({ page }) => {
+  test('the drawer lists every section, the templates, and marks planned ones', async ({
+    page,
+  }) => {
     await page.goto('/')
     await page.getByRole('button', { name: 'Open navigation' }).click()
     const drawer = page.getByRole('dialog', { name: 'Hieu UI Lab' })
     for (const name of ['Installation', 'Architecture', 'All experiments', 'Maps', '3D', 'About']) {
       await expect(drawer.getByRole('link', { name, exact: true })).toBeVisible()
     }
-    await expect(drawer.getByRole('link', { name: 'Templates Planned' })).toBeVisible()
+    for (const name of [
+      'All templates',
+      'Admin dashboard Experimental',
+      'Operations monitoring Experimental',
+      'Data management workspace Experimental',
+    ]) {
+      await expect(drawer.getByRole('link', { name, exact: true })).toBeVisible()
+    }
+    await expect(drawer.getByRole('link', { name: 'Combobox Planned' })).toBeVisible()
     // Built, so it carries no "Planned" label.
     await expect(drawer.getByRole('link', { name: 'Playground', exact: true })).toBeVisible()
   })

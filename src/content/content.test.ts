@@ -9,10 +9,14 @@ import {
   featuredBlockSlugs,
   featuredComponentSlugs,
   featuredProjectSlugs,
+  featuredShowcaseSlugs,
+  featuredTemplateSlugs,
 } from './landing'
 import { notes } from './notes'
 import { getProject, projects } from './projects'
+import { getShowcaseProject, showcaseProjects } from './showcase-projects'
 import { techStack } from './tech-stack'
+import { getTemplate, templates } from './templates'
 
 function expectUnique(values: readonly string[]) {
   expect(new Set(values).size).toBe(values.length)
@@ -23,6 +27,9 @@ describe('content', () => {
     expectUnique(notes.map((note) => note.slug))
     expectUnique(projects.map((project) => project.slug))
     expectUnique(experiments.map((experiment) => experiment.slug))
+    expectUnique(templates.map((template) => template.slug))
+    // /projects/:slug serves both, so a project and a case study can never share a slug.
+    expectUnique([...projects, ...showcaseProjects].map((project) => project.slug))
   })
 
   it('features only implemented entries that exist', () => {
@@ -34,6 +41,12 @@ describe('content', () => {
     }
     for (const slug of featuredProjectSlugs) {
       expect(getProject(slug), slug).toBeDefined()
+    }
+    for (const slug of featuredTemplateSlugs) {
+      expect(getTemplate(slug), slug).toBeDefined()
+    }
+    for (const slug of featuredShowcaseSlugs) {
+      expect(getShowcaseProject(slug), slug).toBeDefined()
     }
   })
 

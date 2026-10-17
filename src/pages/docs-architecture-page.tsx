@@ -14,9 +14,10 @@ const structure = `src/
     blocks/    # registry blocks composed from ui components
     site/      # app shell and docs UI (not part of the registry)
     landing/   # landing page sections
+    showcase/  # project pages: media, detail, and the public-project note
   config/
     site.ts    # navigation and section copy: header, sidebar, drawer, search, footer
-  content/     # typed notes, case studies, experiments, and landing data
+  content/     # typed notes, case studies, public projects, templates, experiments, landing data
   lab/         # geospatial and 3D experiments, lazy-loaded per route
   pages/       # route components
   playground/  # playground examples (an allowlist), control schemas, validation, workbench UI
@@ -26,7 +27,8 @@ const structure = `src/
     loaders.ts # slug lookups: 404s and redirects
     meta.ts    # page titles, descriptions, and breadcrumbs
   styles/
-    globals.css  # semantic tokens, themes, shared state utilities`
+    globals.css  # semantic tokens, themes, shared state utilities
+  templates/   # example apps built from blocks, lazy-loaded one by one`
 
 const routeExample = `{
   path: 'notes',
