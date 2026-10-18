@@ -41,6 +41,10 @@ export interface ResolvedRouteMeta {
   notFound: boolean
 }
 
+function withoutTrailingSlash(path: string | undefined): string | undefined {
+  return path?.replace(/(.)\/$/, '$1')
+}
+
 function isRouteHandle(handle: unknown): handle is RouteHandle {
   return typeof handle === 'object' && handle !== null && 'meta' in handle
 }
@@ -64,7 +68,8 @@ export function resolveRouteMeta(matches: readonly UIMatch[]): ResolvedRouteMeta
     if (resolved.notFound) notFound = true
     if (resolved.noindex) noindex = true
     if (resolved.description) description = resolved.description
-    if (crumbs.at(-1)?.href !== match.pathname) {
+    // An index route reports its parent's path with a trailing slash, and is the same page.
+    if (withoutTrailingSlash(crumbs.at(-1)?.href) !== withoutTrailingSlash(match.pathname)) {
       crumbs.push(...(resolved.parents ?? []), {
         title: resolved.crumb ?? resolved.title,
         href: match.pathname,

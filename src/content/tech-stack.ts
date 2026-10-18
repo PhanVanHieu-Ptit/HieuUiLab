@@ -72,6 +72,11 @@ export const techStack: readonly TechGroup[] = [
     items: [
       { name: 'Vite', purpose: 'Dev server and production build', href: 'https://vite.dev' },
       { name: 'Shiki', purpose: 'Lazy-loaded syntax highlighting', href: 'https://shiki.style' },
+      {
+        name: 'marked',
+        purpose: 'Markdown parsing for the documentation pages',
+        href: 'https://marked.js.org',
+      },
     ],
   },
 ]

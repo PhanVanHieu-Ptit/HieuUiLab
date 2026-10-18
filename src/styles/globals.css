@@ -1,5 +1,14 @@
 @import 'tailwindcss';
 
+/*
+ * Tailwind scans every file in the project for class names. Markdown is prose that mentions class
+ * names (the docs, the README, the changelog), so it must not generate utilities.
+ */
+@source not '../docs/content';
+@source not '../../README.md';
+@source not '../../CHANGELOG.md';
+@source not '../docs/README.md';
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*

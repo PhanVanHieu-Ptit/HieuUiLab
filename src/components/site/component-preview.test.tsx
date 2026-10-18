@@ -9,7 +9,7 @@ import { ComponentPreview } from './component-preview'
 
 // Highlighting loads Shiki; the plain <pre> is enough here.
 vi.mock('@/lib/highlight', () => ({
-  highlightTsx: () => new Promise<string>(() => undefined),
+  highlightCode: () => new Promise<string>(() => undefined),
 }))
 
 function NameField() {

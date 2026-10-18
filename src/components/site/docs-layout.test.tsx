@@ -24,18 +24,18 @@ describe('DocsLayout', () => {
         .getAllByRole('link')
         .map((link) => link.textContent),
     ).toEqual(['Home', 'Docs'])
-    expect(within(trail).getByText('Theming')).toHaveAttribute('aria-current', 'page')
+    expect(within(trail).getByText('Theme customization')).toHaveAttribute('aria-current', 'page')
   })
 
   it('groups the sidebar and marks the active link', async () => {
     await renderRoute('/docs')
     const sidebar = screen.getByRole('navigation', { name: 'Registry' })
-    expect(within(sidebar).getByRole('heading', { name: 'Getting started' })).toBeInTheDocument()
-    expect(within(sidebar).getByRole('link', { name: 'Introduction' })).toHaveAttribute(
+    expect(within(sidebar).getByRole('heading', { name: 'Overview' })).toBeInTheDocument()
+    expect(within(sidebar).getByRole('link', { name: 'Getting started' })).toHaveAttribute(
       'aria-current',
       'page',
     )
-    expect(within(sidebar).getByRole('link', { name: 'Theming' })).not.toHaveAttribute(
+    expect(within(sidebar).getByRole('link', { name: 'Theme customization' })).not.toHaveAttribute(
       'aria-current',
     )
   })

@@ -14,7 +14,7 @@ describe('CommandMenu', () => {
     const input = within(dialog).getByRole('combobox', { name: 'Search documentation' })
     expect(input).toHaveFocus()
     const listbox = within(dialog).getByRole('listbox', { name: 'Results' })
-    expect(within(listbox).getByRole('group', { name: 'Getting started' })).toBeInTheDocument()
+    expect(within(listbox).getByRole('group', { name: 'Overview' })).toBeInTheDocument()
     expect(within(listbox).getByRole('option', { name: /^Button/ })).toBeInTheDocument()
   })
 

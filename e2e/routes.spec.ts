@@ -27,9 +27,16 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/labs', 'Geospatial and 3D experiments', 'Labs · Hieu UI Lab'],
   ['/labs/maps', 'Maps', 'Maps · Hieu UI Lab'],
   ['/labs/3d', '3D', '3D · Hieu UI Lab'],
-  ['/docs', 'Introduction', 'Docs · Hieu UI Lab'],
+  ['/docs', 'Getting started', 'Getting started · Hieu UI Lab'],
   ['/docs/installation', 'Installation', 'Installation · Hieu UI Lab'],
-  ['/docs/architecture', 'Architecture', 'Architecture · Hieu UI Lab'],
+  ['/docs/project-structure', 'Project structure', 'Project structure · Hieu UI Lab'],
+  ['/docs/theming', 'Theme customization', 'Theme customization · Hieu UI Lab'],
+  [
+    '/docs/component-conventions/adding-a-component',
+    'Adding a component',
+    'Adding a component · Hieu UI Lab',
+  ],
+  ['/docs/changelog', 'Changelog', 'Changelog · Hieu UI Lab'],
   ['/notes', 'Technical notes', 'Notes · Hieu UI Lab'],
   ['/notes/theme-without-flash', /.+/, ' · Hieu UI Lab'],
   ['/projects', 'Projects and case studies', 'Projects · Hieu UI Lab'],
@@ -153,7 +160,15 @@ test.describe('mobile navigation', () => {
     await page.goto('/')
     await page.getByRole('button', { name: 'Open navigation' }).click()
     const drawer = page.getByRole('dialog', { name: 'Hieu UI Lab' })
-    for (const name of ['Installation', 'Architecture', 'All experiments', 'Maps', '3D', 'About']) {
+    for (const name of [
+      'Installation',
+      'Project structure',
+      'Adding a component',
+      'All experiments',
+      'Maps',
+      '3D',
+      'About',
+    ]) {
       await expect(drawer.getByRole('link', { name, exact: true })).toBeVisible()
     }
     for (const name of [
