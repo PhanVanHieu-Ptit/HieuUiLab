@@ -102,7 +102,9 @@ test.describe('overlays', () => {
     await page.goto('/components/tooltip')
     const bold = page.getByRole('button', { name: 'Bold' })
     await expect(bold).not.toBeInViewport()
-    for (let step = 0; step < 80; step += 1) {
+    // The header and the sidebar come first, and the sidebar lists every docs page and entry, so
+    // the number of Tab presses grows with the registry and the docs: keep the limit generous.
+    for (let step = 0; step < 200; step += 1) {
       await page.keyboard.press('Tab')
       if (await bold.evaluate((element) => element === document.activeElement)) break
     }

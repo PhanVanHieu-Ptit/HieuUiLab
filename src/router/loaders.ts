@@ -1,5 +1,7 @@
 import { data, replace, type LoaderFunctionArgs } from 'react-router'
 
+import type { DocEntry } from '@/docs/manifest'
+import { suggestDocs } from '@/docs/suggest'
 import {
   experimentHref,
   experimentKinds,
@@ -22,7 +24,7 @@ export interface NotFoundData {
   suggestions: readonly { title: string; href: string }[]
 }
 
-function notFound(suggestions: NotFoundData['suggestions'] = []): never {
+export function notFound(suggestions: NotFoundData['suggestions'] = []): never {
   const body: NotFoundData = { suggestions }
   // eslint-disable-next-line @typescript-eslint/only-throw-error -- React Router renders thrown data as a route error response.
   throw data(body, { status: 404, statusText: 'Not Found' })
@@ -62,6 +64,29 @@ export function registryLoader(kind: RegistryKind) {
       })),
     )
   }
+}
+
+/** What a docs page's loader returns: the page's id and its Markdown text. */
+export interface DocLoaderData {
+  id: string
+  source: string
+}
+
+/**
+ * A docs page's Markdown. Fetching it here, not in the page, means the text is there on the first
+ * render, so a link with a `#heading` can scroll to a heading that exists. Parsing waits for the
+ * page chunk, which keeps the Markdown parser out of the main bundle.
+ */
+export function docLoader(entry: DocEntry) {
+  return async (): Promise<DocLoaderData> => ({
+    id: entry.id,
+    source: (await entry.load()).default,
+  })
+}
+
+/** An unknown path under `/docs`: a 404 that suggests the closest pages. */
+export function docNotFoundLoader({ params }: LoaderFunctionArgs): never {
+  return notFound(suggestDocs(params['*'] ?? ''))
 }
 
 /** Route id of `/labs/:kind`; its category page reads this route's loader data. */

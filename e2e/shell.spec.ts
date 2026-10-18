@@ -39,7 +39,7 @@ const routes = [
   '/blocks/sign-in-page',
   '/blocks/user-profile-settings',
   '/docs/installation',
-  '/docs/architecture',
+  '/docs/project-structure',
   '/templates',
   '/templates/admin-dashboard',
   '/templates/operations-monitoring',
@@ -179,11 +179,11 @@ test.describe('mobile navigation drawer', () => {
     await page.goto('/')
     await page.getByRole('button', { name: 'Open navigation' }).click()
     const drawer = page.getByRole('dialog', { name: 'Hieu UI Lab' })
-    await drawer.getByRole('link', { name: 'Theming' }).click()
+    await drawer.getByRole('link', { name: 'Theme customization' }).click()
 
     await expect(page).toHaveURL(/\/docs\/theming$/)
     await expect(drawer).toBeHidden()
-    await expect(page.getByRole('heading', { level: 1, name: 'Theming' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: 'Theme customization' })).toBeVisible()
   })
 })
 

@@ -6,7 +6,7 @@ import { PageContainer, PageHeader, SectionHeader } from '@/components/site/page
 import { SmartLink } from '@/components/site/smart-link'
 import { StatusBadge } from '@/components/site/status-badge'
 import { buttonVariants } from '@/components/ui/button'
-import { docsNav, sections, siteConfig } from '@/config/site'
+import { docsNav, flattenNavItems, sections, siteConfig } from '@/config/site'
 import { experiments } from '@/content/experiments'
 import { notes } from '@/content/notes'
 import { projects } from '@/content/projects'
@@ -65,9 +65,9 @@ const inventory = [
   { title: 'Notes', href: '/notes', detail: '', count: notes.length },
 ]
 
-const planned = docsNav
-  .flatMap((section) => section.items)
-  .filter((item) => item.status === 'planned')
+const planned = flattenNavItems(docsNav.flatMap((section) => section.items)).filter(
+  (item) => item.status === 'planned',
+)
 
 export function AboutPage() {
   return (

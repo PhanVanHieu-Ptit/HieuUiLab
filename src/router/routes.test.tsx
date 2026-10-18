@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { getNote } from '@/content/notes'
 import { getProject } from '@/content/projects'
 import { getTemplate } from '@/content/templates'
+import { docNodes } from '@/docs/manifest'
 import { renderRoute } from '@/test/render'
 
 const note = getNote('theme-without-flash')
@@ -25,9 +26,8 @@ const requiredRoutes: readonly [path: string, title: string | null][] = [
   ['/labs', 'Labs'],
   ['/labs/maps', 'Maps'],
   ['/labs/3d', '3D'],
-  ['/docs', 'Docs'],
-  ['/docs/installation', 'Installation'],
-  ['/docs/architecture', 'Architecture'],
+  // Every documentation page, taken from the manifest the routes are generated from.
+  ...docNodes.map((node): [string, string] => [node.href, node.entry.title]),
   ['/notes', 'Notes'],
   ['/notes/theme-without-flash', note?.title ?? 'missing note'],
   ['/projects', 'Projects'],
@@ -67,6 +67,7 @@ describe('breadcrumbs', () => {
     ['/labs/3d/webgl-scene', ['Home', 'Labs', '3D'], 'WebGL scene with motion controls'],
     ['/labs/maps', ['Home', 'Labs'], 'Maps'],
     ['/notes/theme-without-flash', ['Home', 'Notes'], note?.title],
+    // The group a page belongs to is a crumb without a link.
     ['/docs/installation', ['Home', 'Docs'], 'Installation'],
     ['/blocks/empty-state', ['Home', 'Blocks', 'Feedback'], 'Empty state'],
     ['/templates/operations-monitoring', ['Home', 'Templates'], 'Operations monitoring'],
@@ -85,6 +86,17 @@ describe('breadcrumbs', () => {
   it('is not shown on the home page', async () => {
     await renderRoute('/')
     expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).toBeNull()
+  })
+
+  it('names the group of a docs page, without a link, between Docs and the page', async () => {
+    await renderRoute('/docs/installation')
+    const trail = screen.getByRole('navigation', { name: 'Breadcrumb' })
+    expect(
+      within(trail)
+        .getAllByRole('listitem')
+        .map((item) => item.textContent),
+    ).toEqual(['Home', 'Docs', 'Overview', 'Installation'])
+    expect(within(trail).queryByRole('link', { name: 'Overview' })).toBeNull()
   })
 })
 
@@ -176,7 +188,7 @@ describe('invalid URLs', () => {
     expect(screen.getAllByRole('main')).toHaveLength(1)
   })
 
-  it.each(['/docs/nope', '/xyz', '/notes/a/b'])('%s renders the not-found page', async (path) => {
+  it.each(['/xyz', '/notes/a/b'])('%s renders the not-found page', async (path) => {
     await renderRoute(path)
     expect(screen.getByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /^Browse/ })).toBeNull()
@@ -186,8 +198,42 @@ describe('invalid URLs', () => {
   })
 })
 
+describe('an unknown docs page', () => {
+  it.each(['/docs/nope', '/docs/installation/nope', '/docs/a/b/c'])(
+    '%s is a 404 inside the docs layout',
+    async (path) => {
+      await renderRoute(path)
+      expect(screen.getByRole('heading', { level: 1, name: 'Page not found' })).toBeInTheDocument()
+      // The sidebar stays, with a way back to the docs.
+      expect(screen.getByRole('navigation', { name: 'Registry' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Browse Docs' })).toHaveAttribute('href', '/docs')
+      expect(screen.queryByRole('navigation', { name: 'Breadcrumb' })).toBeNull()
+      expect(screen.getAllByRole('main')).toHaveLength(1)
+      await waitFor(() => {
+        expect(document.title).toBe('Page not found · Hieu UI Lab')
+      })
+      expect(metaContent('meta[name="robots"]')).toBe('noindex')
+    },
+  )
+
+  it('suggests the pages closest to a mistyped path', async () => {
+    await renderRoute('/docs/instalation')
+    const suggestions = screen.getByRole('navigation', { name: 'Suggestions' })
+    expect(within(suggestions).getByRole('link', { name: 'Installation' })).toHaveAttribute(
+      'href',
+      '/docs/installation',
+    )
+  })
+
+  it('suggests nothing for a path unlike any page', async () => {
+    await renderRoute('/docs/zzzzzzzz')
+    expect(screen.queryByRole('navigation', { name: 'Suggestions' })).toBeNull()
+  })
+})
+
 describe('redirects', () => {
   it.each([
+    ['/docs/architecture', '/docs/project-structure'],
     ['/lab', '/labs'],
     ['/lab/map-projections', '/labs/maps/map-projections'],
     ['/lab/webgl-scene', '/labs/3d/webgl-scene'],

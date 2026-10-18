@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import { getImplementedEntry } from '@/registry'
 import type { ImplementedEntry } from '@/registry/types'
 import { importStatement, playgroundCode } from '@/registry/usage'
+import { registryDetailAnchors } from '@/test/docs-context'
 import { renderRoute } from '@/test/render'
 
 function entry(slug: string): ImplementedEntry {
@@ -342,4 +343,18 @@ describe('RegistryDetailPage dependencies and related entries', () => {
     ).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/blocks/confirm-action')
   })
+})
+
+describe('RegistryDetailPage section anchors', () => {
+  // The docs link to these ids (for example /components/button#api), and validateDocs trusts the
+  // list in src/test/docs-context.ts. This keeps the list true.
+  it.each(['/components/button', '/blocks/data-table'])(
+    '%s has a section for every anchor the docs may link to',
+    async (path) => {
+      await renderRoute(path)
+      for (const id of registryDetailAnchors) {
+        expect(document.getElementById(id), id).not.toBeNull()
+      }
+    },
+  )
 })

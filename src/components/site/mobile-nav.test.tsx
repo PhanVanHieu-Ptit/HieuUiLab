@@ -12,7 +12,7 @@ describe('MobileNav', () => {
 
     const drawer = await screen.findByRole('dialog', { name: 'Hieu UI Lab' })
     const nav = within(drawer).getByRole('navigation', { name: 'Site' })
-    expect(within(nav).getByRole('link', { name: 'Introduction' })).toBeInTheDocument()
+    expect(within(nav).getByRole('link', { name: 'Getting started' })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: 'Button' })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: /^Resource list/ })).toHaveAttribute(
       'href',

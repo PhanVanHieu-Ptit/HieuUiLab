@@ -1,5 +1,6 @@
 import { experimentKinds, experimentKindHref } from '@/content/experiments'
 import { templateBlocks, templateHref, templates } from '@/content/templates'
+import { DOCS_BASE, docGroups, docHref, type DocEntry } from '@/docs/manifest'
 import { getRegistryEntries, getRegistryEntry, registryHref } from '@/registry'
 import { registryCategories } from '@/registry/taxonomy'
 import type { RegistryKind, RegistryStatus } from '@/registry/types'
@@ -22,6 +23,8 @@ export interface NavItem {
   headerFrom?: 'lg' | 'xl'
   /** Extra terms the search palette matches, e.g. a registry entry's category and tags. */
   keywords?: readonly string[]
+  /** Pages nested under this one, listed beneath it in the sidebar. */
+  children?: readonly NavItem[]
 }
 
 export interface NavSection {
@@ -136,33 +139,23 @@ function templateNavItems(): NavItem[] {
   }))
 }
 
-/** Documentation sidebar. Components and blocks are derived from the registry. */
+function docNavItem(entry: DocEntry, parentHref: string): NavItem {
+  const href = docHref(parentHref, entry.slug)
+  return {
+    title: entry.title,
+    href,
+    description: entry.description,
+    ...(entry.keywords ? { keywords: entry.keywords } : {}),
+    ...(entry.children ? { children: entry.children.map((child) => docNavItem(child, href)) } : {}),
+  }
+}
+
+/** Documentation sidebar. The written docs come from the docs manifest; components and blocks are derived from the registry. */
 export const docsNav: readonly NavSection[] = [
-  {
-    title: 'Getting started',
-    items: [
-      {
-        title: 'Introduction',
-        href: '/docs',
-        description: 'What the lab is and how the registry works.',
-      },
-      {
-        title: 'Installation',
-        href: '/docs/installation',
-        description: 'Copy a component into your project, with its dependencies and tokens.',
-      },
-      {
-        title: 'Architecture',
-        href: '/docs/architecture',
-        description: 'Project structure, the registry, routing, and code splitting.',
-      },
-      {
-        title: 'Theming',
-        href: '/docs/theming',
-        description: 'Design tokens, themes, and shared interaction states.',
-      },
-    ],
-  },
+  ...docGroups.map((group) => ({
+    title: group.title,
+    items: group.pages.map((page) => docNavItem(page, DOCS_BASE)),
+  })),
   {
     title: 'Components',
     href: '/components',
@@ -215,7 +208,14 @@ export const labsNav: NavSection = {
   ],
 }
 
+/** The items and everything nested beneath them, parents before their children. */
+export function flattenNavItems(items: readonly NavItem[]): NavItem[] {
+  return items.flatMap((item) => [item, ...flattenNavItems(item.children ?? [])])
+}
+
 /** The docs nav item for a path, e.g. to derive a docs page's title and description. */
 export function findDocsNavItem(href: string): NavItem | undefined {
-  return docsNav.flatMap((section) => section.items).find((item) => item.href === href)
+  return flattenNavItems(docsNav.flatMap((section) => section.items)).find(
+    (item) => item.href === href,
+  )
 }

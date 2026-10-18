@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Kbd } from '@/components/ui/kbd'
-import { docsNav, type NavItem } from '@/config/site'
+import { docsNav, flattenNavItems, type NavItem } from '@/config/site'
 import { cn } from '@/lib/cn'
 
 import { StatusBadge } from './status-badge'
@@ -16,7 +16,7 @@ interface SearchGroup {
 
 const searchGroups: readonly SearchGroup[] = docsNav.map((section) => ({
   title: section.title,
-  items: section.items.filter((item) => !item.disabled),
+  items: flattenNavItems(section.items).filter((item) => !item.disabled),
 }))
 
 function filterGroups(query: string): SearchGroup[] {

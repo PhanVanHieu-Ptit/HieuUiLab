@@ -4,7 +4,14 @@ import { Link } from 'react-router'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { docsNav, labsNav, mainNav, siteConfig, type NavSection } from '@/config/site'
+import {
+  docsNav,
+  flattenNavItems,
+  labsNav,
+  mainNav,
+  siteConfig,
+  type NavSection,
+} from '@/config/site'
 
 import { DocsNavList } from './docs-nav'
 import { LogoMark } from './icons'
@@ -14,7 +21,7 @@ import { LogoMark } from './icons'
 const coveredHrefs = new Set(
   [...docsNav, labsNav].flatMap((section) => [
     section.href,
-    ...section.items.map((item) => item.href),
+    ...flattenNavItems(section.items).map((item) => item.href),
   ]),
 )
 const extraNav = mainNav

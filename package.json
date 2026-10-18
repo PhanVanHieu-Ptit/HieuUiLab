@@ -17,6 +17,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
+    "docs:check": "vitest run src/docs",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
@@ -28,6 +29,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.55.0",
+    "marked": "^18.1.1",
     "radix-ui": "~1.7.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

@@ -6,6 +6,7 @@ import { RouteFallback } from '@/components/site/route-fallback'
 import { SiteLayout } from '@/components/site/site-layout'
 import { findDocsNavItem, sections, siteConfig } from '@/config/site'
 import type { ExperimentKindInfo } from '@/content/experiments'
+import { createDocsRoutes } from '@/docs/routes'
 import type { ProjectEntry } from '@/content/project-entries'
 import type { Template } from '@/content/templates'
 import type { Experiment, Note } from '@/content/types'
@@ -32,7 +33,7 @@ function handle(meta: RouteHandle['meta']): RouteHandle {
   return { meta }
 }
 
-/** Title and description of a docs or planned page, taken from its sidebar entry. */
+/** Title and description of a page that has a sidebar entry but no docs manifest entry. */
 function docsHandle(href: string): RouteHandle {
   const item = findDocsNavItem(href)
   if (!item) throw new Error(`No docs nav item for ${href}`)
@@ -46,10 +47,6 @@ function docsHandle(href: string): RouteHandle {
 const sectionHandle = (section: PageMeta) => handle(section)
 
 // Lazy page modules: each becomes its own chunk, loaded when the route matches.
-const docsIntroduction = () => import('@/pages/docs-introduction-page')
-const docsInstallation = () => import('@/pages/docs-installation-page')
-const docsArchitecture = () => import('@/pages/docs-architecture-page')
-const docsTheming = () => import('@/pages/docs-theming-page')
 const registryDetail = () => import('@/pages/registry-detail-page')
 const templatePages = () => import('@/pages/template-pages')
 const playgroundPage = () => import('@/pages/playground-page')
@@ -101,33 +98,7 @@ export function createRoutes(): RouteObject[] {
                 {
                   path: 'docs',
                   handle: sectionHandle(sections.docs),
-                  children: [
-                    {
-                      index: true,
-                      lazy: {
-                        Component: async () => (await docsIntroduction()).DocsIntroductionPage,
-                      },
-                    },
-                    {
-                      path: 'installation',
-                      handle: docsHandle('/docs/installation'),
-                      lazy: {
-                        Component: async () => (await docsInstallation()).DocsInstallationPage,
-                      },
-                    },
-                    {
-                      path: 'architecture',
-                      handle: docsHandle('/docs/architecture'),
-                      lazy: {
-                        Component: async () => (await docsArchitecture()).DocsArchitecturePage,
-                      },
-                    },
-                    {
-                      path: 'theming',
-                      handle: docsHandle('/docs/theming'),
-                      lazy: { Component: async () => (await docsTheming()).DocsThemingPage },
-                    },
-                  ],
+                  children: createDocsRoutes(),
                 },
                 {
                   path: 'components',

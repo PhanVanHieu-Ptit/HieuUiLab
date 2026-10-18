@@ -205,7 +205,8 @@ export function suggestEntries(
     .map(({ entry }) => entry)
 }
 
-function editDistance(a: string, b: string): number {
+/** The number of single-character edits that turn `a` into `b`. */
+export function editDistance(a: string, b: string): number {
   let previous = Array.from({ length: b.length + 1 }, (_, index) => index)
   for (let i = 1; i <= a.length; i++) {
     const current = [i]

@@ -35,6 +35,45 @@ function ItemLabel({ item }: { item: NavItem }) {
   )
 }
 
+interface ItemListProps {
+  items: readonly NavItem[]
+  onNavigate: (() => void) | undefined
+  /** A nested list is indented under its parent item. */
+  nested?: boolean
+}
+
+/** One level of links. A page with child pages lists them beneath it, always expanded. */
+function ItemList({ items, onNavigate, nested = false }: ItemListProps) {
+  return (
+    <ul className={cn('flex flex-col gap-0.5', nested && 'mt-0.5 ml-3 border-l pl-2')}>
+      {items.map((item) => (
+        <li key={item.href}>
+          {item.disabled ? (
+            <span
+              aria-disabled="true"
+              className={cn(itemClass({ isActive: false }), 'disabled-state')}
+            >
+              <ItemLabel item={item} />
+            </span>
+          ) : (
+            <NavLink
+              to={item.href}
+              end={!item.matchNested}
+              className={itemClass}
+              onClick={onNavigate}
+            >
+              <ItemLabel item={item} />
+            </NavLink>
+          )}
+          {item.children && item.children.length > 0 ? (
+            <ItemList items={item.children} onNavigate={onNavigate} nested />
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 interface NavListProps {
   sections: readonly NavSection[]
   /** Called after a link is followed, e.g. to close the mobile drawer. */
@@ -58,29 +97,7 @@ export function DocsNavList({ sections, onNavigate, className }: NavListProps) {
             >
               {section.title}
             </h2>
-            <ul className="flex flex-col gap-0.5">
-              {section.items.map((item) => (
-                <li key={item.href}>
-                  {item.disabled ? (
-                    <span
-                      aria-disabled="true"
-                      className={cn(itemClass({ isActive: false }), 'disabled-state')}
-                    >
-                      <ItemLabel item={item} />
-                    </span>
-                  ) : (
-                    <NavLink
-                      to={item.href}
-                      end={!item.matchNested}
-                      className={itemClass}
-                      onClick={onNavigate}
-                    >
-                      <ItemLabel item={item} />
-                    </NavLink>
-                  )}
-                </li>
-              ))}
-            </ul>
+            <ItemList items={section.items} onNavigate={onNavigate} />
           </section>
         )
       })}
