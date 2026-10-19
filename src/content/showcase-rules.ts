@@ -32,6 +32,8 @@ const ALLOWED_ROOT_FILES = new Set([
   'package.json',
   'index.html',
   'eslint.config.js',
+  'tsconfig.json',
+  'tsconfig.app.json',
   'vite.config.ts',
   'playwright.config.ts',
 ])

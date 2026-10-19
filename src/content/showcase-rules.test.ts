@@ -328,6 +328,7 @@ describe('isSafeRepoPath', () => {
       '.github/workflows/ci.yml',
       'public/favicon.svg',
       'README.md',
+      'tsconfig.app.json',
     ]) {
       expect(isSafeRepoPath(path), path).toBe(true)
     }

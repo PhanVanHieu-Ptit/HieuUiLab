@@ -8,9 +8,9 @@ import {
   getExperiment,
   getExperimentKind,
 } from '@/content/experiments'
-import { getNote } from '@/content/notes'
 import { getProjectEntry } from '@/content/project-entries'
 import { getTemplate } from '@/content/templates'
+import { getNote, type NoteEntry } from '@/notes/manifest'
 import { getRegistryEntry, registry, registryHref } from '@/registry'
 import { suggestEntries } from '@/registry/catalog'
 import type { RegistryKind } from '@/registry/types'
@@ -34,8 +34,20 @@ function slugParam(params: LoaderFunctionArgs['params'], key = 'slug'): string {
   return params[key] ?? ''
 }
 
-export function noteLoader({ params }: LoaderFunctionArgs) {
-  return getNote(slugParam(params)) ?? notFound()
+/** What a note's loader returns: its manifest entry and its Markdown text. */
+export interface NoteLoaderData {
+  entry: NoteEntry
+  source: string
+}
+
+/**
+ * A note's Markdown, fetched here for the same reason a docs page's is: the text is there on the
+ * first render, so a link to `/notes/<slug>#heading` can scroll to a heading that exists. Parsing
+ * waits for the page chunk, which keeps the Markdown parser out of the main bundle.
+ */
+export async function noteLoader({ params }: LoaderFunctionArgs): Promise<NoteLoaderData> {
+  const entry = getNote(slugParam(params)) ?? notFound()
+  return { entry, source: (await entry.load()).default }
 }
 
 export function projectLoader({ params }: LoaderFunctionArgs) {

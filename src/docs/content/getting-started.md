@@ -1,6 +1,6 @@
 # Getting started
 
-Hieu UI Lab is a personal registry of React components and page-level blocks, with the tests, examples, and notes behind them. This page explains how the registry works and where each topic is documented.
+Hieu UI Lab is a personal registry of React components and page-level blocks, with the tests, examples, and engineering notes behind them. This page explains how the registry works and where each topic is documented.
 
 ## How the registry works
 

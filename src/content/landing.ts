@@ -20,7 +20,7 @@ export const capabilities: readonly Capability[] = [
   {
     title: 'Share practical engineering knowledge',
     description:
-      'Short notes on the decisions behind the code: what was tried, why it works, and where it falls short.',
+      'Articles on the decisions behind the code: the alternatives considered, how each was checked, and what was not.',
     href: '/notes',
     linkLabel: 'Browse notes',
   },

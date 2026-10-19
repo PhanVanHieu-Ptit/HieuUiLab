@@ -26,7 +26,8 @@ copyable source, props documentation, and tests.
 | Project showcase at `/projects`: this site, its component library and design system, and the geospatial and 3D experiments, each with a problem statement, decisions, architecture, evidence-backed challenges, live demos, limitations, and its repository link (the site is not deployed, so there is no deployment link). Public projects only; every claim must cite a file in the repository | Implemented; the content is validated against the repository in unit tests, and the pages are unit + e2e tested                               |
 | Documentation at `/docs`: Markdown pages in `src/docs/content/` with nested navigation, breadcrumbs, a table of contents, highlighted code with copy buttons, and props tables, live examples, and design tokens generated from the registry and the stylesheet                                                                                                                                   | Implemented; links, anchors, repository paths, and code-sample imports are validated (`pnpm docs:check`), and the pages are unit + e2e tested |
 | Registry entry `Combobox`                                                                                                                                                                                                                                                                                                                                                                         | Planned — its page says so; nothing built                                                                                                     |
-| Notes, case studies, and the project showcase                                                                                                                                                                                                                                                                                                                                                     | Typed local data in `src/content/`                                                                                                            |
+| Engineering notes at `/notes`: Markdown articles with tags, detail pages, and related articles, checked against the repository                                                                                                                                                                                                                                                                    | Implemented, unit + end-to-end tested; validated by `pnpm notes:check`                                                                        |
+| Case studies and the project showcase                                                                                                                                                                                                                                                                                                                                                             | Typed local data in `src/content/`                                                                                                            |
 | MapLibre                                                                                                                                                                                                                                                                                                                                                                                          | Planned — not implemented                                                                                                                     |
 | CI (GitHub Actions)                                                                                                                                                                                                                                                                                                                                                                               | Implemented: runs lint, format check, typecheck, unit tests, build, and e2e on pushes to `main` and on pull requests                          |
 | Deployment                                                                                                                                                                                                                                                                                                                                                                                        | Not set up                                                                                                                                    |
@@ -90,10 +91,11 @@ result.
 | `pnpm test`         | Unit/component tests (Vitest), single run                                                                                           |
 | `pnpm test:watch`   | Vitest in watch mode                                                                                                                |
 | `pnpm docs:check`   | Validate the docs: links, anchors, repository paths, and code-sample imports (also part of `pnpm test`)                             |
+| `pnpm notes:check`  | Validate the engineering notes: sections, code excerpts against their files, links, and evidence (also part of `pnpm test`)         |
 | `pnpm test:e2e`     | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme |
 | `pnpm check`        | Lint, format check, typecheck, tests, build — what CI runs                                                                          |
 
-Run `pnpm check` before pushing. CI also runs `pnpm docs:check` on its own, then `pnpm test:e2e`.
+Run `pnpm check` before pushing. CI also runs `pnpm docs:check` and `pnpm notes:check` on their own, then `pnpm test:e2e`.
 
 ## Routes
 
@@ -107,7 +109,7 @@ Run `pnpm check` before pushing. CI also runs `pnpm docs:check` on its own, then
 | `/playground`, `/playground?example=<id>`       | Interactive examples with typed controls                |
 | `/labs`, `/labs/maps`, `/labs/3d`               | Experiments and their categories                        |
 | `/labs/:kind/:slug`                             | One experiment, e.g. `/labs/3d/webgl-scene`             |
-| `/notes`, `/notes/:slug`                        | Technical notes                                         |
+| `/notes`, `/notes/:slug`                        | Engineering notes (filter by `?tag=`)                   |
 | `/projects`, `/projects/:slug`                  | Public projects and case studies                        |
 | `/about`                                        | About the lab, built from the registry and content data |
 
@@ -166,6 +168,23 @@ See `src/docs/content/adding-a-page-block.md` (`/docs/block-composition/page-blo
 ## Adding a template
 
 See `src/docs/content/adding-a-template.md` (`/docs/block-composition/templates`).
+
+## Adding a note
+
+Engineering notes (`/notes`) are Markdown articles in `src/notes/content/`, described by
+`src/notes/manifest.ts` and checked by `validateNotes` (`src/notes/notes-rules.ts`) in
+`src/notes/notes.test.ts`. The guide, with the template, the code-block rules, and the honesty
+checklist, is `src/notes/README.md`.
+
+- **A fixed template.** Context and problem, Constraints, Approach and alternatives considered,
+  Implementation example, Verification (with what it does not verify), Trade-offs and lessons
+  learned, and References when the article cites an external source.
+- **Code is real or labelled.** A code block is an excerpt of a repository file, which the validator
+  checks, or its title says `Hypothetical example:`. Commands are the repository's own `pnpm`
+  scripts.
+- **No invented history.** The validator rejects numeric metrics and wording about incidents,
+  customers, or employers. That is a tripwire; the evidence list and the review checklist are the
+  real controls.
 
 ## Adding a project
 

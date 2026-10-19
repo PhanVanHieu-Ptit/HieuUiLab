@@ -23,7 +23,6 @@ import {
   featuredTemplateSlugs,
   recentNotesCount,
 } from '@/content/landing'
-import { notes } from '@/content/notes'
 import { getProject } from '@/content/projects'
 import { getShowcaseProject } from '@/content/showcase-projects'
 import type { ShowcaseProject } from '@/content/showcase-types'
@@ -32,6 +31,7 @@ import type { Project } from '@/content/types'
 import { cities } from '@/lab/map-projections/cities'
 import { MapSvg } from '@/lab/map-projections/map-svg'
 import { createOrthographic } from '@/lab/map-projections/projection'
+import { notes } from '@/notes/manifest'
 
 const globe = createOrthographic(105, 15)
 
@@ -174,15 +174,15 @@ export function HomePage() {
 
       <LandingSection
         id="notes"
-        title="Recent technical notes"
-        description="Short write-ups of decisions, with their limits."
+        title="Recent engineering notes"
+        description="Articles on the decisions behind the code, with how each was checked and what was not."
         more={{ label: 'All notes', href: '/notes' }}
       >
         {recentNotes.length === 0 ? (
           <EmptyState
             icon={<NotebookPen />}
-            title="No notes yet"
-            description="Notes are added as the lab grows."
+            title="No articles yet"
+            description="Articles are added as the lab grows."
           />
         ) : (
           <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">

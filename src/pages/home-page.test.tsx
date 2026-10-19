@@ -29,7 +29,7 @@ describe('HomePage', () => {
       'Geospatial and 3D experiments',
       'Projects',
       'Engineering case studies',
-      'Recent technical notes',
+      'Recent engineering notes',
       'Technology stack',
     ]) {
       expect(screen.getByRole('heading', { level: 2, name })).toBeInTheDocument()

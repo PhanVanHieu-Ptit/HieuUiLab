@@ -27,10 +27,15 @@ The repository checks its own data with pure functions that take their facts as 
 
 - `validateRegistry` in `src/registry/validate.ts` checks every entry's metadata against its source. It also runs when the dev server starts.
 - `validateShowcase` in `src/content/showcase-rules.ts` checks that the project showcase cites files and anchors that exist.
+- `validateNotes` in `src/notes/notes-rules.ts` checks the engineering notes: the template sections, that every code block is an excerpt of the file it names or is labelled as hypothetical, that the commands are the repository's own, and that the evidence files exist. It reuses the Markdown rules of `src/docs/markdown-rules.ts`. `src/notes/notes.test.ts` runs it against the real articles.
 - `validateDocs` in `src/docs/docs-rules.ts` checks these pages: the manifest against the files, every internal link and `#heading`, every repository path written in code, the imports in code samples, and the directives that pull content from the registry. It also keeps `CHANGELOG.md` in date order. `src/docs/docs.test.ts` runs it against the real docs, and `src/docs/docs-rules.test.ts` feeds it bad data to show each rule fires.
 
 ```bash title="check the docs"
 pnpm docs:check
+```
+
+```bash title="check the notes"
+pnpm notes:check
 ```
 
 `pnpm docs:check` runs only the tests in `src/docs`, so a broken link or import is reported on its own as `docs/<page id>: message`. `pnpm test` includes the same checks. A test reads repository files with `src/test/repo-files.ts`, which uses `import.meta.glob`; only tests may import it, since bundling it would ship every source file as text.
@@ -39,7 +44,7 @@ pnpm docs:check
 
 Playwright tests live in `e2e/` and run in Chromium against the production build: the configuration builds the site and serves it with `pnpm preview` on port 47317, or the port in `E2E_PORT`. It always starts its own server, so it never tests another project that holds the port. They cover:
 
-- keyboard flows for the components and blocks, in `components.spec.ts`, `forms.spec.ts`, `data-display.spec.ts`, `blocks.spec.ts`, `catalog.spec.ts`, `playground.spec.ts`, `templates.spec.ts`, and `projects.spec.ts`;
+- keyboard flows for the components and blocks, in `components.spec.ts`, `forms.spec.ts`, `data-display.spec.ts`, `blocks.spec.ts`, `catalog.spec.ts`, `playground.spec.ts`, `templates.spec.ts`, and `projects.spec.ts`, and `notes.spec.ts`;
 - routing in `routes.spec.ts`: direct load, refresh, Back and Forward, invalid URLs, and redirects;
 - layout in `shell.spec.ts`: no horizontal overflow on every route at 360, 768, and 1280 pixels in both themes, the header, the mobile drawer, and the search menu. Set `SCREENSHOT_DIR` to save full-page captures from that sweep for manual review.
 
@@ -52,7 +57,7 @@ Install the browser once. To run one file, pass it to Playwright, for example `p
 
 ## CI {#ci}
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests, on Ubuntu with Node.js 24. In order: install with the frozen lockfile, lint, format check, typecheck, `pnpm docs:check`, unit tests, build, then the Playwright tests. A new `*.test.ts` file runs in CI without a workflow change; a new `package.json` script does not, unless the workflow calls it.
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests, on Ubuntu with Node.js 24. In order: install with the frozen lockfile, lint, format check, typecheck, `pnpm docs:check`, `pnpm notes:check`, unit tests, build, then the Playwright tests. A new `*.test.ts` file runs in CI without a workflow change; a new `package.json` script does not, unless the workflow calls it.
 
 ## What is not tested {#gaps}
 
