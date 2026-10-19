@@ -40,7 +40,7 @@ export const showcaseProjects: readonly ShowcaseProject[] = [
         'Routing, route metadata, loaders, and redirects',
         'A registry-driven catalog, detail pages, search, and install guidance',
         'A playground limited to pre-defined examples',
-        'Labs, templates, notes, and this project showcase as typed content',
+        'Labs, templates, and this project showcase as typed content, and the engineering notes as checked Markdown',
         'Unit and end-to-end tests, and a CI workflow',
       ],
       excludes: [
@@ -107,9 +107,14 @@ export const showcaseProjects: readonly ShowcaseProject[] = [
         },
         {
           name: 'Content',
-          responsibility:
-            'Typed data for notes, case studies, projects, templates, and experiments.',
+          responsibility: 'Typed data for case studies, projects, templates, and experiments.',
           path: 'src/content/projects.ts',
+        },
+        {
+          name: 'Engineering notes',
+          responsibility:
+            'Markdown articles with a typed manifest, tags, and related articles, and a validator that checks each quoted code block against the file it names.',
+          path: 'src/notes/manifest.ts',
         },
         {
           name: 'Labs',

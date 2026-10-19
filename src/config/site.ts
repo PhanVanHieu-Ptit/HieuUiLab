@@ -75,9 +75,9 @@ export const sections = {
   },
   notes: {
     title: 'Notes',
-    heading: 'Technical notes',
+    heading: 'Engineering notes',
     description:
-      'Short write-ups of decisions made while building the lab: the problem, the approach, and its limits.',
+      'A technical learning journal. Each article states the problem, the constraints, the alternatives, a code example, how it was checked, and what was not.',
   },
   projects: {
     title: 'Projects',
@@ -109,7 +109,7 @@ export const mainNav: readonly NavItem[] = [
   },
   { title: 'Labs', href: '/labs', description: 'Geospatial and 3D experiments.' },
   { title: 'Projects', href: '/projects', description: 'Projects and case studies.' },
-  { title: 'Notes', href: '/notes', description: 'Short technical write-ups.' },
+  { title: 'Notes', href: '/notes', description: 'Engineering notes and write-ups.' },
   { title: 'Docs', href: '/docs' },
   { title: 'About', href: '/about', description: 'What the lab is.', headerFrom: 'xl' },
 ]

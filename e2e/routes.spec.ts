@@ -37,8 +37,47 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
     'Adding a component · Hieu UI Lab',
   ],
   ['/docs/changelog', 'Changelog', 'Changelog · Hieu UI Lab'],
-  ['/notes', 'Technical notes', 'Notes · Hieu UI Lab'],
-  ['/notes/theme-without-flash', /.+/, ' · Hieu UI Lab'],
+  ['/notes', 'Engineering notes', 'Notes · Hieu UI Lab'],
+  [
+    '/notes/theme-without-flash',
+    'Switching themes without a first-paint flash',
+    'Switching themes without a first-paint flash · Hieu UI Lab',
+  ],
+  [
+    '/notes/reduced-motion-beyond-css',
+    'Respecting reduced motion beyond CSS',
+    'Respecting reduced motion beyond CSS · Hieu UI Lab',
+  ],
+  [
+    '/notes/contrast-checks-as-unit-tests',
+    'Checking colour contrast in a unit test',
+    'Checking colour contrast in a unit test · Hieu UI Lab',
+  ],
+  [
+    '/notes/whole-card-links',
+    'Whole-card links without nesting everything in an anchor',
+    'Whole-card links without nesting everything in an anchor · Hieu UI Lab',
+  ],
+  [
+    '/notes/designing-reusable-component-apis',
+    'Designing reusable React component APIs',
+    'Designing reusable React component APIs · Hieu UI Lab',
+  ],
+  [
+    '/notes/strict-typescript-for-a-component-library',
+    'Strict TypeScript for a component library',
+    'Strict TypeScript for a component library · Hieu UI Lab',
+  ],
+  [
+    '/notes/react-hook-form-and-zod-in-a-form-library',
+    'React Hook Form and Zod in a component library',
+    'React Hook Form and Zod in a component library · Hieu UI Lab',
+  ],
+  [
+    '/notes/registry-validation-as-a-distribution-workflow',
+    'Registry validation as a distribution workflow',
+    'Registry validation as a distribution workflow · Hieu UI Lab',
+  ],
   ['/projects', 'Projects and case studies', 'Projects · Hieu UI Lab'],
   [
     '/projects/hieu-ui-lab-platform',
@@ -212,7 +251,7 @@ test.describe('mobile navigation', () => {
     await expect(page).toHaveURL(/\/about$/)
     await page.goBack()
     await expect(page).toHaveURL(/\/notes$/)
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Technical notes')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Engineering notes')
     await page.goForward()
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('About the lab')
   })

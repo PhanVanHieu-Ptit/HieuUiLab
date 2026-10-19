@@ -7,6 +7,7 @@ import type { ShowcaseContext } from '@/content/showcase-rules'
 import { showcaseProjects } from '@/content/showcase-projects'
 import { templates } from '@/content/templates'
 import { labDemos } from '@/lab'
+import { noteHref, notes } from '@/notes/manifest'
 import { getImplementedEntry } from '@/registry'
 import { createRoutes } from '@/router/routes'
 
@@ -21,6 +22,7 @@ function knownPaths(): Set<string> {
     ...experiments.map((experiment) => experimentHref(experiment)),
     ...projects.map((project) => `/projects/${project.slug}`),
     ...showcaseProjects.map((project) => `/projects/${project.slug}`),
+    ...notes.map((note) => noteHref(note)),
   ])
 }
 

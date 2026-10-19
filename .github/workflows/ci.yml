@@ -33,6 +33,9 @@ jobs:
       - run: pnpm typecheck
       # Also part of pnpm test; run on its own so a broken link or import in the docs is named.
       - run: pnpm docs:check
+      # Same for the engineering notes: a code block that is not in its file, or a missing
+      # section, is named on its own.
+      - run: pnpm notes:check
       - run: pnpm test
       - run: pnpm build
 

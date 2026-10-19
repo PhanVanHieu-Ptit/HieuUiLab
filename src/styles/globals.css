@@ -5,6 +5,8 @@
  * names (the docs, the README, the changelog), so it must not generate utilities.
  */
 @source not '../docs/content';
+@source not '../notes/content';
+@source not '../notes/README.md';
 @source not '../../README.md';
 @source not '../../CHANGELOG.md';
 @source not '../docs/README.md';

@@ -9,7 +9,7 @@ import type { ExperimentKindInfo } from '@/content/experiments'
 import { createDocsRoutes } from '@/docs/routes'
 import type { ProjectEntry } from '@/content/project-entries'
 import type { Template } from '@/content/templates'
-import type { Experiment, Note } from '@/content/types'
+import type { Experiment } from '@/content/types'
 import { HomePage } from '@/pages/home-page'
 import { NotFoundPage, RootErrorPage, RouteErrorPage } from '@/pages/not-found-page'
 import { RegistryIndexPage } from '@/pages/registry-index-page'
@@ -24,6 +24,7 @@ import {
   legacyLabLoader,
   noteLoader,
   projectLoader,
+  type NoteLoaderData,
   registryLoader,
   templateLoader,
 } from './loaders'
@@ -241,9 +242,9 @@ export function createRoutes(): RouteObject[] {
                       path: ':slug',
                       loader: noteLoader,
                       handle: handle(
-                        metaFromData<Note>((note) => ({
-                          title: note.title,
-                          description: note.summary,
+                        metaFromData<NoteLoaderData>(({ entry }) => ({
+                          title: entry.title,
+                          description: entry.summary,
                         })),
                       ),
                       lazy: { Component: async () => (await notePages()).NoteDetailPage },

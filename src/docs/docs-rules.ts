@@ -8,6 +8,14 @@ import {
   type Block,
   type ParsedDoc,
 } from './markdown'
+import {
+  blockShapeProblem,
+  linkShape,
+  validateFenceShape,
+  validateHeadingStructure,
+  validateInline,
+  type Report,
+} from './markdown-rules'
 
 // The rules every documentation page must follow, as a pure function over an injected context
 // (the same shape as `validateShowcase`). `src/test/docs-context.ts` supplies the real answers:
@@ -49,67 +57,13 @@ export interface DocsContext {
   }
 }
 
-/** Fence languages the docs use. `bash` and `text` are shown without highlighting. */
-export const fenceLanguages = ['tsx', 'ts', 'json', 'css', 'bash', 'text'] as const
-
-const ROOT_FILES = new Set([
-  'package.json',
-  'README.md',
-  'CHANGELOG.md',
-  'index.html',
-  'vite.config.ts',
-  'playwright.config.ts',
-  'eslint.config.js',
-  'tsconfig.json',
-  'tsconfig.app.json',
-  'tsconfig.node.json',
-  'pnpm-lock.yaml',
-])
-
-/** An inline code span that is meant as a path in this repository. */
-const REPO_PATH =
-  /^(?:(?:src|e2e|public|\.github)\/[\w./@-]*|[\w.-]+\.(?:json|md|html|ts|js|yaml))$/
-
-const HTML_ENTITY = /&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);/i
-
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
-
-/** Words that promise what is not built. The docs say what exists, and say what does not. */
-const PLACEHOLDERS =
-  /\b(?:TODO|TBD|coming soon|upcoming|will soon|in a future (?:release|version))\b/i
-
-/**
- * Spellings to keep consistent across pages. The pattern finds a term in running text (code spans
- * are not checked); only the spellings in `accepted` are allowed.
- */
-const TERMS: readonly { pattern: RegExp; accepted: readonly string[] }[] = [
-  { pattern: /\bgithub\b/gi, accepted: ['GitHub'] },
-  { pattern: /\btype ?script\b/gi, accepted: ['TypeScript'] },
-  { pattern: /\bjava ?script\b/gi, accepted: ['JavaScript'] },
-  { pattern: /\bnode\.? ?js\b/gi, accepted: ['Node.js'] },
-  { pattern: /\bpnpm\b/gi, accepted: ['pnpm'] },
-  { pattern: /\btailwind(?: ?css)?\b/gi, accepted: ['Tailwind', 'Tailwind CSS'] },
-  { pattern: /\bhieu[ -]?ui[ -]?lab\b/gi, accepted: ['Hieu UI Lab'] },
-  { pattern: /\bplaywright\b/gi, accepted: ['Playwright'] },
-  { pattern: /\bvitest\b/gi, accepted: ['Vitest'] },
-  { pattern: /\beslint\b/gi, accepted: ['ESLint'] },
-  { pattern: /\bprettier\b/gi, accepted: ['Prettier'] },
-  { pattern: /\bshiki\b/gi, accepted: ['Shiki'] },
-  { pattern: /\bdata[ -]?table\b/gi, accepted: ['data table', 'Data table', 'DataTable'] },
-]
 
 interface Page {
   node: DocNode
   source: string
   doc: ParsedDoc
   headingIds: ReadonlySet<string>
-}
-
-type Report = (id: string, message: string) => void
-
-function excerpt(text: string): string {
-  const flat = text.trim().replace(/\s+/g, ' ')
-  return flat.length > 48 ? `${flat.slice(0, 48)}…` : flat
 }
 
 /** Module specifiers a code sample imports. */
@@ -133,18 +87,16 @@ function linkProblem(
   pages: ReadonlyMap<string, Page>,
   here?: Page,
 ): string | undefined {
-  if (href.startsWith('https://')) return undefined
-  if (href.startsWith('http://')) return `link ${href} is not https`
-  if (href.startsWith('#')) {
-    const id = href.slice(1)
+  const shape = linkShape(href)
+  if (shape.kind === 'external') return undefined
+  if (shape.kind === 'invalid') return shape.message
+  if (shape.kind === 'fragment') {
     if (here === undefined) return `link ${href} has no page to point into`
-    return here.headingIds.has(id) ? undefined : `link ${href} points at no heading on this page`
+    return here.headingIds.has(shape.id)
+      ? undefined
+      : `link ${href} points at no heading on this page`
   }
-  if (!href.startsWith('/')) {
-    return `link "${href}" must be an https:// URL, a /path on this site, or a #heading`
-  }
-  const [beforeHash = '', hash] = href.split('#')
-  const path = beforeHash.split('?')[0] ?? ''
+  const { path, hash } = shape
   const moved = ctx.redirects[path]
   if (moved !== undefined) return `link ${href} uses ${path}, which moved to ${moved}`
 
@@ -215,47 +167,6 @@ function validateManifest(ctx: DocsContext, report: Report): void {
   }
 }
 
-function validateHeadings(page: Page, report: Report): void {
-  const id = page.node.entry.id
-  const { doc } = page
-  if (doc.title !== page.node.entry.title) {
-    report(
-      id,
-      doc.title === undefined
-        ? `the file must start with "# ${page.node.entry.title}"`
-        : `the file starts with "# ${doc.title}" but the manifest title is "${page.node.entry.title}"`,
-    )
-  }
-  if (doc.h1Count > 1) report(id, 'has more than one # heading; the first line is the only h1')
-
-  const headings = page.doc.blocks.filter(
-    (block): block is Extract<Block, { type: 'heading' }> => block.type === 'heading',
-  )
-  if (!headings.some((heading) => heading.depth === 2)) report(id, 'has no ## section')
-
-  let previous = 1
-  const seen = new Set<string>()
-  for (const heading of headings) {
-    // A second h1 is reported once, above.
-    if (heading.depth < 2) continue
-    if (heading.depth > 4) {
-      report(id, `heading "${heading.text}" is h${String(heading.depth)}; use ##, ###, or ####`)
-      continue
-    }
-    if (heading.depth > previous + 1) {
-      report(
-        id,
-        `heading "${heading.text}" skips from h${String(previous)} to h${String(heading.depth)}`,
-      )
-    }
-    previous = heading.depth
-    if (heading.text.trim() === '') report(id, 'has an empty heading')
-    if (heading.id === 'main') report(id, 'heading "main" would take the id of the page body')
-    if (seen.has(heading.id)) report(id, `two headings have the id "${heading.id}"`)
-    seen.add(heading.id)
-  }
-}
-
 function validateContent(
   page: Page,
   ctx: DocsContext,
@@ -266,19 +177,11 @@ function validateContent(
   const blocks = page.doc.blocks
 
   walkBlocks(blocks, (block) => {
-    if (block.type === 'unsupported') {
-      report(id, `${block.reason}: "${excerpt(block.raw)}"`)
-    } else if (block.type === 'invalid-directive') {
-      report(id, `${block.error}: "${excerpt(block.raw)}"`)
-    } else if (block.type === 'code') {
-      validateFence(block, page, ctx, report)
-    } else if (block.type === 'directive') {
-      validateDirective(block.directive, page, ctx, report)
-    } else if (block.type === 'table') {
-      validateTable(block, id, ctx, report)
-    } else if (block.type === 'alert' && block.blocks.length === 0) {
-      report(id, 'has an alert with no text')
-    }
+    const problem = blockShapeProblem(block)
+    if (problem) report(id, problem)
+    else if (block.type === 'code') validateFence(block, page, ctx, report)
+    else if (block.type === 'directive') validateDirective(block.directive, page, ctx, report)
+    else if (block.type === 'table') validateTable(block, id, ctx, report)
   })
 
   const exampleIds = new Map<string, string>()
@@ -293,45 +196,13 @@ function validateContent(
     exampleIds.set(example, slug)
   })
 
+  const checks = {
+    pathExists: (path: string) => ctx.pathExists(path),
+    linkProblem: (href: string) => linkProblem(href, ctx, pages, page),
+  }
   walkInlines(blocks, (inline) => {
-    if (inline.type === 'unsupported') {
-      report(id, `${inline.reason}: "${excerpt(inline.raw)}"`)
-    } else if (inline.type === 'link') {
-      const problem = linkProblem(inline.href, ctx, pages, page)
-      if (problem) report(id, problem)
-    } else if (inline.type === 'code') {
-      const text = inline.text
-      if (REPO_PATH.test(text) && (text.includes('/') || ROOT_FILES.has(text))) {
-        if (!ctx.pathExists(text.replace(/\/$/, ''))) {
-          report(id, `${text} does not exist in the repository`)
-        }
-      }
-    } else if (inline.type === 'text') {
-      validateText(inline.text, id, report)
-    }
+    validateInline(inline, id, checks, report)
   })
-}
-
-function validateText(text: string, id: string, report: Report): void {
-  const entity = HTML_ENTITY.exec(text)
-  if (entity) {
-    report(
-      id,
-      `contains the HTML entity ${entity[0]}; write the character itself, since entities are shown as typed`,
-    )
-  }
-  const placeholder = PLACEHOLDERS.exec(text)
-  if (placeholder)
-    report(id, `says "${placeholder[0]}"; document what exists, not what is promised`)
-  if (/\be2e\b/i.test(text))
-    report(id, 'writes "e2e" in prose; write "end-to-end" (e2e is for paths and commands)')
-  for (const { pattern, accepted } of TERMS) {
-    for (const match of text.matchAll(pattern)) {
-      if (!accepted.includes(match[0])) {
-        report(id, `writes "${match[0]}"; the spelling is "${accepted.join('" or "')}"`)
-      }
-    }
-  }
 }
 
 function validateFence(
@@ -341,23 +212,7 @@ function validateFence(
   report: Report,
 ): void {
   const id = page.node.entry.id
-  const label = block.attrs.title ?? (block.lang || 'untitled')
-  if (block.error) report(id, `code block "${label}": ${block.error}`)
-  if (!(fenceLanguages as readonly string[]).includes(block.lang)) {
-    report(
-      id,
-      `code block "${label}" ${block.lang === '' ? 'has no language' : `has the language "${block.lang}"`}; use ${fenceLanguages.join(', ')}`,
-    )
-  }
-  for (const key of Object.keys(block.attrs)) {
-    if (key !== 'title') report(id, `code block "${label}" has the unknown attribute "${key}"`)
-  }
-  if (!block.attrs.title) {
-    report(
-      id,
-      `a ${block.lang || 'plain'} code block has no title="…"; the title names what is copied`,
-    )
-  }
+  const label = validateFenceShape(block, id, report)
 
   if (block.lang !== 'ts' && block.lang !== 'tsx') return
 
@@ -504,7 +359,7 @@ export function validateDocs(ctx: DocsContext): string[] {
   }
 
   for (const page of pages.values()) {
-    validateHeadings(page, report)
+    validateHeadingStructure(page.node.entry.id, page.node.entry.title, page.doc, report)
     validateContent(page, ctx, pages, report)
     if (docFile(page.node.entry) === 'CHANGELOG.md') validateChangelog(page, report)
   }

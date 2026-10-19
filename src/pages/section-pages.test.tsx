@@ -86,7 +86,7 @@ describe('Project pages', () => {
 describe('Note pages', () => {
   it('lists notes with machine-readable dates', async () => {
     await renderRoute('/notes')
-    expect(screen.getByRole('heading', { level: 1, name: 'Technical notes' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Engineering notes' })).toBeInTheDocument()
     const link = screen.getByRole('link', { name: 'Switching themes without a first-paint flash' })
     expect(link).toHaveAttribute('href', '/notes/theme-without-flash')
     expect(document.querySelector('time[datetime="2026-10-13"]')).not.toBeNull()
@@ -100,9 +100,7 @@ describe('Note pages', () => {
         name: 'Switching themes without a first-paint flash',
       }),
     ).toBeInTheDocument()
-    expect(
-      screen.getByRole('heading', { level: 2, name: 'Decide before first paint' }),
-    ).toBeVisible()
+    expect(screen.getByRole('heading', { level: 2, name: 'Implementation example' })).toBeVisible()
   })
 })
 

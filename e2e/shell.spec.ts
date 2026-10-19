@@ -57,6 +57,13 @@ const routes = [
   '/projects/geospatial-3d-experiments',
   '/notes',
   '/notes/theme-without-flash',
+  '/notes/reduced-motion-beyond-css',
+  '/notes/contrast-checks-as-unit-tests',
+  '/notes/whole-card-links',
+  '/notes/designing-reusable-component-apis',
+  '/notes/strict-typescript-for-a-component-library',
+  '/notes/react-hook-form-and-zod-in-a-form-library',
+  '/notes/registry-validation-as-a-distribution-workflow',
   '/about',
 ]
 const themes = ['light', 'dark'] as const

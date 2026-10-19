@@ -1,10 +1,10 @@
 import { act, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
-import { getNote } from '@/content/notes'
 import { getProject } from '@/content/projects'
 import { getTemplate } from '@/content/templates'
 import { docNodes } from '@/docs/manifest'
+import { getNote, noteHref, notes } from '@/notes/manifest'
 import { renderRoute } from '@/test/render'
 
 const note = getNote('theme-without-flash')
@@ -29,7 +29,8 @@ const requiredRoutes: readonly [path: string, title: string | null][] = [
   // Every documentation page, taken from the manifest the routes are generated from.
   ...docNodes.map((node): [string, string] => [node.href, node.entry.title]),
   ['/notes', 'Notes'],
-  ['/notes/theme-without-flash', note?.title ?? 'missing note'],
+  // Every article, taken from the manifest the loader reads.
+  ...notes.map((entry): [string, string] => [noteHref(entry), entry.title]),
   ['/projects', 'Projects'],
   ['/projects/contrast-tested-design-system', project?.title ?? 'missing project'],
   ['/about', 'About'],

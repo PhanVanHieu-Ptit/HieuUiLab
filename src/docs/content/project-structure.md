@@ -14,11 +14,12 @@ src/
     showcase/    Project pages: media, detail, and the public-project note
   config/
     site.ts      Navigation and section copy: header, sidebar, drawer, search, footer
-  content/       Typed data: notes, case studies, public projects, templates, experiments
+  content/       Typed data: case studies, public projects, templates, experiments
   docs/          These pages: the Markdown, its manifest, the renderer, and the validator
   hooks/         Shared hooks: theme, reduced motion, overflow detection
   lab/           Geospatial and 3D experiments, lazy-loaded per route
   lib/           Small helpers: cn, clipboard, dates, syntax highlighting, heading slugs
+  notes/         Engineering notes: the Markdown articles, their manifest, and the validator
   pages/         Route components
   playground/    Control schemas and validation, the example allowlist, stages, workbench UI
   registry/      One folder per entry (demos.tsx and meta.ts), types, validation, catalog
@@ -54,8 +55,8 @@ Detail routes have a small loader that looks the slug up in local content. An un
     { index: true, lazy: { Component: … } },
     {
       path: ':slug',
-      loader: noteLoader, // the note, or a 404
-      handle: { meta: metaFromData<Note>((note) => ({ title: note.title })) },
+      loader: noteLoader, // the note and its Markdown, or a 404
+      handle: { meta: metaFromData<NoteLoaderData>(({ entry }) => ({ title: entry.title })) },
       lazy: { Component: … },
     },
   ],
@@ -68,7 +69,7 @@ The docs routes are generated from `src/docs/manifest.ts`, one per page and nest
 
 The shell, the home page, and the component and block indexes load up front. Docs pages, registry detail pages, the playground, the labs, notes, case studies, and the about page are lazy routes, each its own chunk. Loaders and route metadata are not lazy, so a 404 or redirect resolves before any page code downloads. Shiki and each lab demo load on demand inside their pages.
 
-A docs page's Markdown text is fetched by its loader, and the Markdown parser loads with the docs page component, so neither is part of the main bundle. The registry itself is still in the main bundle, because the navigation lists every entry and each entry carries its source text.
+A docs page's Markdown text is fetched by its loader, and the Markdown parser loads with the docs page component, so neither is part of the main bundle. An engineering note works the same way, with one chunk per article. The registry itself is still in the main bundle, because the navigation lists every entry and each entry carries its source text.
 
 ## Documentation {#docs}
 

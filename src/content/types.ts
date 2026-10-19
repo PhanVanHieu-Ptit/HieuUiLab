@@ -12,16 +12,6 @@ export interface ContentSection {
   code?: { language: 'tsx' | 'bash' | 'text'; title?: string; code: string }
 }
 
-export interface Note {
-  slug: string
-  title: string
-  summary: string
-  /** ISO date (YYYY-MM-DD) the note was written. */
-  date: string
-  tags: readonly string[]
-  body: readonly ContentSection[]
-}
-
 /** An engineering case study. Content describes work that exists in this repository. */
 export interface Project {
   slug: string

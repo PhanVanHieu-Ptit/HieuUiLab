@@ -12,7 +12,6 @@ import {
   featuredShowcaseSlugs,
   featuredTemplateSlugs,
 } from './landing'
-import { notes } from './notes'
 import { getProject, projects } from './projects'
 import { getShowcaseProject, showcaseProjects } from './showcase-projects'
 import { techStack } from './tech-stack'
@@ -24,7 +23,6 @@ function expectUnique(values: readonly string[]) {
 
 describe('content', () => {
   it('uses unique slugs per collection', () => {
-    expectUnique(notes.map((note) => note.slug))
     expectUnique(projects.map((project) => project.slug))
     expectUnique(experiments.map((experiment) => experiment.slug))
     expectUnique(templates.map((template) => template.slug))
@@ -57,17 +55,9 @@ describe('content', () => {
     }
   })
 
-  it('lists notes newest first with valid ISO dates', () => {
-    for (const note of notes) {
-      expect(note.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-      expect(Number.isNaN(Date.parse(note.date))).toBe(false)
-    }
-    const dates = notes.map((note) => note.date)
-    expect(dates).toEqual([...dates].sort().reverse())
-  })
-
-  it('gives every article a body', () => {
-    for (const item of [...notes, ...projects, ...experiments]) {
+  // The engineering notes are Markdown, checked by `src/notes/notes.test.ts`.
+  it('gives every case study and experiment a body', () => {
+    for (const item of [...projects, ...experiments]) {
       expect(item.body.length, item.slug).toBeGreaterThan(0)
       for (const section of item.body) {
         expect(section.paragraphs.length, `${item.slug}: ${section.heading}`).toBeGreaterThan(0)

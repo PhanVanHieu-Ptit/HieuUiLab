@@ -18,19 +18,21 @@ import {
   type ShowcaseProject,
 } from '@/content/showcase-types'
 import { templateBlocks, templateHref, type Template } from '@/content/templates'
-import type { Experiment, Note, Project } from '@/content/types'
+import type { Experiment, Project } from '@/content/types'
 import { formatDate } from '@/lib/format-date'
+import { noteHref, type NoteEntry } from '@/notes/manifest'
 import { getRegistryEntry } from '@/registry'
 
 import { StatusBadge } from './status-badge'
 
 type HeadingLevel = 'h2' | 'h3'
 
+/** An article: its date, title, summary, and tags. Only the title is a link, so the tags are plain labels. */
 export function NoteCard({
   note,
   headingLevel = 'h3',
 }: {
-  note: Note
+  note: NoteEntry
   headingLevel?: HeadingLevel
 }) {
   return (
@@ -41,7 +43,7 @@ export function NoteCard({
         </time>
         <CardTitle as={headingLevel}>
           <CardLink asChild>
-            <Link to={`/notes/${note.slug}`}>{note.title}</Link>
+            <Link to={noteHref(note)}>{note.title}</Link>
           </CardLink>
         </CardTitle>
         <CardDescription className="line-clamp-3">{note.summary}</CardDescription>
