@@ -99,7 +99,7 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
     'A contrast-tested design system',
     'A contrast-tested design system · Hieu UI Lab',
   ],
-  ['/about', 'About the lab', 'About · Hieu UI Lab'],
+  ['/about', 'About Hieu', 'About · Hieu UI Lab'],
 ]
 
 test('every required URL loads directly and survives a refresh', async ({ page }) => {
@@ -253,7 +253,7 @@ test.describe('mobile navigation', () => {
     await expect(page).toHaveURL(/\/notes$/)
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Engineering notes')
     await page.goForward()
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('About the lab')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('About Hieu')
   })
 })
 

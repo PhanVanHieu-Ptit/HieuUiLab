@@ -150,10 +150,13 @@ function proseOf(project: ShowcaseProject): string[] {
   ]
 }
 
+/** What an evidence check needs from the repository; the profile rules share it. */
+export type EvidenceContext = Pick<ShowcaseContext, 'fileExists' | 'fileContains'>
+
 function checkPath(
   path: string,
   where: string,
-  ctx: ShowcaseContext,
+  ctx: EvidenceContext,
   problems: string[],
   anchor?: string,
 ) {
@@ -166,7 +169,12 @@ function checkPath(
   }
 }
 
-function checkEvidence(ref: EvidenceRef, where: string, ctx: ShowcaseContext, problems: string[]) {
+export function checkEvidence(
+  ref: EvidenceRef,
+  where: string,
+  ctx: EvidenceContext,
+  problems: string[],
+) {
   if (ref.label.trim() === '') problems.push(`${where}: evidence has no label`)
   checkPath(ref.path, where, ctx, problems, ref.anchor)
 }

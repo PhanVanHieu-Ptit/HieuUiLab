@@ -41,6 +41,8 @@ export interface Crumb {
 
 export const siteConfig = {
   name: 'Hieu UI Lab',
+  /** How the About page names the site's author. The profile content lives in `content/profile.ts`. */
+  ownerName: 'Hieu',
   description:
     'Reusable React components, UI blocks, and frontend engineering experiments, documented and tested.',
   githubUrl: 'https://github.com/PhanVanHieu-Ptit/HieuUiLab',
@@ -91,9 +93,9 @@ export const sections = {
   },
   about: {
     title: 'About',
-    heading: 'About the lab',
+    heading: `About ${siteConfig.ownerName}`,
     description:
-      'What Hieu UI Lab is, what it is built with, and what is finished or still planned.',
+      'Who builds Hieu UI Lab, what the work in this repository shows, what it is built with, and what is still being learned.',
   },
 } as const
 
@@ -111,7 +113,12 @@ export const mainNav: readonly NavItem[] = [
   { title: 'Projects', href: '/projects', description: 'Projects and case studies.' },
   { title: 'Notes', href: '/notes', description: 'Engineering notes and write-ups.' },
   { title: 'Docs', href: '/docs' },
-  { title: 'About', href: '/about', description: 'What the lab is.', headerFrom: 'xl' },
+  {
+    title: 'About',
+    href: '/about',
+    description: 'Who builds the lab and what the work shows.',
+    headerFrom: 'xl',
+  },
 ]
 
 function registryNavItems(kind: RegistryKind): NavItem[] {

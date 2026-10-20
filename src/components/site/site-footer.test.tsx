@@ -2,6 +2,7 @@ import { screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { siteConfig } from '@/config/site'
+import { profile } from '@/content/profile'
 import { renderRoute } from '@/test/render'
 
 describe('SiteFooter', () => {
@@ -13,7 +14,7 @@ describe('SiteFooter', () => {
     }
   })
 
-  it('links to every section, the source, and GitHub contact without an email address', async () => {
+  it('links to every section, the source, and the contact links the profile lists', async () => {
     await renderRoute('/')
     const footer = screen.getByRole('contentinfo')
 
@@ -37,6 +38,10 @@ describe('SiteFooter', () => {
     expect(
       within(footer).getByRole('link', { name: 'Repository (opens in a new tab)' }),
     ).toHaveAttribute('href', siteConfig.githubUrl)
-    expect(footer.querySelector('a[href^="mailto:"]')).toBeNull()
+    // An email address appears only when the profile lists one; the footer never invents it.
+    const email = profile.links.find((link) => link.kind === 'email')
+    expect(footer.querySelector('a[href^="mailto:"]')?.getAttribute('href') ?? null).toBe(
+      email ? `mailto:${email.address}` : null,
+    )
   })
 })
