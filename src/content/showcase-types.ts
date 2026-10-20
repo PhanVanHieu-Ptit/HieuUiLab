@@ -127,7 +127,10 @@ export const visibilityLabel: Readonly<Record<ShowcaseProject['visibility'], str
 }
 
 /** Where a file of a project is on GitHub, e.g. for an evidence link. */
-export function repositoryFileUrl(repository: ShowcaseRepository, path: string): string {
+export function repositoryFileUrl(
+  repository: Pick<ShowcaseRepository, 'url'>,
+  path: string,
+): string {
   return `${repository.url}/blob/main/${path}`
 }
 

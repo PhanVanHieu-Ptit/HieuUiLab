@@ -99,19 +99,19 @@ Run `pnpm check` before pushing. CI also runs `pnpm docs:check` and `pnpm notes:
 
 ## Routes
 
-| Path                                            | Page                                                    |
-| ----------------------------------------------- | ------------------------------------------------------- |
-| `/`                                             | Landing page                                            |
-| `/components`, `/components/:slug`              | Registry components (docs layout)                       |
-| `/blocks`, `/blocks/:slug`                      | Registry blocks (docs layout)                           |
-| `/docs`, `/docs/<page>`, `/docs/<page>/<child>` | Documentation (Markdown, nested; see `src/docs/`)       |
-| `/templates`, `/templates/:slug`                | Example apps built from the blocks (docs layout)        |
-| `/playground`, `/playground?example=<id>`       | Interactive examples with typed controls                |
-| `/labs`, `/labs/maps`, `/labs/3d`               | Experiments and their categories                        |
-| `/labs/:kind/:slug`                             | One experiment, e.g. `/labs/3d/webgl-scene`             |
-| `/notes`, `/notes/:slug`                        | Engineering notes (filter by `?tag=`)                   |
-| `/projects`, `/projects/:slug`                  | Public projects and case studies                        |
-| `/about`                                        | About the lab, built from the registry and content data |
+| Path                                            | Page                                                   |
+| ----------------------------------------------- | ------------------------------------------------------ |
+| `/`                                             | Landing page                                           |
+| `/components`, `/components/:slug`              | Registry components (docs layout)                      |
+| `/blocks`, `/blocks/:slug`                      | Registry blocks (docs layout)                          |
+| `/docs`, `/docs/<page>`, `/docs/<page>/<child>` | Documentation (Markdown, nested; see `src/docs/`)      |
+| `/templates`, `/templates/:slug`                | Example apps built from the blocks (docs layout)       |
+| `/playground`, `/playground?example=<id>`       | Interactive examples with typed controls               |
+| `/labs`, `/labs/maps`, `/labs/3d`               | Experiments and their categories                       |
+| `/labs/:kind/:slug`                             | One experiment, e.g. `/labs/3d/webgl-scene`            |
+| `/notes`, `/notes/:slug`                        | Engineering notes (filter by `?tag=`)                  |
+| `/projects`, `/projects/:slug`                  | Public projects and case studies                       |
+| `/about`                                        | About the author and the lab: skills, goals, inventory |
 
 The route tree is in `src/router/routes.tsx` (React Router data router):
 
@@ -212,6 +212,31 @@ in `src/content/showcase-projects.test.ts`.
   `public/showcase/<slug>/` with `alt`, `caption`, `width`, and `height`. All are checked to exist.
 - **Case studies** of part of a project stay in `src/content/projects.ts`; link them with
   `relatedCaseStudies`. A slug is unique across projects and case studies.
+
+## Editing the About page
+
+The About page (`/about`) reads one typed profile, `src/content/profile.ts`: the headline, the
+introduction, the skill domains, the learning goals, and the contact links are written once there.
+The footer's Contact group reads the same links. `validateProfile`
+(`src/content/profile-rules.ts`) checks the profile against the repository in
+`src/content/profile.test.ts`, which runs in `pnpm test`.
+
+- **Skills are domains with evidence.** Each domain cites source files, with an optional `anchor`
+  (text that must occur in the file), and links to at least one project or note by slug. The
+  validator fails when a path, an anchor, a slug, or a tool's npm package does not exist. There are
+  no ratings or years: the evidence is the claim.
+- **Learning goals are not achievements.** A goal says what the repository has today.
+  `notYetDependency` names a package that must not be in `package.json` yet; once it is installed
+  the test fails, so the goal has to be rewritten as work that was done.
+- **No employment, qualification, or metric fields.** The type has none. The validator also rejects
+  numeric metrics, words about employers, customers, or production use, qualification wording, and
+  phrases such as "expert" or "production-proven". That is a tripwire; the evidence requirement is
+  the real control.
+- **Links appear only when they are real.** `links` lists `github`, `repository`, and `issues`
+  today. To add a CV, put a PDF in `public/` and add `{ kind: 'cv', path: '/cv.pdf' }`; to add an
+  email, add `{ kind: 'email', address: '…' }`. The validator checks that the file exists and that
+  the address is well formed, and then the About page and the footer show it. A link that is not
+  listed is not shown.
 
 ## Adding a playground example
 

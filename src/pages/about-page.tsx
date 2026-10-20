@@ -1,15 +1,20 @@
-import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router'
 
+import { DomainCard } from '@/components/about/domain-card'
+import { GoalList } from '@/components/about/goal-list'
+import { ProfileLinkButtons } from '@/components/about/profile-links'
+import { LandingSection } from '@/components/landing/landing-section'
 import { TechStackList } from '@/components/landing/tech-stack-list'
+import { NoteCard, ShowcaseProjectCard } from '@/components/site/content-cards'
 import { PageContainer, PageHeader, SectionHeader } from '@/components/site/page'
-import { SmartLink } from '@/components/site/smart-link'
 import { StatusBadge } from '@/components/site/status-badge'
-import { buttonVariants } from '@/components/ui/button'
-import { docsNav, flattenNavItems, sections, siteConfig } from '@/config/site'
+import { docsNav, flattenNavItems, sections } from '@/config/site'
 import { experiments } from '@/content/experiments'
+import { featuredShowcaseSlugs, recentNotesCount } from '@/content/landing'
+import { contactLinks, profile, profileLinks } from '@/content/profile'
 import { projects } from '@/content/projects'
-import { showcaseProjects } from '@/content/showcase-projects'
+import { getShowcaseProject, showcaseProjects } from '@/content/showcase-projects'
+import type { ShowcaseProject } from '@/content/showcase-types'
 import { templates } from '@/content/templates'
 import { notes } from '@/notes/manifest'
 import { getRegistryEntries } from '@/registry'
@@ -70,13 +75,83 @@ const planned = flattenNavItems(docsNav.flatMap((section) => section.items)).fil
 )
 
 export function AboutPage() {
+  const featuredProjects = featuredShowcaseSlugs
+    .map((slug) => getShowcaseProject(slug))
+    .filter((project): project is ShowcaseProject => project !== undefined)
+  const recentNotes = notes.slice(0, recentNotesCount)
+
   return (
     <PageContainer className="flex flex-col gap-14 pt-6 pb-section">
       <PageHeader
         eyebrow={sections.about.title}
         title={sections.about.heading}
-        description={siteConfig.description}
+        description={profile.headline}
+        actions={<ProfileLinkButtons links={contactLinks()} />}
       />
+
+      <section aria-label="Introduction" className="flex max-w-prose flex-col gap-4">
+        {profile.intro.map((paragraph) => (
+          <p key={paragraph} className="leading-7 text-pretty">
+            {paragraph}
+          </p>
+        ))}
+      </section>
+
+      <section aria-labelledby="skills" className="flex scroll-mt-24 flex-col gap-6">
+        <SectionHeader
+          id="skills"
+          title="Skills by engineering domain"
+          anchorLabel="Skills by engineering domain"
+          description="What this repository shows in each area, with the code, projects, and notes behind it. There are no ratings: the evidence is the claim."
+        />
+        <ul className="grid gap-4 md:grid-cols-2">
+          {profile.domains.map((domain) => (
+            <li key={domain.id} className="flex">
+              <DomainCard domain={domain} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <LandingSection
+        id="projects"
+        title="Public projects"
+        description="Each one lists its source, its decisions, and its known limits."
+        more={{ label: 'All projects', href: '/projects' }}
+      >
+        <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {featuredProjects.map((project) => (
+            <li key={project.slug} className="flex">
+              <ShowcaseProjectCard project={project} />
+            </li>
+          ))}
+        </ul>
+      </LandingSection>
+
+      <LandingSection
+        id="notes"
+        title="Recent engineering notes"
+        description="Each article says how its claims were checked and what was not."
+        more={{ label: 'All notes', href: '/notes' }}
+      >
+        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {recentNotes.map((note) => (
+            <li key={note.slug} className="flex">
+              <NoteCard note={note} />
+            </li>
+          ))}
+        </ul>
+      </LandingSection>
+
+      <section aria-labelledby="learning-goals" className="flex scroll-mt-24 flex-col gap-6">
+        <SectionHeader
+          id="learning-goals"
+          title="Learning goals, not achievements"
+          anchorLabel="Learning goals"
+          description="Things still to learn. None is claimed as experience, and each says what this repository has today."
+        />
+        <GoalList goals={profile.goals} />
+      </section>
 
       <section aria-labelledby="what-it-is" className="flex max-w-prose flex-col gap-4">
         <SectionHeader id="what-it-is" title="What it is" anchorLabel="What it is" />
@@ -148,23 +223,10 @@ export function AboutPage() {
           id="source"
           title="Source and contact"
           anchorLabel="Source and contact"
-          description="The lab is built in the open. Questions and suggestions go through GitHub issues."
+          description="The lab is built in the open. The source, its history, and the issue tracker are on GitHub."
         />
         <div className="flex flex-wrap gap-3">
-          {[
-            { label: 'Repository', href: siteConfig.githubUrl },
-            { label: 'Open an issue', href: siteConfig.issuesUrl },
-            { label: 'GitHub profile', href: siteConfig.githubProfileUrl },
-          ].map((link) => (
-            <SmartLink
-              key={link.href}
-              href={link.href}
-              className={buttonVariants({ variant: 'outline', size: 'sm' })}
-            >
-              {link.label}
-              <ArrowUpRight aria-hidden="true" />
-            </SmartLink>
-          ))}
+          <ProfileLinkButtons links={profileLinks()} />
         </div>
       </section>
     </PageContainer>
