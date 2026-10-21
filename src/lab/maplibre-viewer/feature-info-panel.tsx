@@ -121,7 +121,10 @@ export function FeatureInfoPanel({ selected, onClear }: FeatureInfoPanelProps) {
   const headingId = useId()
   const details = selected ? getFeatureDetails(selected) : null
   return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-3 rounded-lg border bg-surface p-4">
+    <section
+      aria-labelledby={headingId}
+      className="flex flex-col gap-3 rounded-lg border bg-surface p-4"
+    >
       <div className="flex items-center justify-between gap-2">
         <h3 id={headingId} className="text-sm font-semibold">
           Selected feature

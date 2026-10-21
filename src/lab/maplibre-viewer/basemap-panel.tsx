@@ -19,7 +19,12 @@ export interface BasemapPanelProps {
  * Which basemap is showing, and the opt-in to a provider’s tiles. Nothing is requested from a
  * provider until the visitor presses the button, and the panel says what that sends.
  */
-export function BasemapPanel({ basemap, online, onRequestOnline, onUseBundled }: BasemapPanelProps) {
+export function BasemapPanel({
+  basemap,
+  online,
+  onRequestOnline,
+  onUseBundled,
+}: BasemapPanelProps) {
   const headingId = useId()
   const noteId = useId()
   const usingOnline = basemap.requested === 'online'
@@ -78,7 +83,13 @@ export function BasemapPanel({ basemap, online, onRequestOnline, onUseBundled }:
           <p id={noteId} className="text-xs text-pretty text-muted-foreground">
             {describeUnavailable(online)}
           </p>
-          <Button variant="outline" size="sm" className="self-start" disabled aria-describedby={noteId}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="self-start"
+            disabled
+            aria-describedby={noteId}
+          >
             <Globe aria-hidden="true" />
             Load online basemap
           </Button>

@@ -27,6 +27,18 @@ const fake = vi.hoisted(() => {
 
   class GpuError extends Error {}
 
+  /**
+   * What the library was asked to do, in order, and never reset: the controller loads the library
+   * once per file, so the worker hand-over happens during the first test that builds a map.
+   */
+  const libraryEvents: string[] = []
+  const workerUrls: string[] = []
+  const workerUrl = '/assets/maplibre-gl-worker.test.js'
+  const setWorkerUrl = (url: string) => {
+    libraryEvents.push('setWorkerUrl')
+    workerUrls.push(url)
+  }
+
   class FakeControl {
     constructor(readonly options?: Record<string, unknown>) {}
   }
@@ -66,6 +78,7 @@ const fake = vi.hoisted(() => {
 
     constructor(readonly options: Record<string, unknown>) {
       if (FakeMap.failWith) throw FakeMap.failWith
+      libraryEvents.push('new Map')
       FakeMap.instances.push(this)
       this.style = options.style as FakeStyle
       this.indexLayers()
@@ -120,7 +133,10 @@ const fake = vi.hoisted(() => {
       this.record('setStyle', style, options)
       this.style = style
       this.indexLayers()
-      if (FakeMap.autoLoad) queueMicrotask(() => { this.emit('style.load') })
+      if (FakeMap.autoLoad)
+        queueMicrotask(() => {
+          this.emit('style.load')
+        })
     }
 
     setLayoutProperty(...args: unknown[]) {
@@ -176,7 +192,17 @@ const fake = vi.hoisted(() => {
     }
   }
 
-  return { FakeMap, FakeNavigation, FakeScale, FakeAttribution, GpuError }
+  return {
+    FakeMap,
+    FakeNavigation,
+    FakeScale,
+    FakeAttribution,
+    GpuError,
+    libraryEvents,
+    workerUrls,
+    workerUrl,
+    setWorkerUrl,
+  }
 })
 
 vi.mock('maplibre-gl', () => ({
@@ -185,8 +211,10 @@ vi.mock('maplibre-gl', () => ({
   ScaleControl: fake.FakeScale,
   AttributionControl: fake.FakeAttribution,
   GPUInitializationError: fake.GpuError,
+  setWorkerUrl: fake.setWorkerUrl,
 }))
 vi.mock('maplibre-gl/dist/maplibre-gl.css', () => ({}))
+vi.mock('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url', () => ({ default: fake.workerUrl }))
 
 type FakeMap = InstanceType<typeof fake.FakeMap>
 
@@ -269,6 +297,18 @@ async function swapped(map: FakeMap, count = 1) {
 }
 
 describe('creating the map', () => {
+  // A bundled app has no worker beside the library, so a map that starts without this URL fails in
+  // a real browser while every test that mocks the library still passes.
+  it('hands the library its worker once, before the first map exists', async () => {
+    await create()
+    await create()
+    expect(fake.workerUrls).toEqual([fake.workerUrl])
+    expect(fake.libraryEvents.indexOf('setWorkerUrl')).toBeGreaterThanOrEqual(0)
+    expect(fake.libraryEvents.indexOf('setWorkerUrl')).toBeLessThan(
+      fake.libraryEvents.indexOf('new Map'),
+    )
+  })
+
   it('builds one map with the bundled style and resolves once it has drawn', async () => {
     const { map } = await create()
     expect(fake.FakeMap.instances).toHaveLength(1)
@@ -311,7 +351,9 @@ describe('creating the map', () => {
 
   it('starts with the visitor’s visibility baked into the style', async () => {
     const { map } = await create(makeOptions({ sites: false, route: true, zones: true }))
-    const style = map.options.style as { layers: { id: string; layout?: { visibility?: string } }[] }
+    const style = map.options.style as {
+      layers: { id: string; layout?: { visibility?: string } }[]
+    }
     const sites = style.layers.find((layer) => layer.id === 'lab-sites-circle')
     expect(sites?.layout?.visibility).toBe('none')
   })
@@ -321,7 +363,11 @@ describe('failing to create the map', () => {
   it('reports missing WebGL2 as such', async () => {
     fake.FakeMap.failWith = new fake.GpuError('no gpu')
     await expect(
-      createMapController(document.createElement('div'), makeOptions(), new AbortController().signal),
+      createMapController(
+        document.createElement('div'),
+        makeOptions(),
+        new AbortController().signal,
+      ),
     ).rejects.toMatchObject({ name: 'MapInitError', kind: 'webgl2-unavailable' })
     expect(fake.FakeMap.instances).toHaveLength(0)
   })
@@ -454,7 +500,11 @@ describe('applying the state', () => {
       ['lab-sites-circle', 'visibility', 'none'],
     ])
     controller.setLayerVisibility('sites', true)
-    expect(map.callsTo('setLayoutProperty').at(-1)).toEqual(['lab-sites-circle', 'visibility', 'visible'])
+    expect(map.callsTo('setLayoutProperty').at(-1)).toEqual([
+      'lab-sites-circle',
+      'visibility',
+      'visible',
+    ])
   })
 
   it('highlights a feature by filter and clears it with a filter that matches nothing', async () => {
@@ -473,7 +523,11 @@ describe('applying the state', () => {
   it('repaints from a new palette without a new map', async () => {
     const { controller, map } = await create()
     controller.setPalette(derivePalette({ ...FALLBACK_TOKENS, primary: '#ff0000' }))
-    expect(map.callsTo('setPaintProperty')).toContainEqual(['lab-route-line', 'line-color', '#ff0000'])
+    expect(map.callsTo('setPaintProperty')).toContainEqual([
+      'lab-route-line',
+      'line-color',
+      '#ff0000',
+    ])
     expect(map.callsTo('setPaintProperty').some(([id]) => id === 'lab-ocean')).toBe(true)
     expect(fake.FakeMap.instances).toHaveLength(1)
   })
@@ -637,11 +691,15 @@ describe('the online basemap', () => {
     await swapped(map)
     const [style, options] = map.callsTo('setStyle')[0] ?? []
     expect(options).toEqual({ diff: false })
-    const composed = style as { layers: { id: string; layout?: { visibility?: string }; filter?: unknown }[] }
+    const composed = style as {
+      layers: { id: string; layout?: { visibility?: string }; filter?: unknown }[]
+    }
     const ids = composed.layers.map((layer) => layer.id)
     expect(ids[0]).toBe('provider-water')
     expect(ids.at(-1)).toBe('lab-sites-circle')
-    expect(composed.layers.find((layer) => layer.id === 'lab-zones-fill')?.layout?.visibility).toBe('none')
+    expect(composed.layers.find((layer) => layer.id === 'lab-zones-fill')?.layout?.visibility).toBe(
+      'none',
+    )
     expect(composed.layers.find((layer) => layer.id === 'lab-sites-selected')?.filter).toEqual([
       '==',
       ['get', 'id'],
@@ -658,7 +716,9 @@ describe('the online basemap', () => {
     expect(map.callsTo('setMinZoom').at(-1)).toEqual([2])
     const credits = map.attribution()?.options?.customAttribution as string[]
     expect(credits[0]).toBe('Example &lt;b&gt;Maps&lt;/b&gt;')
-    expect(map.controls.filter((control) => control instanceof fake.FakeAttribution)).toHaveLength(1)
+    expect(map.controls.filter((control) => control instanceof fake.FakeAttribution)).toHaveLength(
+      1,
+    )
   })
 
   it('reports ready on the first idle after the swap, and only then', async () => {
@@ -815,16 +875,21 @@ describe('the online basemap', () => {
       }
     }
 
-    it.each([401, 403, 429])('falls back to the bundled map after repeated HTTP %i', async (status) => {
-      const { map, options } = await online()
-      refuse(map, status, 2)
-      expect(options.onBasemapFailed).not.toHaveBeenCalled()
-      refuse(map, status, 1)
-      expect(options.onBasemapFailed).toHaveBeenCalledTimes(1)
-      expect(String(options.onBasemapFailed.mock.calls[0]?.[0])).toContain(`HTTP ${String(status)}`)
-      expect(String(options.onBasemapFailed.mock.calls[0]?.[0])).not.toContain(SECRET)
-      expect(map.callsTo('setStyle')).toHaveLength(2)
-    })
+    it.each([401, 403, 429])(
+      'falls back to the bundled map after repeated HTTP %i',
+      async (status) => {
+        const { map, options } = await online()
+        refuse(map, status, 2)
+        expect(options.onBasemapFailed).not.toHaveBeenCalled()
+        refuse(map, status, 1)
+        expect(options.onBasemapFailed).toHaveBeenCalledTimes(1)
+        expect(String(options.onBasemapFailed.mock.calls[0]?.[0])).toContain(
+          `HTTP ${String(status)}`,
+        )
+        expect(String(options.onBasemapFailed.mock.calls[0]?.[0])).not.toContain(SECRET)
+        expect(map.callsTo('setStyle')).toHaveLength(2)
+      },
+    )
 
     it('falls back once, however many more errors follow', async () => {
       const { map, options } = await online()

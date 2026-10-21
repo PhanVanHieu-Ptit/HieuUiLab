@@ -83,7 +83,11 @@ describe('resolveOnlineBasemap', () => {
 
   describe('rejects an unsafe or malformed URL', () => {
     const cases: [string, string, OnlineBasemap][] = [
-      ['plain http', 'http://tiles.example.com/style.json', { status: 'invalid', reason: 'not-https' }],
+      [
+        'plain http',
+        'http://tiles.example.com/style.json',
+        { status: 'invalid', reason: 'not-https' },
+      ],
       ['a javascript: URL', 'javascript:alert(1)', { status: 'invalid', reason: 'not-https' }],
       ['a data: URL', 'data:text/plain,hello', { status: 'invalid', reason: 'not-https' }],
       ['text that is not a URL', 'not a url', { status: 'invalid', reason: 'not-a-url' }],
@@ -112,7 +116,10 @@ describe('resolveOnlineBasemap', () => {
       expect(result.status).toBe('ready')
     }
     expect(
-      resolveOnlineBasemap({ ...ready, VITE_MAP_STYLE_URL: 'http://localhost.evil.example/s.json' }),
+      resolveOnlineBasemap({
+        ...ready,
+        VITE_MAP_STYLE_URL: 'http://localhost.evil.example/s.json',
+      }),
     ).toEqual({ status: 'invalid', reason: 'not-https' })
   })
 })

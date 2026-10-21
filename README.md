@@ -19,7 +19,8 @@ copyable source, props documentation, and tests.
 | Data display: `Table` (sortable headers), `Pagination`, `StatusBadge`, `MetricCard`, `NotificationItem`; blocks `DataTable`, `DataToolbar`, `ErrorState`, `ActivityList`, `DetailPanel`, `OrdersDashboard` (typed mock data, in memory)                                                                                                                                                           | Experimental, unit + e2e tested                                                                                                               |
 | Page blocks (category Pages): `DashboardOverview`, `MonitoringDashboard`, `CrudManagementPage`, `SearchFilterToolbar`, `UserProfileSettings`, `NotificationCenter`, `SignInPage` (UI only, no authentication), `MultiStepOnboarding`; plus `Sparkline` (typed, clearly marked mock data in demos; no backend)                                                                                     | Experimental, unit + e2e tested                                                                                                               |
 | Preview width switcher (Full / Tablet 768 / Mobile 375) on examples that set `preview.responsive`; the page blocks reflow with container queries                                                                                                                                                                                                                                                  | Implemented, unit + e2e tested                                                                                                                |
-| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                                                                                                                                                                                                                                                                                          | Experimental, unit + e2e tested; no map or 3D library                                                                                         |
+| Lab: map projection explorer (SVG), WebGL2 scene with reduced-motion and fallback states                                                                                                                                                                                                                                                                                                          | Experimental, unit + e2e tested; written without a map or 3D library                                                                          |
+| Lab: interactive map viewer at `/labs/maps/maplibre-viewer`, built on MapLibre GL JS: toggleable layers with status, selectable features and an info panel, a route, a legend, a bundled offline basemap, and an opt-in online basemap with documented attribution and usage terms                                                                                                                | Experimental, unit + e2e tested against the real library in the production build; settings and provider terms in `/docs/map-viewer`           |
 | Routing: nested routes, breadcrumbs, titles/meta, 404s, redirects, lazy pages (see below)                                                                                                                                                                                                                                                                                                         | Implemented, unit + e2e tested (direct load, refresh, back/forward)                                                                           |
 | Playground at `/playground`: Button, Input, Badge, Dialog, and Data table with typed controls (boolean, text, option, number), light/dark and preview-width switching, reset, copyable usage code and configuration. Pre-defined examples only; no code is compiled or evaluated                                                                                                                  | Implemented, unit + e2e tested                                                                                                                |
 | Templates at `/templates`: Admin dashboard, Operations monitoring, and Data management workspace, each an example app composed only from existing blocks, with invented data, a resizable live preview, and its source                                                                                                                                                                            | Experimental, unit + e2e tested                                                                                                               |
@@ -35,7 +36,7 @@ copyable source, props documentation, and tests.
 ## Stack
 
 React 19 · TypeScript (strict) · Vite · Tailwind CSS v4 with semantic tokens · Radix UI ·
-Lucide · React Router · React Hook Form + Zod · Shiki (lazy-loaded) · marked (docs Markdown) · Vitest + Testing Library · Playwright · ESLint +
+Lucide · React Router · React Hook Form + Zod · Shiki (lazy-loaded) · MapLibre GL JS (lazy-loaded, map viewer only) · marked (docs Markdown) · Vitest + Testing Library · Playwright · ESLint +
 Prettier · pnpm.
 
 TypeScript is pinned to 6.0.x and ESLint to 9.x because `typescript-eslint` and
@@ -62,12 +63,19 @@ pnpm exec playwright install chromium
 
 ### Environment variables
 
-The app needs none, so there is no `.env.example`. Never commit `.env` files: `.gitignore`
-excludes `.env` and `.env.*` (except `.env.example`) and `*.local`.
+The app needs none to run. The map viewer's optional online basemap reads four build-time
+variables, listed with comments in `.env.example`. With none set, the viewer draws its bundled
+basemap and makes no network requests. Vite inlines `VITE_` variables into the public bundle, so
+never put a secret in one, and read the provider's terms first (`/docs/map-viewer`). Never commit
+`.env` files: `.gitignore` excludes `.env` and `.env.*` (except `.env.example`) and `*.local`.
 
-| Variable   | Used by    | Default | Purpose                                  |
-| ---------- | ---------- | ------- | ---------------------------------------- |
-| `E2E_PORT` | Playwright | `47317` | Port for the preview server in e2e tests |
+| Variable                 | Used by                   | Default       | Purpose                                                                   |
+| ------------------------ | ------------------------- | ------------- | ------------------------------------------------------------------------- |
+| `VITE_MAP_STYLE_URL`     | Map viewer, at build time | unset         | A MapLibre style URL; enables the online basemap                          |
+| `VITE_MAP_API_KEY`       | Map viewer, at build time | unset         | Replaces `{key}` in the style URL                                         |
+| `VITE_MAP_ATTRIBUTION`   | Map viewer, at build time | unset         | The credit the provider requires; without it the online basemap stays off |
+| `VITE_MAP_PROVIDER_NAME` | Map viewer, at build time | the host name | How the Basemap panel names the provider                                  |
+| `E2E_PORT`               | Playwright                | `47317`       | Port for the preview server in e2e tests                                  |
 
 ## Documentation
 
@@ -99,19 +107,19 @@ Run `pnpm check` before pushing. CI also runs `pnpm docs:check` and `pnpm notes:
 
 ## Routes
 
-| Path                                            | Page                                                   |
-| ----------------------------------------------- | ------------------------------------------------------ |
-| `/`                                             | Landing page                                           |
-| `/components`, `/components/:slug`              | Registry components (docs layout)                      |
-| `/blocks`, `/blocks/:slug`                      | Registry blocks (docs layout)                          |
-| `/docs`, `/docs/<page>`, `/docs/<page>/<child>` | Documentation (Markdown, nested; see `src/docs/`)      |
-| `/templates`, `/templates/:slug`                | Example apps built from the blocks (docs layout)       |
-| `/playground`, `/playground?example=<id>`       | Interactive examples with typed controls               |
-| `/labs`, `/labs/maps`, `/labs/3d`               | Experiments and their categories                       |
-| `/labs/:kind/:slug`                             | One experiment, e.g. `/labs/3d/webgl-scene`            |
-| `/notes`, `/notes/:slug`                        | Engineering notes (filter by `?tag=`)                  |
-| `/projects`, `/projects/:slug`                  | Public projects and case studies                       |
-| `/about`                                        | About the author and the lab: skills, goals, inventory |
+| Path                                            | Page                                                                        |
+| ----------------------------------------------- | --------------------------------------------------------------------------- |
+| `/`                                             | Landing page                                                                |
+| `/components`, `/components/:slug`              | Registry components (docs layout)                                           |
+| `/blocks`, `/blocks/:slug`                      | Registry blocks (docs layout)                                               |
+| `/docs`, `/docs/<page>`, `/docs/<page>/<child>` | Documentation (Markdown, nested; see `src/docs/`)                           |
+| `/templates`, `/templates/:slug`                | Example apps built from the blocks (docs layout)                            |
+| `/playground`, `/playground?example=<id>`       | Interactive examples with typed controls                                    |
+| `/labs`, `/labs/maps`, `/labs/3d`               | Experiments and their categories                                            |
+| `/labs/:kind/:slug`                             | One experiment, e.g. `/labs/3d/webgl-scene` or `/labs/maps/maplibre-viewer` |
+| `/notes`, `/notes/:slug`                        | Engineering notes (filter by `?tag=`)                                       |
+| `/projects`, `/projects/:slug`                  | Public projects and case studies                                            |
+| `/about`                                        | About the author and the lab: skills, goals, inventory                      |
 
 The route tree is in `src/router/routes.tsx` (React Router data router):
 

@@ -65,6 +65,5 @@ The notes use the same Markdown as the docs: paragraphs, lists, tables, block qu
 These topics were proposed and are not articles, because the repository does not yet contain what an honest article would need. Nothing on the site names them.
 
 - **Managing server state with TanStack Query.** `@tanstack/react-query` is not a dependency, and the examples use mock data and no network. A source rule forbids network calls in blocks and templates. It needs a real use of the library, with a test.
-- **Rendering geospatial layers with MapLibre.** `maplibre-gl` is not a dependency, and the README lists it as planned. The lab draws its maps with SVG and WebGL written by hand.
 - **Publishing a React UI library to npm.** `package.json` is private, and there is no library build, `exports` map, or release workflow. It needs an actual package build to describe and check.
 - **Writing reliable component tests, structuring providers, routing, and layouts, and investigating frontend performance.** The repository has material for each: the testing strategy page, the router and layout components, and the known limitation about registry source in the main bundle. They are not written yet. The performance note in particular needs a repeatable way to measure, and the repository has no bundle analyzer or measurement code.

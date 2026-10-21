@@ -29,7 +29,8 @@ export function MapViewer({ online }: MapViewerProps) {
   // Probed once, before the map library is imported: a browser that cannot run it never fetches it.
   const [supported] = useState(supportsWebgl2)
   const [state, dispatch] = useReducer(viewerReducer, initialViewerState)
-  const { containerRef, controller, phase, contextLost, attempt, retry } = useMapController(dispatch)
+  const { containerRef, controller, phase, contextLost, attempt, retry } =
+    useMapController(dispatch)
   const { resolvedTheme } = useTheme()
 
   // The effects below only push what the visitor chose into the map. They depend on `controller`,

@@ -21,7 +21,11 @@ describe('viewerReducer', () => {
   it('starts with every layer visible, nothing selected, and the bundled basemap', () => {
     expect(initialViewerState.visibility).toEqual({ sites: true, route: true, zones: true })
     expect(initialViewerState.selected).toBeNull()
-    expect(initialViewerState.basemap).toEqual({ requested: 'bundled', phase: 'ready', error: null })
+    expect(initialViewerState.basemap).toEqual({
+      requested: 'bundled',
+      phase: 'ready',
+      error: null,
+    })
     expect(INITIAL_VISIBILITY).toEqual(initialViewerState.visibility)
   })
 
@@ -66,9 +70,12 @@ describe('viewerReducer', () => {
     })
 
     it('replaces the selection with another feature', () => {
-      expect(run([{ type: 'select', ref: site }, { type: 'select', ref: zone }]).selected).toEqual(
-        zone,
-      )
+      expect(
+        run([
+          { type: 'select', ref: site },
+          { type: 'select', ref: zone },
+        ]).selected,
+      ).toEqual(zone)
     })
 
     it('ignores a selection on a hidden layer', () => {
@@ -98,7 +105,11 @@ describe('viewerReducer', () => {
     })
 
     it('ignores a late ready report after the visitor went back to the bundled map', () => {
-      const state = run([{ type: 'requestOnline' }, { type: 'useBundled' }, { type: 'basemapReady' }])
+      const state = run([
+        { type: 'requestOnline' },
+        { type: 'useBundled' },
+        { type: 'basemapReady' },
+      ])
       expect(state.basemap.requested).toBe('bundled')
     })
 
@@ -115,10 +126,7 @@ describe('viewerReducer', () => {
     })
 
     it('clears the reason when the visitor tries again', () => {
-      const state = run([
-        { type: 'basemapFailed', message: 'x' },
-        { type: 'requestOnline' },
-      ])
+      const state = run([{ type: 'basemapFailed', message: 'x' }, { type: 'requestOnline' }])
       expect(state.basemap.error).toBeNull()
     })
 

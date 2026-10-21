@@ -1,7 +1,7 @@
 import { useCallback, useState, type Dispatch } from 'react'
 
 import { createMapController } from './map-controller'
-import { MapInitError, type MapController } from './map-types'
+import { MapInitError, type LayerStatuses, type MapController } from './map-types'
 import { readMapPalette } from './theme-colors'
 import { INITIAL_VISIBILITY, type ViewerAction } from './viewer-state'
 
@@ -9,6 +9,9 @@ export type MapPhase =
   | { readonly kind: 'loading' }
   | { readonly kind: 'ready' }
   | { readonly kind: 'error'; readonly error: MapInitError }
+
+/** With no map there is no layer on screen, so none of them may keep saying "Loading". */
+const FAILED_STATUSES: LayerStatuses = { sites: 'error', route: 'error', zones: 'error' }
 
 function toInitError(error: unknown): MapInitError {
   if (error instanceof MapInitError) return error
@@ -75,6 +78,7 @@ export function useMapController(dispatch: Dispatch<ViewerAction>) {
         (error: unknown) => {
           // An aborted mount is not a failure: the page moved on before the map was built.
           if (abort.signal.aborted) return
+          dispatch({ type: 'layerStatus', statuses: FAILED_STATUSES })
           setPhase({ kind: 'error', error: toInitError(error) })
         },
       )

@@ -15,7 +15,9 @@ afterEach(() => {
 })
 
 /** A 2D context whose fill colour is whatever the test says the browser resolved it to. */
-function stubCanvas(resolve: (css: string) => { fillStyle: string; pixel: [number, number, number] }) {
+function stubCanvas(
+  resolve: (css: string) => { fillStyle: string; pixel: [number, number, number] },
+) {
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(((kind: string) => {
     if (kind !== '2d') return null
     let current = { fillStyle: '#000000', pixel: [0, 0, 0] as [number, number, number] }

@@ -49,9 +49,7 @@ describe('the sample dataset', () => {
     const positions: LngLat[] = [
       ...sites.features.map((feature) => toLngLat(feature.geometry.coordinates)),
       ...route.features.flatMap((feature) => feature.geometry.coordinates.map(toLngLat)),
-      ...zones.features.flatMap((feature) =>
-        (feature.geometry.coordinates[0] ?? []).map(toLngLat),
-      ),
+      ...zones.features.flatMap((feature) => (feature.geometry.coordinates[0] ?? []).map(toLngLat)),
       ...land.features.flatMap((feature) => (feature.geometry.coordinates[0] ?? []).map(toLngLat)),
     ]
     expect(positions.length).toBeGreaterThan(0)

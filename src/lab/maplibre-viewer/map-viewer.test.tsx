@@ -231,7 +231,9 @@ describe('layer controls', () => {
       entryAt().options.onLayerStatus({ sites: 'ready', route: 'ready', zones: 'error' })
     })
     expect(within(sitesRow).getByText('Ready')).toBeInTheDocument()
-    const zonesRow = screen.getByRole('switch', { name: 'Service zones' }).closest('li') as HTMLElement
+    const zonesRow = screen
+      .getByRole('switch', { name: 'Service zones' })
+      .closest('li') as HTMLElement
     expect(within(zonesRow).getByText('Error')).toBeInTheDocument()
   })
 
@@ -263,9 +265,15 @@ describe('selecting a feature', () => {
     const panel = screen.getByRole('region', { name: 'Selected feature' })
     expect(within(panel).getByText('Lumen Harbour')).toBeInTheDocument()
     expect(within(panel).getByText('5.0000° N, 35.0000° W')).toBeInTheDocument()
-    expect(controller.selectFeature).toHaveBeenLastCalledWith({ layer: 'sites', id: 'lumen-harbour' })
+    expect(controller.selectFeature).toHaveBeenLastCalledWith({
+      layer: 'sites',
+      id: 'lumen-harbour',
+    })
     expect(controller.focusFeature).toHaveBeenCalledWith({ layer: 'sites', id: 'lumen-harbour' })
-    expect(screen.getByRole('button', { name: /^Lumen Harbour/ })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: /^Lumen Harbour/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('announces the selection once, politely', async () => {
@@ -284,7 +292,10 @@ describe('selecting a feature', () => {
     const panel = screen.getByRole('region', { name: 'Selected feature' })
     expect(within(panel).getByText('Harbour district')).toBeInTheDocument()
     expect(within(panel).getByText('Lumen Harbour')).toBeInTheDocument()
-    expect(controller.selectFeature).toHaveBeenLastCalledWith({ layer: 'zones', id: 'harbour-district' })
+    expect(controller.selectFeature).toHaveBeenLastCalledWith({
+      layer: 'zones',
+      id: 'harbour-district',
+    })
     expect(controller.focusFeature).not.toHaveBeenCalled()
   })
 
@@ -365,7 +376,9 @@ describe('lifecycle', () => {
     const { rerender } = await renderReady(unconfigured)
     rerender(<MapViewer online={{ ...readyOnline }} />)
     rerender(<MapViewer online={{ ...readyOnline }} />)
-    rerender(<MapViewer online={{ ...readyOnline, styleUrl: 'https://tiles.example.org/s.json' }} />)
+    rerender(
+      <MapViewer online={{ ...readyOnline, styleUrl: 'https://tiles.example.org/s.json' }} />,
+    )
     rerender(<MapViewer online={unconfigured} />)
     expect(harness.calls).toBe(1)
     expect(entryAt().controller.dispose).not.toHaveBeenCalled()
@@ -472,7 +485,9 @@ describe('the online basemap', () => {
       options.onBasemapReady()
     })
     expect(screen.getByText('Online')).toBeInTheDocument()
-    expect(screen.getByText(/Tiles and labels from Example Maps \(tiles\.example\.com\)/)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Tiles and labels from Example Maps \(tiles\.example\.com\)/),
+    ).toBeInTheDocument()
   })
 
   it('goes back to the bundled basemap on request', async () => {
@@ -526,6 +541,25 @@ describe('when the map cannot start', () => {
     expect(harness.entries).toHaveLength(1)
   })
 
+  it('marks every layer as failed instead of leaving it loading, and starts over on Retry', async () => {
+    harness.failures.push(new MapInitError('init-failed', 'The map could not be created.'))
+    const { user } = await renderReady()
+    await screen.findByRole('alert')
+    const layerRow = (name: string) =>
+      screen.getByRole('switch', { name }).closest('li') as HTMLElement
+    for (const name of ['Sites', 'Service route', 'Service zones']) {
+      expect(within(layerRow(name)).getByText('Error')).toBeInTheDocument()
+      expect(within(layerRow(name)).queryByText('Loading')).not.toBeInTheDocument()
+    }
+
+    await user.click(screen.getByRole('button', { name: 'Try again' }))
+    await waitFor(() => {
+      expect(harness.entries).toHaveLength(1)
+    })
+    expect(within(layerRow('Sites')).getByText('Loading')).toBeInTheDocument()
+    expect(within(layerRow('Sites')).queryByText('Error')).not.toBeInTheDocument()
+  })
+
   it('brings a map started after Retry up to date with what the visitor chose meanwhile', async () => {
     harness.failures.push(new MapInitError('init-failed', 'The map could not be created.'))
     const { user } = await renderReady()
@@ -544,7 +578,9 @@ describe('when the map cannot start', () => {
   })
 
   it('offers only a reload when the library could not be downloaded', async () => {
-    harness.failures.push(new MapInitError('import-failed', 'The map library could not be downloaded.'))
+    harness.failures.push(
+      new MapInitError('import-failed', 'The map library could not be downloaded.'),
+    )
     await renderReady()
     const alert = await screen.findByRole('alert')
     expect(within(alert).getByText('The map library could not be loaded')).toBeInTheDocument()

@@ -50,7 +50,9 @@ function hexToRgb(hex: string): Rgb {
 
 function rgbToHex([r, g, b]: Rgb): string {
   const part = (channel: number) =>
-    Math.round(Math.min(255, Math.max(0, channel))).toString(16).padStart(2, '0')
+    Math.round(Math.min(255, Math.max(0, channel)))
+      .toString(16)
+      .padStart(2, '0')
   return `#${part(r)}${part(g)}${part(b)}`
 }
 

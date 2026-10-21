@@ -313,7 +313,10 @@ export function routeLengthKm(coordinates: readonly LngLat[]): number {
 }
 
 /** Meridians and parallels every `step` degrees inside `bounds`. */
-export function graticule(bounds: Bounds, step: number): FeatureCollection<LineString, { id: string }> {
+export function graticule(
+  bounds: Bounds,
+  step: number,
+): FeatureCollection<LineString, { id: string }> {
   const [west, south, east, north] = bounds
   const features: Feature<LineString, { id: string }>[] = []
   const first = (from: number) => Math.ceil(from / step) * step
@@ -418,7 +421,11 @@ export function getFeatureDetails(ref: FeatureRef): FeatureDetails | null {
 /** Ray casting. Treats longitude and latitude as plane coordinates, which is fine at this scale. */
 export function pointInRing(point: LngLat, ring: readonly LngLat[]): boolean {
   let inside = false
-  for (let index = 0, previous = ring.length - 1; index < ring.length; previous = index, index += 1) {
+  for (
+    let index = 0, previous = ring.length - 1;
+    index < ring.length;
+    previous = index, index += 1
+  ) {
     const a = ring[index]
     const b = ring[previous]
     if (!a || !b) continue
@@ -431,9 +438,7 @@ export function pointInRing(point: LngLat, ring: readonly LngLat[]): boolean {
 }
 
 /** Where to take the camera for a feature: a point to centre on, or bounds to fit. */
-export type FocusTarget =
-  | { kind: 'point'; position: LngLat }
-  | { kind: 'bounds'; bounds: Bounds }
+export type FocusTarget = { kind: 'point'; position: LngLat } | { kind: 'bounds'; bounds: Bounds }
 
 function boundsOf(positions: readonly LngLat[]): Bounds {
   const lngs = positions.map((position) => position[0])
@@ -445,9 +450,7 @@ export function getFocusTarget(ref: FeatureRef): FocusTarget | null {
   switch (ref.layer) {
     case 'sites': {
       const feature = getSite(ref.id)
-      return feature
-        ? { kind: 'point', position: toLngLat(feature.geometry.coordinates) }
-        : null
+      return feature ? { kind: 'point', position: toLngLat(feature.geometry.coordinates) } : null
     }
     case 'route': {
       const feature = getRoute(ref.id)

@@ -26,6 +26,11 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
   ['/playground', 'Playground', 'Playground · Hieu UI Lab'],
   ['/labs', 'Geospatial and 3D experiments', 'Labs · Hieu UI Lab'],
   ['/labs/maps', 'Maps', 'Maps · Hieu UI Lab'],
+  [
+    '/labs/maps/maplibre-viewer',
+    'Interactive map viewer with MapLibre',
+    'Interactive map viewer with MapLibre · Hieu UI Lab',
+  ],
   ['/labs/3d', '3D', '3D · Hieu UI Lab'],
   ['/docs', 'Getting started', 'Getting started · Hieu UI Lab'],
   ['/docs/installation', 'Installation', 'Installation · Hieu UI Lab'],

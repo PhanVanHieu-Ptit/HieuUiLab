@@ -534,7 +534,7 @@ export const showcaseProjects: readonly ShowcaseProject[] = [
       ],
       excludes: [
         'Map tiles, coastlines, or country borders',
-        'A map library such as MapLibre, which is planned and not built',
+        'A map library: these two demos draw their maps by hand, and the MapLibre viewer is a separate experiment',
         'Model loading, or any scene beyond one cube',
       ],
     },
@@ -750,13 +750,13 @@ export const showcaseProjects: readonly ShowcaseProject[] = [
       'The 3D scene is a single cube.',
       'The globe turns with sliders only: there is no pointer-drag rotation.',
       'When WebGL is unavailable, the fallback is a message rather than an alternative rendering.',
-      'MapLibre is planned for a comparison and not built.',
+      'These demos use no map library. The MapLibre viewer is a separate experiment and is not compared with them.',
     ],
     improvements: [
       'Add pointer-drag rotation to the globe.',
       'Add more projections.',
       'Add public-domain coastlines after checking their license.',
-      'Build a MapLibre version to compare against.',
+      'Compare the hand-written projections with the MapLibre viewer.',
     ],
   },
 ]
