@@ -24,7 +24,44 @@ export const experiments: readonly Experiment[] = [
       {
         heading: 'Why no map library',
         paragraphs: [
-          'Libraries such as MapLibre handle tiles, labels, and interaction, but they hide the maths. Writing the projections by hand makes the distortion visible and keeps this page free of extra downloads.',
+          'Libraries such as MapLibre handle tiles, labels, and interaction, but they hide the maths. Writing the projections by hand makes the distortion visible and keeps this page free of extra downloads. The map viewer experiment takes the opposite approach and uses MapLibre.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'maplibre-viewer',
+    title: 'Interactive map viewer with MapLibre',
+    summary:
+      'A MapLibre GL JS map of an invented island: toggleable layers, selectable features, a route, and a basemap that makes no network request until you ask for one.',
+    kind: 'geospatial',
+    status: 'experimental',
+    capabilities: [
+      'MapLibre GL JS over a bundled, tile-free basemap and synthetic data',
+      'Layer toggles with status, feature selection, an info panel, and a legend',
+      'One map per mount, every listener released on cleanup, no rebuild when state changes',
+      'An optional online basemap, configured at build time and loaded only after a click',
+    ],
+    body: [
+      {
+        heading: 'How it works',
+        paragraphs: [
+          'The dataset, the camera and basemap settings, the style builders, the one module that talks to MapLibre, and the React controls live in separate files, so the style and the state can be tested without a GPU.',
+          'React holds what the visitor chose: which layers are visible, what is selected, and which basemap is showing. A controller applies those choices to the map. A click is read from the map by a single listener, and the details shown come from the dataset rather than from the map.',
+        ],
+      },
+      {
+        heading: 'Basemap and network use',
+        paragraphs: [
+          'By default the basemap is drawn from data in the repository, so opening the page makes no tile requests. An online basemap can be configured when the site is built. It is requested only after the visitor presses the button, and the panel says what that shares with the provider.',
+          'Public tile servers are shared services that can limit or block use. The viewer treats repeated refusals as a reason to return to the bundled basemap. The documentation lists each provider’s attribution and usage terms.',
+        ],
+      },
+      {
+        heading: 'Lifecycle and fallbacks',
+        paragraphs: [
+          'The map library is downloaded only in a browser that can create a WebGL2 context. The map is built once per mount: React’s double mount in development builds no second map, and leaving the page removes the map, its listeners, and its GPU context.',
+          'If the browser has no WebGL2, or the library cannot be downloaded, the map area says what happened and what to try. Camera moves follow the system’s reduced-motion setting.',
         ],
       },
     ],
@@ -82,7 +119,7 @@ export const experimentKinds: Readonly<Record<ExperimentKind, ExperimentKindInfo
     title: 'Maps',
     path: 'maps',
     description:
-      'Geospatial experiments: map projections and rendering written without a map library or tile server.',
+      'Geospatial experiments: map projections written by hand, and an interactive map built with MapLibre GL JS.',
   },
   '3d': {
     kind: '3d',

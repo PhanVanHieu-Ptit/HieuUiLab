@@ -288,18 +288,6 @@ export const profile: Profile = {
       notYetDependency: '@tanstack/react-query',
     },
     {
-      id: 'maplibre',
-      title: 'Geospatial layers with MapLibre',
-      why: 'The lab draws projections by hand to understand how they work. A mapping library is the next step for real map data and layers.',
-      today: 'The maps are SVG drawn from pure projection functions. MapLibre is not a dependency.',
-      evidence: {
-        label: 'The SVG map component',
-        path: 'src/lab/map-projections/map-svg.tsx',
-        anchor: '<svg',
-      },
-      notYetDependency: 'maplibre-gl',
-    },
-    {
       id: 'npm-publishing',
       title: 'Publishing a React UI library to npm',
       why: 'Today the components are copied into a project by hand. Publishing a library means a build, an exports map, versioning, and a release process.',
