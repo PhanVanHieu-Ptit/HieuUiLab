@@ -48,6 +48,28 @@ describe('Lab pages', () => {
     expect(await screen.findByRole('heading', { name: 'WebGL is unavailable' })).toBeInTheDocument()
   })
 
+  it('lists the map viewer alongside the other geospatial experiment', async () => {
+    await renderRoute('/labs/maps')
+    expect(
+      screen.getByRole('link', { name: 'Interactive map viewer with MapLibre' }),
+    ).toHaveAttribute('href', '/labs/maps/maplibre-viewer')
+    expect(screen.getByRole('link', { name: 'Map projection explorer' })).toHaveAttribute(
+      'href',
+      '/labs/maps/map-projections',
+    )
+  })
+
+  it('opens the map viewer, which explains the missing map where WebGL2 is unavailable', async () => {
+    await renderRoute('/labs/maps/maplibre-viewer')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Interactive map viewer with MapLibre' }),
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('heading', { name: 'Interactive map unavailable' }),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('Loading experiment')).not.toBeInTheDocument()
+  })
+
   it('links back to the lab from the breadcrumb', async () => {
     await renderRoute('/labs/3d/webgl-scene')
     const breadcrumb = screen.getByRole('navigation', { name: 'Breadcrumb' })

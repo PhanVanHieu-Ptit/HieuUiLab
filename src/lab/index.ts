@@ -7,6 +7,11 @@ export const labDemos: Readonly<Record<string, LazyExoticComponent<ComponentType
       default: module.MapProjectionsDemo,
     })),
   ),
+  'maplibre-viewer': lazy(() =>
+    import('./maplibre-viewer/maplibre-viewer-demo').then((module) => ({
+      default: module.MaplibreViewerDemo,
+    })),
+  ),
   'webgl-scene': lazy(() =>
     import('./webgl-scene/webgl-scene-demo').then((module) => ({
       default: module.WebglSceneDemo,
