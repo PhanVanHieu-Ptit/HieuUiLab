@@ -67,6 +67,11 @@ describe('breadcrumbs', () => {
   it.each([
     ['/labs/3d/webgl-scene', ['Home', 'Labs', '3D'], 'WebGL scene with motion controls'],
     ['/labs/maps', ['Home', 'Labs'], 'Maps'],
+    [
+      '/labs/maps/maplibre-viewer',
+      ['Home', 'Labs', 'Maps'],
+      'Interactive map viewer with MapLibre',
+    ],
     ['/notes/theme-without-flash', ['Home', 'Notes'], note?.title],
     // The group a page belongs to is a crumb without a link.
     ['/docs/installation', ['Home', 'Docs'], 'Installation'],

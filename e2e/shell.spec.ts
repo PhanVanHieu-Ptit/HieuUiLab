@@ -49,6 +49,7 @@ const routes = [
   '/labs/maps',
   '/labs/3d',
   '/labs/maps/map-projections',
+  '/labs/maps/maplibre-viewer',
   '/labs/3d/webgl-scene',
   '/projects',
   '/projects/contrast-tested-design-system',

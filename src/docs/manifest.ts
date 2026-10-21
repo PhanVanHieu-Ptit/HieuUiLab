@@ -138,6 +138,24 @@ export const docGroups: readonly DocGroup[] = [
         load: () => import('./content/data-table.md?raw'),
       },
       {
+        id: 'map-viewer',
+        slug: 'map-viewer',
+        title: 'Map viewer and basemaps',
+        description:
+          'Configure the map viewer’s basemap, and what each tile provider requires: attribution, usage policy, and API keys.',
+        keywords: [
+          'maplibre',
+          'map',
+          'tiles',
+          'attribution',
+          'api key',
+          'basemap',
+          'csp',
+          'worker',
+        ],
+        load: () => import('./content/map-viewer.md?raw'),
+      },
+      {
         id: 'block-composition',
         slug: 'block-composition',
         title: 'Block composition',

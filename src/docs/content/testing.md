@@ -46,7 +46,8 @@ Playwright tests live in `e2e/` and run in Chromium against the production build
 
 - keyboard flows for the components and blocks, in `components.spec.ts`, `forms.spec.ts`, `data-display.spec.ts`, `blocks.spec.ts`, `catalog.spec.ts`, `playground.spec.ts`, `templates.spec.ts`, and `projects.spec.ts`, and `notes.spec.ts`;
 - routing in `routes.spec.ts`: direct load, refresh, Back and Forward, invalid URLs, and redirects;
-- layout in `shell.spec.ts`: no horizontal overflow on every route at 360, 768, and 1280 pixels in both themes, the header, the mobile drawer, and the search menu. Set `SCREENSHOT_DIR` to save full-page captures from that sweep for manual review.
+- layout in `shell.spec.ts`: no horizontal overflow on every route at 360, 768, and 1280 pixels in both themes, the header, the mobile drawer, and the search menu. Set `SCREENSHOT_DIR` to save full-page captures from that sweep for manual review;
+- the map viewer in `maplibre-viewer.spec.ts`: the real MapLibre library running in the production build, because the unit tests replace it with a stand-in and jsdom has no WebGL. It checks that the map starts, that layers toggle, that features can be selected, that the map follows its container, and that leaving the page removes it. It skips the map tests in a browser without WebGL2. See [Map viewer and basemaps](/docs/map-viewer).
 
 ```bash title="run the end-to-end tests"
 pnpm exec playwright install chromium
@@ -64,3 +65,4 @@ Install the browser once. To run one file, pass it to Playwright, for example `p
 - There are no visual snapshot tests. CI runs on Ubuntu with no baseline images, so the tests assert layout and behavior, not pixels.
 - No automated accessibility engine such as axe runs, and Chromium is the only browser.
 - The site is not deployed, so nothing tests a live URL.
+- No test contacts a map tile provider. The map viewer's optional online basemap is tested against stand-ins only.

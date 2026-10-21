@@ -9,13 +9,7 @@ import type {
 
 import { GRATICULE_STEP, MAP_VIEW } from './config'
 import { featureExists, graticule, land, route, sites, zones, type SiteCategory } from './data'
-import {
-  HIT_PRIORITY,
-  LAYERS,
-  layerOfStyleLayer,
-  type FeatureRef,
-  type LayerId,
-} from './layers'
+import { HIT_PRIORITY, LAYERS, layerOfStyleLayer, type FeatureRef, type LayerId } from './layers'
 import type { MapPalette } from './theme-colors'
 
 /**

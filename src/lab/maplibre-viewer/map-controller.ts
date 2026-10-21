@@ -49,10 +49,25 @@ type MapLibreModule = Awaited<ReturnType<typeof importMapLibre>>
 
 let loading: Promise<MapLibreModule> | undefined
 
-/** The library and its stylesheet, fetched once. A failed fetch is forgotten so Retry can try again. */
+/**
+ * The library, its stylesheet, and its worker, fetched once. A failed fetch is forgotten so Retry
+ * can try again.
+ *
+ * MapLibre looks for its worker next to its own file, but a bundler moves that file and emits no
+ * worker beside it, so the request lands on the app's HTML fallback and the map never starts.
+ * `?worker&url` makes Vite emit the worker as an asset of its own and return that asset's URL,
+ * which is handed to the library before any map exists.
+ */
 function loadMapLibre(): Promise<MapLibreModule> {
-  loading ??= Promise.all([importMapLibre(), import('maplibre-gl/dist/maplibre-gl.css')]).then(
-    ([module]) => module,
+  loading ??= Promise.all([
+    importMapLibre(),
+    import('maplibre-gl/dist/maplibre-gl.css'),
+    import('maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'),
+  ]).then(
+    ([module, , worker]) => {
+      module.setWorkerUrl(worker.default)
+      return module
+    },
     (cause: unknown) => {
       loading = undefined
       throw new MapInitError('import-failed', 'The map library could not be downloaded.', { cause })
@@ -98,7 +113,10 @@ function hostOf(url: string): string {
 }
 
 /** Download an online style and check it. Messages name the host and never the URL or its key. */
-async function fetchOnlineStyle(styleUrl: string, signal: AbortSignal): Promise<StyleSpecification> {
+async function fetchOnlineStyle(
+  styleUrl: string,
+  signal: AbortSignal,
+): Promise<StyleSpecification> {
   const host = hostOf(styleUrl)
   const timeout = new AbortController()
   const timer = setTimeout(() => {
@@ -206,9 +224,13 @@ export async function createMapController(
     })
   } catch (cause) {
     if (cause instanceof maplibre.GPUInitializationError) {
-      throw new MapInitError('webgl2-unavailable', 'This browser could not create a WebGL2 context.', {
-        cause,
-      })
+      throw new MapInitError(
+        'webgl2-unavailable',
+        'This browser could not create a WebGL2 context.',
+        {
+          cause,
+        },
+      )
     }
     throw new MapInitError('init-failed', 'The map could not be created.', { cause })
   }
@@ -227,7 +249,11 @@ function buildController(
   maplibre: MapLibreModule,
   map: MapLibreMap,
   options: MapControllerOptions,
-  desired: { palette: MapPalette; visibility: Record<LayerId, boolean>; selected: FeatureRef | null },
+  desired: {
+    palette: MapPalette
+    visibility: Record<LayerId, boolean>
+    selected: FeatureRef | null
+  },
 ): MapController {
   const subscriptions: Subscription[] = []
   let disposed = false
@@ -261,7 +287,11 @@ function buildController(
 
   // --- Layer status -------------------------------------------------------------------------
 
-  const statuses: Record<LayerId, LayerStatus> = { sites: 'loading', route: 'loading', zones: 'loading' }
+  const statuses: Record<LayerId, LayerStatus> = {
+    sites: 'loading',
+    route: 'loading',
+    zones: 'loading',
+  }
   let lastReported: LayerStatuses | null = null
 
   function reportStatuses() {
@@ -294,7 +324,8 @@ function buildController(
   function applySelection() {
     for (const layer of LAYER_IDS) {
       const highlight = `lab-${layer}-selected`
-      if (map.getLayer(highlight)) map.setFilter(highlight, selectionFilter(desired.selected, layer))
+      if (map.getLayer(highlight))
+        map.setFilter(highlight, selectionFilter(desired.selected, layer))
     }
   }
 
@@ -355,9 +386,7 @@ function buildController(
       style = await fetchOnlineStyle(target.styleUrl, current.signal)
     } catch (error) {
       if (current.signal.aborted || disposed) return
-      failOnline(
-        error instanceof Error ? error.message : 'The online basemap could not be loaded.',
-      )
+      failOnline(error instanceof Error ? error.message : 'The online basemap could not be loaded.')
       return
     }
     if (current.signal.aborted || disposed) return
@@ -448,7 +477,9 @@ function buildController(
               { layers },
             )
       options.onFeatureClick(
-        pickFeature(hits.map((hit) => ({ styleLayerId: hit.layer.id, properties: hit.properties }))),
+        pickFeature(
+          hits.map((hit) => ({ styleLayerId: hit.layer.id, properties: hit.properties })),
+        ),
       )
     }),
   )

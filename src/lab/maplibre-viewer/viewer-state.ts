@@ -54,8 +54,7 @@ export function viewerReducer(state: ViewerState, action: ViewerAction): ViewerS
         ...state,
         visibility: { ...state.visibility, [action.layer]: action.visible },
         // A feature on a hidden layer cannot be seen, so it cannot stay selected.
-        selected:
-          !action.visible && state.selected?.layer === action.layer ? null : state.selected,
+        selected: !action.visible && state.selected?.layer === action.layer ? null : state.selected,
       }
     }
     case 'select':

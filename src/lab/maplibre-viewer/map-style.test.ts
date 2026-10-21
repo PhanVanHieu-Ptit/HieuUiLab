@@ -94,7 +94,10 @@ describe('data layers', () => {
   })
 
   it('bakes visibility into the layout', () => {
-    const hidden = dataLayers({ ...desired, visibility: { sites: false, route: true, zones: true } })
+    const hidden = dataLayers({
+      ...desired,
+      visibility: { sites: false, route: true, zones: true },
+    })
     const visibilityOf = (id: string) => hidden.find((layer) => layer.id === id)?.layout?.visibility
     expect(visibilityOf('lab-sites-circle')).toBe('none')
     expect(visibilityOf('lab-sites-selected')).toBe('none')
@@ -123,7 +126,11 @@ describe('selectionFilter', () => {
   })
 
   it('matches nothing on a layer the selection does not belong to', () => {
-    expect(selectionFilter({ layer: 'sites', id: HUB_ID }, 'route')).toEqual(['==', ['get', 'id'], ''])
+    expect(selectionFilter({ layer: 'sites', id: HUB_ID }, 'route')).toEqual([
+      '==',
+      ['get', 'id'],
+      '',
+    ])
   })
 
   it('is baked into the highlight layers', () => {

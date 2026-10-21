@@ -24,7 +24,9 @@ export function Legend() {
         {SITE_CATEGORIES.map((category) => (
           <li key={category} className="flex items-center gap-3">
             <span className="flex size-6 shrink-0 items-center justify-center" aria-hidden="true">
-              <span className={cn('rounded-full ring-2 ring-background', CATEGORY_SWATCH[category])} />
+              <span
+                className={cn('rounded-full ring-2 ring-background', CATEGORY_SWATCH[category])}
+              />
             </span>
             <span>{SITE_CATEGORY_LABELS[category]}</span>
           </li>

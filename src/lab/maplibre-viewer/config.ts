@@ -37,10 +37,7 @@ export interface MapEnv {
 }
 
 export type OnlineBasemapProblem =
-  | 'not-a-url'
-  | 'not-https'
-  | 'has-credentials'
-  | 'unresolved-placeholder'
+  'not-a-url' | 'not-https' | 'has-credentials' | 'unresolved-placeholder'
 
 export type OnlineBasemap =
   | { readonly status: 'unconfigured' }
@@ -141,7 +138,8 @@ export function escapeHtml(text: string): string {
     .replaceAll("'", '&#39;')
 }
 
-const SECRET_PARAMETER = /([?&#;](?:key|api[_-]?key|access[_-]?token|token|secret|auth)=)[^&#\s"')]+/gi
+const SECRET_PARAMETER =
+  /([?&#;](?:key|api[_-]?key|access[_-]?token|token|secret|auth)=)[^&#\s"')]+/gi
 
 /** Mask the value of any query parameter that looks like a credential. */
 export function redactSecrets(text: string): string {
