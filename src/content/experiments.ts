@@ -95,6 +95,79 @@ export const experiments: readonly Experiment[] = [
       },
     ],
   },
+  {
+    slug: 'three-scene',
+    title: 'Three.js scene with orbit controls',
+    summary:
+      'Five solids on a lit grid, drawn with Three.js: orbit and zoom within limits, select a solid by clicking it or from a list, and reset the camera. The scene draws only when something changes.',
+    kind: '3d',
+    status: 'experimental',
+    capabilities: [
+      'Three.js with orbit controls limited so the camera stays above the ground and inside the stage',
+      'Drawing on demand: no animation frame is requested while the scene is still',
+      'Selecting a solid by clicking it or from a list, and camera buttons, so nothing needs a pointer',
+      'Every geometry, material, listener, and the graphics context released when the page is left',
+      'A scene made of layers, so extrusions or terrain can be added as another layer',
+    ],
+    body: [
+      {
+        heading: 'Rendering pipeline',
+        paragraphs: [
+          'The solids and the ground are objects in a scene graph. Each mesh pairs a geometry, which holds its vertices, with a material, which says how light changes its colour. Two lights shade them: a hemisphere light for the sky and a directional light for the sun. There are no shadows, reflections, or post-processing.',
+          'A perspective camera looks at a point just above the ground. Each frame the renderer draws the scene as that camera sees it, with the camera’s position taken from the orbit controls. Clicking casts a ray from the camera through the clicked pixel and selects the nearest solid it crosses.',
+        ],
+        code: {
+          language: 'text',
+          title: 'What happens when something changes',
+          code: [
+            'drag, wheel, button, selection, theme, resize',
+            '  -> invalidate()            coalesced: any number of calls cost one frame',
+            '  -> next animation frame    controls.update() moves the camera',
+            '  -> renderer.render()       scene graph + camera -> pixels',
+            '  -> still moving?           request another frame, or go quiet',
+          ].join('\n'),
+        },
+      },
+      {
+        heading: 'Design decisions',
+        paragraphs: [
+          'The scene draws on demand instead of on a timer. Nothing in it moves by itself, so an idle scene asks the browser for nothing, and a hidden tab or a scrolled-away scene needs no special handling. The Renderer stats panel shows a frame count that stops rising when the scene is still.',
+          'The camera is limited rather than free. It cannot go below the ground, look along it edge-on, or move so close or so far that the stage is lost. Panning is off because the stage is small and fixed. A plain mouse wheel scrolls the page, and Ctrl or ⌘ with the wheel zooms, so a scene in the middle of a page does not trap scrolling.',
+          'Camera moves are also buttons, and solids are also a list. Dragging a canvas is not available from a keyboard or a screen reader, so every action the pointer can do has a control that can be focused and named. With reduced motion requested, the camera has no inertia and the Reset camera button jumps instead of flying.',
+          'The colours come from the site’s theme tokens and are read again when the theme changes. Light is the same in both themes, so a solid keeps its shading.',
+        ],
+      },
+      {
+        heading: 'Lifecycle and fallbacks',
+        paragraphs: [
+          'Three.js is downloaded only in a browser that can create a WebGL2 context, and only by this page. The renderer is built once per mount: React’s double mount in development builds no second one. Leaving the page releases the geometries, materials, event listeners, and the graphics context, in that order, while the renderer can still free them.',
+          'If the browser has no WebGL2, or the 3D code cannot be downloaded, or the renderer cannot start, the scene area says what happened and what to try. If the browser drops the graphics context the page says so, and the scene draws again when the context returns.',
+        ],
+      },
+      {
+        heading: 'Extending it',
+        paragraphs: [
+          'Everything in the scene comes from an ordered list of layers. A layer builds some objects, and may react to a theme change or a selection. The runtime owns drawing, picking, and disposal, so a layer needs no cleanup code. Adding building extrusions or terrain means writing one layer and appending it to the list; this release ships only the ground and the solids.',
+          'A layer can rely on one unit being one metre, +Y being up, and the ground being at y = 0. Converting longitude and latitude to that local frame is the layer’s job, and the map projection experiment already holds the projection maths one might reuse.',
+        ],
+        code: {
+          language: 'tsx',
+          title: 'The shape of a layer',
+          code: [
+            'interface SceneLayer {',
+            '  id: string',
+            '  build(context: { palette: ScenePalette }): {',
+            '    object: Object3D // added to the scene, disposed with it',
+            '    pickables?: ReadonlyMap<Object3D, string> // what a click can select',
+            '    setPalette?(palette: ScenePalette): void',
+            '    setSelected?(id: string | null): void',
+            '  }',
+            '}',
+          ].join('\n'),
+        },
+      },
+    ],
+  },
 ]
 
 export function getExperiment(slug: string): Experiment | undefined {
@@ -126,7 +199,8 @@ export const experimentKinds: Readonly<Record<ExperimentKind, ExperimentKindInfo
     label: '3D',
     title: '3D',
     path: '3d',
-    description: '3D graphics experiments drawn with raw WebGL2, without a 3D library.',
+    description:
+      '3D graphics experiments: a scene drawn with raw WebGL2 and no 3D library, and an interactive scene built with Three.js.',
   },
 }
 

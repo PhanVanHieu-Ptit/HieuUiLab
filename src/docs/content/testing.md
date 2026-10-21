@@ -48,6 +48,7 @@ Playwright tests live in `e2e/` and run in Chromium against the production build
 - routing in `routes.spec.ts`: direct load, refresh, Back and Forward, invalid URLs, and redirects;
 - layout in `shell.spec.ts`: no horizontal overflow on every route at 360, 768, and 1280 pixels in both themes, the header, the mobile drawer, and the search menu. Set `SCREENSHOT_DIR` to save full-page captures from that sweep for manual review;
 - the map viewer in `maplibre-viewer.spec.ts`: the real MapLibre library running in the production build, because the unit tests replace it with a stand-in and jsdom has no WebGL. It checks that the map starts, that layers toggle, that features can be selected, that the map follows its container, and that leaving the page removes it. It skips the map tests in a browser without WebGL2. See [Map viewer and basemaps](/docs/map-viewer).
+- the Three.js scene in `three-scene.spec.ts`: the real library running in the production build, because the unit tests replace the renderer with a stand-in and jsdom has no WebGL. It checks that the scene draws, that clicking and the list select a solid, that a drag, the camera buttons, and Reset camera move the camera and restore the picture, that a plain wheel scrolls the page while Ctrl and wheel zooms, that an idle scene asks the browser for no animation frames, that a lost graphics context is reported and recovered, and that leaving the page releases its context. It skips these tests in a browser without WebGL2.
 
 ```bash title="run the end-to-end tests"
 pnpm exec playwright install chromium

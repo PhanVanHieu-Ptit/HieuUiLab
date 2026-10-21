@@ -5,6 +5,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/use-theme'
 
+import { supportsWebgl2 } from '../shared/webgl-support'
 import { BasemapPanel } from './basemap-panel'
 import type { OnlineBasemap } from './config'
 import { getFeatureDetails } from './data'
@@ -17,7 +18,6 @@ import { readMapPalette } from './theme-colors'
 import { useMapController } from './use-map-controller'
 import { MapFailure, MapLoading, MapUnavailable } from './viewer-states'
 import { initialViewerState, viewerReducer } from './viewer-state'
-import { supportsWebgl2 } from './webgl-support'
 
 export interface MapViewerProps {
   /** What the build offers as an online basemap. Reading it never starts a request. */

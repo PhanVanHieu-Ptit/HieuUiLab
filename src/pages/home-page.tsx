@@ -107,7 +107,7 @@ export function HomePage() {
       <LandingSection
         id="lab"
         title="Geospatial and 3D experiments"
-        description="Map projections and a 3D scene written by hand, and an interactive map built on MapLibre."
+        description="Map projections and a 3D scene written by hand, an interactive map built on MapLibre, and a 3D scene built on Three.js."
         more={{ label: 'All experiments', href: '/labs' }}
       >
         <ul className="grid gap-4 md:grid-cols-2">

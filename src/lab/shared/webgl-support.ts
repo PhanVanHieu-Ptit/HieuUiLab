@@ -14,9 +14,9 @@ function probe(): boolean {
 }
 
 /**
- * Whether this browser can create a WebGL2 context, which MapLibre GL JS 6 requires. Checked
- * before the library is imported, so a browser that cannot run the map never downloads it. The
- * answer is remembered for the page's lifetime.
+ * Whether this browser can create a WebGL2 context, which MapLibre GL JS 6 and Three.js (r163 and
+ * later) both require. Checked before either library is imported, so a browser that cannot run
+ * them never downloads them. The answer is remembered for the page's lifetime.
  */
 export function supportsWebgl2(): boolean {
   cached ??= probe()
