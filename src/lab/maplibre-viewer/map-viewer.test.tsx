@@ -36,7 +36,7 @@ const harness = vi.hoisted(() => ({
   waiting: [] as (() => void)[],
 }))
 
-vi.mock('./webgl-support', () => ({
+vi.mock('../shared/webgl-support', () => ({
   supportsWebgl2: () => harness.supported,
 }))
 

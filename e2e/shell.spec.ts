@@ -51,6 +51,7 @@ const routes = [
   '/labs/maps/map-projections',
   '/labs/maps/maplibre-viewer',
   '/labs/3d/webgl-scene',
+  '/labs/3d/three-scene',
   '/projects',
   '/projects/contrast-tested-design-system',
   '/projects/hieu-ui-lab-platform',

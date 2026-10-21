@@ -12,6 +12,11 @@ export const labDemos: Readonly<Record<string, LazyExoticComponent<ComponentType
       default: module.MaplibreViewerDemo,
     })),
   ),
+  'three-scene': lazy(() =>
+    import('./three-scene/three-scene-demo').then((module) => ({
+      default: module.ThreeSceneDemo,
+    })),
+  ),
   'webgl-scene': lazy(() =>
     import('./webgl-scene/webgl-scene-demo').then((module) => ({
       default: module.WebglSceneDemo,

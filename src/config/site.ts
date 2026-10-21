@@ -73,7 +73,7 @@ export const sections = {
     title: 'Labs',
     heading: 'Geospatial and 3D experiments',
     description:
-      'Small, working experiments with maps and graphics: some written by hand, one built on MapLibre. Each one runs in the page, respects reduced motion, and explains how it works.',
+      'Small, working experiments with maps and graphics: some written by hand, one built on MapLibre, one on Three.js. Each one runs in the page, respects reduced motion, and explains how it works.',
   },
   notes: {
     title: 'Notes',

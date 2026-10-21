@@ -48,6 +48,31 @@ describe('Lab pages', () => {
     expect(await screen.findByRole('heading', { name: 'WebGL is unavailable' })).toBeInTheDocument()
   })
 
+  it('lists the Three.js scene alongside the raw WebGL2 scene in the 3D category', async () => {
+    await renderRoute('/labs/3d')
+    expect(
+      screen.getByRole('link', { name: 'Three.js scene with orbit controls' }),
+    ).toHaveAttribute('href', '/labs/3d/three-scene')
+    expect(screen.getByRole('link', { name: 'WebGL scene with motion controls' })).toHaveAttribute(
+      'href',
+      '/labs/3d/webgl-scene',
+    )
+  })
+
+  it('opens the Three.js scene, which explains the missing scene where WebGL2 is unavailable', async () => {
+    await renderRoute('/labs/3d/three-scene')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Three.js scene with orbit controls' }),
+    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: '3D scene unavailable' })).toBeInTheDocument()
+    expect(screen.queryByText('Loading experiment')).not.toBeInTheDocument()
+    // The explanation sits under the demo whether or not the demo can run.
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Rendering pipeline' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: 'Extending it' })).toBeInTheDocument()
+  })
+
   it('lists the map viewer alongside the other geospatial experiment', async () => {
     await renderRoute('/labs/maps')
     expect(

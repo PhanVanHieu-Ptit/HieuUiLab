@@ -66,6 +66,7 @@ describe('required routes', () => {
 describe('breadcrumbs', () => {
   it.each([
     ['/labs/3d/webgl-scene', ['Home', 'Labs', '3D'], 'WebGL scene with motion controls'],
+    ['/labs/3d/three-scene', ['Home', 'Labs', '3D'], 'Three.js scene with orbit controls'],
     ['/labs/maps', ['Home', 'Labs'], 'Maps'],
     [
       '/labs/maps/maplibre-viewer',

@@ -32,6 +32,11 @@ const routes: readonly [path: string, h1: string | RegExp, title: string][] = [
     'Interactive map viewer with MapLibre · Hieu UI Lab',
   ],
   ['/labs/3d', '3D', '3D · Hieu UI Lab'],
+  [
+    '/labs/3d/three-scene',
+    'Three.js scene with orbit controls',
+    'Three.js scene with orbit controls · Hieu UI Lab',
+  ],
   ['/docs', 'Getting started', 'Getting started · Hieu UI Lab'],
   ['/docs/installation', 'Installation', 'Installation · Hieu UI Lab'],
   ['/docs/project-structure', 'Project structure', 'Project structure · Hieu UI Lab'],
