@@ -93,10 +93,9 @@ describe('DocsPage', () => {
       'href',
       '/docs',
     )
-    expect(within(pager).getByRole('link', { name: /Project structure/ })).toHaveAttribute(
-      'href',
-      '/docs/project-structure',
-    )
+    expect(
+      within(pager).getByRole('link', { name: /Install with the shadcn CLI/ }),
+    ).toHaveAttribute('href', '/docs/shadcn-registry')
   })
 
   it('has only a next link on the first page and only a previous link on the last', () => {

@@ -54,6 +54,7 @@ const entries: readonly NoteEntry[] = [
     summary:
       'How a copy-and-own registry keeps its install contract true without a package manager: declared metadata checked against the real source, and what that check cannot see.',
     date: '2026-10-19',
+    updated: '2026-10-22',
     tags: ['registry', 'tooling'],
     related: ['strict-typescript-for-a-component-library', 'designing-reusable-component-apis'],
     evidence: [
@@ -90,7 +91,17 @@ const entries: readonly NoteEntry[] = [
       {
         label: 'What the installation page promises',
         path: 'src/docs/content/installation.md',
-        anchor: 'There is no package to install, no command-line tool',
+        anchor: 'Nothing tracks a copied file against the entry it came from.',
+      },
+      {
+        label: 'The shadcn item generator',
+        path: 'src/registry/shadcn/manifest.ts',
+        anchor: 'export function toShadcnItem',
+      },
+      {
+        label: 'What the comparison with the official build checks',
+        path: 'src/docs/content/shadcn-registry.md',
+        anchor: '`shadcn build` writes the same content as the committed files',
       },
       {
         label: 'The generated install command',

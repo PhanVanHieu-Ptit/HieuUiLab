@@ -10,6 +10,8 @@
 @source not '../../README.md';
 @source not '../../CHANGELOG.md';
 @source not '../docs/README.md';
+@source not '../../public/r';
+@source not '../registry/shadcn/schema';
 
 @custom-variant dark (&:where(.dark, .dark *));
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "hieu-ui-lab",
+  "homepage": "https://github.com/PhanVanHieu-Ptit/HieuUiLab",
+  "items": [
+    {
+      "name": "kbd",
+      "title": "Kbd",
+      "description": "A semantic <kbd> element for keys and shortcut hints.",
+      "dependencies": [
+        "cn"
+      ],
+      "files": [
+        {
+          "path": "registry/ui/kbd.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "docs": "Needs Tailwind CSS v4 and the semantic color tokens that shadcn init writes (muted, muted-foreground). Bare border utilities use the default border color from the base layer that shadcn init writes.",
+      "categories": [
+        "data-display",
+        "keyboard"
+      ],
+      "type": "registry:ui"
+    }
+  ]
+}

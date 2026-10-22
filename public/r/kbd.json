@@ -1,0 +1,22 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "kbd",
+  "title": "Kbd",
+  "description": "A semantic <kbd> element for keys and shortcut hints.",
+  "dependencies": [
+    "cn"
+  ],
+  "files": [
+    {
+      "path": "registry/ui/kbd.tsx",
+      "content": "import type { ComponentProps } from 'react'\n\nimport { cn } from 'cn'\n\n/** A keyboard key or shortcut hint. */\nexport function Kbd({ className, ...props }: ComponentProps<'kbd'>) {\n  return (\n    <kbd\n      className={cn(\n        'inline-flex h-5 min-w-5 items-center justify-center gap-0.5 rounded-sm border bg-muted px-1 font-mono text-xs leading-none font-medium text-muted-foreground',\n        className,\n      )}\n      {...props}\n    />\n  )\n}\n",
+      "type": "registry:ui"
+    }
+  ],
+  "docs": "Needs Tailwind CSS v4 and the semantic color tokens that shadcn init writes (muted, muted-foreground). Bare border utilities use the default border color from the base layer that shadcn init writes.",
+  "categories": [
+    "data-display",
+    "keyboard"
+  ],
+  "type": "registry:ui"
+}
