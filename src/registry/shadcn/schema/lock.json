@@ -1,0 +1,14 @@
+{
+  "fetchedAt": "2026-10-22",
+  "cli": "4.22.1",
+  "schemas": {
+    "registry.schema.json": {
+      "url": "https://ui.shadcn.com/schema/registry.json",
+      "sha256": "e716ebe595bbc189db2627cb75f0484cd765a09eb397a89b1f1c49074220d4bb"
+    },
+    "registry-item.schema.json": {
+      "url": "https://ui.shadcn.com/schema/registry-item.json",
+      "sha256": "cdf0fba75a26ebf594018264eff2d55407ec14deb3071d0fce0e2b20848e5d44"
+    }
+  }
+}

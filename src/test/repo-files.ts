@@ -7,7 +7,7 @@ import repoFilesSource from './repo-files.ts?raw'
  */
 const sources = import.meta.glob<string>(
   [
-    '/src/**/*.{ts,tsx,css,svg,md}',
+    '/src/**/*.{ts,tsx,css,svg,md,json}',
     '/e2e/**/*.ts',
     '/.github/workflows/*.{yml,yaml}',
     '/*.{md,json,ts,js,html}',
@@ -37,10 +37,14 @@ export function readFile(path: string): string | undefined {
   return allSources[key(path)]
 }
 
-/** True for a file, or for a directory that holds at least one. */
+/** True for a file, or for a directory that holds at least one (under `public/` too). */
 export function pathExists(path: string): boolean {
   const prefix = `${key(path)}/`
-  return fileExists(path) || Object.keys(allSources).some((file) => file.startsWith(prefix))
+  return (
+    fileExists(path) ||
+    Object.keys(allSources).some((file) => file.startsWith(prefix)) ||
+    Object.keys(publicAssets).some((file) => file.startsWith(prefix))
+  )
 }
 
 /** The repository files whose paths start with `prefix`, e.g. "src/docs/content/". */
@@ -52,6 +56,13 @@ export function listFiles(prefix: string): string[] {
 
 export function fileContains(path: string, text: string): boolean {
   return readFile(path)?.includes(text) ?? false
+}
+
+/** URL paths of the files under `public/` that start with `prefix`, e.g. "/r/" lists "/r/kbd.json". */
+export function publicAssetPaths(prefix: string): string[] {
+  return Object.keys(publicAssets)
+    .map((file) => file.slice('/public'.length))
+    .filter((urlPath) => urlPath.startsWith(prefix))
 }
 
 /** A file under `public/`, given its URL path, e.g. "/showcase/app/home.png". */

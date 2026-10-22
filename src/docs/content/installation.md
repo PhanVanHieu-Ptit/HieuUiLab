@@ -1,6 +1,6 @@
 # Installation
 
-Entries are written for React 19 with TypeScript and Tailwind CSS v4. There is no package to install, no command-line tool, and no registry file to download: you copy each entry's file into your project and own it from then on. Nothing tracks a copied file against the entry it came from.
+Entries are written for React 19 with TypeScript and Tailwind CSS v4. There is no package to install: you copy each entry's file into your project and own it from then on. One entry, Kbd, is also published for the shadcn CLI, which [Install with the shadcn CLI](/docs/shadcn-registry) covers. Nothing tracks a copied file against the entry it came from.
 
 Set the project up once with steps 1 to 5, then copy as many entries as you need with step 6.
 

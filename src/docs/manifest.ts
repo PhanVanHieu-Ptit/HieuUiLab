@@ -54,6 +54,15 @@ export const docGroups: readonly DocGroup[] = [
         load: () => import('./content/installation.md?raw'),
       },
       {
+        id: 'shadcn-registry',
+        slug: 'shadcn-registry',
+        title: 'Install with the shadcn CLI',
+        description:
+          'Install the published components with the shadcn CLI: what is published, what was tested, and how conflicts and updates are handled.',
+        keywords: ['shadcn', 'cli', 'registry', 'npx', 'pnpm dlx', 'overwrite', 'update', 'kbd'],
+        load: () => import('./content/shadcn-registry.md?raw'),
+      },
+      {
         id: 'project-structure',
         slug: 'project-structure',
         title: 'Project structure',

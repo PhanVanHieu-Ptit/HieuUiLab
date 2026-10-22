@@ -5,6 +5,7 @@ import { expect, test, type Page } from '@playwright/test'
 const pages = [
   ['/docs', 'Getting started'],
   ['/docs/installation', 'Installation'],
+  ['/docs/shadcn-registry', 'Install with the shadcn CLI'],
   ['/docs/project-structure', 'Project structure'],
   ['/docs/design-tokens', 'Design tokens'],
   ['/docs/theming', 'Theme customization'],
@@ -105,12 +106,17 @@ test.describe('navigation', () => {
       .getByRole('navigation', { name: 'Docs pager' })
       .getByRole('link', { name: /Next/ })
       .click()
+    await expect(page).toHaveURL(/\/docs\/shadcn-registry$/)
+    await page
+      .getByRole('navigation', { name: 'Docs pager' })
+      .getByRole('link', { name: /Next/ })
+      .click()
     await expect(page).toHaveURL(/\/docs\/project-structure$/)
     await page
       .getByRole('navigation', { name: 'Docs pager' })
       .getByRole('link', { name: /Previous/ })
       .click()
-    await expect(page).toHaveURL(/\/docs\/installation$/)
+    await expect(page).toHaveURL(/\/docs\/shadcn-registry$/)
   })
 
   test('opens a docs page from the search menu', async ({ page }) => {

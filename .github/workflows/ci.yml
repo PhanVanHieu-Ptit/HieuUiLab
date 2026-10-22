@@ -36,6 +36,9 @@ jobs:
       # Same for the engineering notes: a code block that is not in its file, or a missing
       # section, is named on its own.
       - run: pnpm notes:check
+      # Also part of pnpm test; run on its own so a stale file under public/r is named. The install
+      # test that needs the network is in registry-install.yml.
+      - run: pnpm registry:check
       - run: pnpm test
       - run: pnpm build
 
