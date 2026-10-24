@@ -8,6 +8,8 @@
     "moduleResolution": "bundler",
     "types": ["node"],
     "noEmit": true,
+    // scripts/ import each other with the .ts extension, which is what Node needs to run them.
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "isolatedModules": true,
     "moduleDetection": "force",

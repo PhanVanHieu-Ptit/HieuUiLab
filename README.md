@@ -87,28 +87,29 @@ result.
 
 ## Scripts
 
-| Script                        | Purpose                                                                                                                             |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                    | Start the dev server                                                                                                                |
-| `pnpm build`                  | Typecheck and build for production into `dist/`                                                                                     |
-| `pnpm preview`                | Serve the production build                                                                                                          |
-| `pnpm lint`                   | ESLint (type-aware, react-hooks, jsx-a11y); fails on warnings                                                                       |
-| `pnpm lint:fix`               | ESLint with autofix                                                                                                                 |
-| `pnpm format`                 | Format with Prettier                                                                                                                |
-| `pnpm format:check`           | Check formatting without writing                                                                                                    |
-| `pnpm typecheck`              | TypeScript project check                                                                                                            |
-| `pnpm test`                   | Unit/component tests (Vitest), single run                                                                                           |
-| `pnpm test:watch`             | Vitest in watch mode                                                                                                                |
-| `pnpm docs:check`             | Validate the docs: links, anchors, repository paths, and code-sample imports (also part of `pnpm test`)                             |
-| `pnpm notes:check`            | Validate the engineering notes: sections, code excerpts against their files, links, and evidence (also part of `pnpm test`)         |
-| `pnpm registry:check`         | Check `public/r` against the registry and validate the shadcn items (also part of `pnpm test`)                                      |
-| `pnpm registry:build`         | Regenerate `public/r` from the registry (`vitest run src/registry/shadcn -u`)                                                       |
-| `pnpm registry:install-test`  | Install the shadcn item into a clean project with the real CLI, build and open it (network; `--runner npm` for npx)                 |
-| `pnpm registry:verify-schema` | Compare the saved shadcn JSON Schemas with the published ones (network)                                                             |
-| `pnpm test:e2e`               | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme |
-| `pnpm check`                  | Lint, format check, typecheck, tests, build — what CI runs                                                                          |
+| Script                        | Purpose                                                                                                                                          |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `pnpm dev`                    | Start the dev server                                                                                                                             |
+| `pnpm build`                  | Typecheck and build for production into `dist/`                                                                                                  |
+| `pnpm preview`                | Serve the production build                                                                                                                       |
+| `pnpm lint`                   | ESLint (type-aware, react-hooks, jsx-a11y); fails on warnings                                                                                    |
+| `pnpm lint:fix`               | ESLint with autofix                                                                                                                              |
+| `pnpm format`                 | Format with Prettier                                                                                                                             |
+| `pnpm format:check`           | Check formatting without writing                                                                                                                 |
+| `pnpm typecheck`              | TypeScript project check                                                                                                                         |
+| `pnpm test`                   | Unit/component tests (Vitest), single run                                                                                                        |
+| `pnpm test:watch`             | Vitest in watch mode                                                                                                                             |
+| `pnpm docs:check`             | Validate the docs: links, anchors, repository paths, and code-sample imports (also part of `pnpm test`)                                          |
+| `pnpm notes:check`            | Validate the engineering notes: sections, code excerpts against their files, links, and evidence (also part of `pnpm test`)                      |
+| `pnpm registry:check`         | Check `public/r` against the registry and validate the shadcn items (also part of `pnpm test`)                                                   |
+| `pnpm registry:build`         | Regenerate `public/r` from the registry (`vitest run src/registry/shadcn -u`)                                                                    |
+| `pnpm registry:install-test`  | Install the shadcn item into a clean project with the real CLI, build and open it (network; `--runner npm` for npx)                              |
+| `pnpm registry:failure-test`  | What the real CLI does with bad names, missing files, malformed items, unsafe paths and failing dependencies (network; `--runner npm`, `--show`) |
+| `pnpm registry:verify-schema` | Compare the saved shadcn JSON Schemas with the published ones (network)                                                                          |
+| `pnpm test:e2e`               | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme              |
+| `pnpm check`                  | Lint, format check, typecheck, tests, build — what CI runs                                                                                       |
 
-Run `pnpm check` before pushing. CI also runs `pnpm docs:check`, `pnpm notes:check` and `pnpm registry:check` on their own, then `pnpm test:e2e`. A second workflow runs the shadcn install test when the registry files change.
+Run `pnpm check` before pushing. CI also runs `pnpm docs:check`, `pnpm notes:check` and `pnpm registry:check` on their own, then `pnpm test:e2e`. A second workflow runs the shadcn install and failure tests when the registry files change.
 
 ## Routes
 

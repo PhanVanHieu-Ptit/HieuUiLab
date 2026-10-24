@@ -1,7 +1,8 @@
 name: Registry install test
 
 # Installs the published shadcn item into a clean project with the real CLI, builds it, and opens it
-# in a browser (scripts/registry-install-test.ts). It needs the network, so it is not part of the
+# in a browser (scripts/registry-install-test.ts), then feeds the CLI bad names, malformed items and
+# unsafe paths (scripts/registry-failure-test.ts). Both need the network, so they are not part of the
 # main CI job. The CLI version is the pinned `shadcn` devDependency, not a version written here.
 
 on:
@@ -32,7 +33,7 @@ concurrency:
 jobs:
   install:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -51,6 +52,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm registry:install-test --runner ${{ matrix.runner }}
+      - run: pnpm registry:failure-test --runner ${{ matrix.runner }}
 
   # Compares the saved JSON Schemas with the published ones. Scheduled or manual only, so a pull
   # request never fails because ui.shadcn.com changed or could not be reached.

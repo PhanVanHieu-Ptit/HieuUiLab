@@ -91,6 +91,7 @@ describe('tested CLI version', () => {
 
   it('is what the install workflow runs, through the pinned devDependency', () => {
     expect(workflow).toContain('pnpm registry:install-test')
+    expect(workflow).toContain('pnpm registry:failure-test')
     // The workflow names no CLI version of its own: the script reads the pinned devDependency.
     expect(workflow).not.toContain('shadcn@')
   })
