@@ -22,6 +22,7 @@
     "registry:check": "vitest run src/registry/shadcn",
     "registry:build": "vitest run src/registry/shadcn -u",
     "registry:install-test": "node scripts/registry-install-test.ts",
+    "registry:failure-test": "node scripts/registry-failure-test.ts",
     "registry:verify-schema": "node scripts/registry-verify-schema.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
