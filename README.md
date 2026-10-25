@@ -142,8 +142,9 @@ The route tree is in `src/router/routes.tsx` (React Router data router):
   docs URLs such as `/docs/architecture` (listed in `docRedirects` in `src/docs/manifest.ts`).
 - **Lazy loading**: docs, registry detail, templates, labs, notes, projects, and about pages are
   separate chunks, and each template and its source text are chunks of their own. Loaders and
-  metadata stay eager, so 404s and redirects resolve before any chunk loads. The registry (with each
-  entry's source text) is still in the main chunk because the navigation lists it.
+  metadata stay eager, so 404s and redirects resolve before any chunk loads. The registry's metadata
+  is in the main chunk because the navigation lists it; each entry's examples and source text are a
+  chunk of their own, loaded where a page shows them.
 - **`/projects/:slug`** serves public projects and case studies from one URL space, so a slug is
   unique across both (a test checks it). The loader returns which kind it found.
 - Use `createRoutes()`, never a shared array: React Router clears resolved `lazy` keys in place, so
@@ -261,8 +262,10 @@ compiled, or evaluated at runtime, and ESLint bans `eval`, `new Function`, dynam
 `dangerouslySetInnerHTML` in `src/playground/`.
 
 1. For a component that renders fully from props and text, give its registry entry a `playground`
-   (see above) and add `registryExample('<slug>', '<one line>')` to the list. Controls, defaults,
-   and generated code are the registry's own.
+   in its `content.ts` (see above), import that `content` in `src/playground/index.ts` (the
+   playground never imports a module at runtime), and add
+   `registryExample('<slug>', content, '<one line>')` to the list. Controls, defaults, and
+   generated code are the registry's own.
 2. For anything else (compound parts, typed data), add `src/playground/examples/<name>.ts` and
    `<name>-stage.tsx`: declare the controls with `defineControls` and the `booleanControl`,
    `stringControl`, `enumControl`, and `numberControl` factories (a bad default throws when the

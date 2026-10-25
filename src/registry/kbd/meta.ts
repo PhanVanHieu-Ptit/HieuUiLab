@@ -1,11 +1,5 @@
-import kbdSource from '@/components/ui/kbd.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { KbdDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const kbdEntry: ImplementedEntry = {
   id: 'kbd',
@@ -22,9 +16,6 @@ export const kbdEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: kbdSource,
-  examples: [
-    { id: 'basic', title: 'Shortcut hints', component: KbdDemo, code: demoCode('KbdDemo') },
-  ],
   api: { parts: [{ name: 'Kbd', props: [nativeProps('kbd')] }] },
+  content: () => import('./content'),
 }

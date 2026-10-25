@@ -1,11 +1,4 @@
-import dashboardOverviewSource from '@/components/blocks/dashboard-overview.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { DashboardOverviewDemo, DashboardOverviewStatesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const dashboardOverviewEntry: ImplementedEntry = {
   id: 'dashboard-overview',
@@ -38,27 +31,6 @@ export const dashboardOverviewEntry: ImplementedEntry = {
       'Dates are formatted in en-US and UTC so the output is stable; swap formatDateTime for your locale and time zone.',
     ],
   },
-  source: dashboardOverviewSource,
-  examples: [
-    {
-      id: 'overview',
-      title: 'Workspace usage',
-      description:
-        'Example data, invented for this page: a made-up workspace with figures for two ranges. Nothing is fetched.',
-      component: DashboardOverviewDemo,
-      code: demoCode('DashboardOverviewDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'states',
-      title: 'Loading, empty, and error',
-      description:
-        'Example only: pick a mock state to see each one. Retry in the error state returns to the data.',
-      component: DashboardOverviewStatesDemo,
-      code: demoCode('DashboardOverviewStatesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'Metrics arrive precomputed (value, change, trend) so the same layout fits any domain. For a page whose figures are derived from rows, see Orders dashboard.',
     'Every chart has a text alternative: a spoken label that states the takeaway, and a “View data as table” disclosure for the main trend. Sparklines have no scale, so each card also shows the figure.',
@@ -273,4 +245,5 @@ export const dashboardOverviewEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

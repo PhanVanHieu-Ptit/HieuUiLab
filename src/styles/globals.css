@@ -319,6 +319,11 @@
     scroll-margin-top: calc(var(--spacing-header) + 1.5rem);
   }
 
+  /* The heading that receives focus after a route change is a landmark, not a control. */
+  main h1[tabindex='-1'] {
+    outline: none;
+  }
+
   ::selection {
     @apply bg-primary-subtle text-primary-subtle-foreground;
   }

@@ -1,11 +1,4 @@
-import monitoringDashboardSource from '@/components/blocks/monitoring-dashboard.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { MonitoringDashboardDemo, MonitoringDashboardStatesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const monitoringDashboardEntry: ImplementedEntry = {
   id: 'monitoring-dashboard',
@@ -39,27 +32,6 @@ export const monitoringDashboardEntry: ImplementedEntry = {
       'Dates are formatted in en-US and UTC so the output is stable; swap formatDateTime for your locale and time zone.',
     ],
   },
-  source: monitoringDashboardSource,
-  examples: [
-    {
-      id: 'status-board',
-      title: 'Status board',
-      description:
-        'Example data, invented for this page: six services and four incidents. Refresh waits briefly and moves the “checked at” time on by a minute; no system is checked.',
-      component: MonitoringDashboardDemo,
-      code: demoCode('MonitoringDashboardDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'states',
-      title: 'Quiet, empty, loading, and error',
-      description:
-        'Example only: pick a mock state, including a refresh that fails. Retry in the error state returns to the board.',
-      component: MonitoringDashboardStatesDemo,
-      code: demoCode('MonitoringDashboardStatesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'Status is never shown by color alone: every service has a badge with the state in words, and every sparkline is paired with the latest figure and a spoken label that gives the low, high, and latest values.',
     'The summary figures come from the exported summarizeServices, so the same numbers are available to tests, alerts, and server code.',
@@ -232,4 +204,5 @@ export const monitoringDashboardEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

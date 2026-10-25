@@ -1,5 +1,5 @@
 import { parseSourceImports } from '../validate'
-import type { ImplementedEntry, RegistryEntry } from '../types'
+import type { FullRegistryEntry, LoadedEntry } from '../types'
 import { isImplemented } from '../types'
 import {
   CN_PACKAGE,
@@ -102,7 +102,7 @@ function installNote(content: string): string {
 }
 
 /** Maps one implemented entry to a registry item. Throws for kinds that are not supported yet. */
-export function toShadcnItem(entry: ImplementedEntry): ShadcnItem {
+export function toShadcnItem(entry: LoadedEntry): ShadcnItem {
   if (entry.kind !== 'component') {
     throw new Error(`${entry.slug}: only components can be published so far, not ${entry.kind}s`)
   }
@@ -142,7 +142,7 @@ export function serialize(value: unknown): string {
 
 /** Builds every published item, the index, and the files to write for them. */
 export function buildShadcnRegistry(
-  entries: readonly RegistryEntry[],
+  entries: readonly FullRegistryEntry[],
   slugs: readonly string[],
   homepage: string,
 ): ShadcnRegistry {

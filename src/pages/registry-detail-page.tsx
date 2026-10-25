@@ -21,7 +21,8 @@ import { packageVersion, registryPackages, registryRequirements } from '@/regist
 import { registryCategories } from '@/registry/taxonomy'
 import {
   isImplemented,
-  type ImplementedEntry,
+  type FullRegistryEntry,
+  type LoadedEntry,
   type PlannedEntry,
   type RegistryEntry,
 } from '@/registry/types'
@@ -48,7 +49,7 @@ function withInlineCode(text: string) {
 
 /** Detail page for one registry entry, loaded by the route's `registryLoader`. */
 export function RegistryDetailPage() {
-  const entry = useLoaderData<RegistryEntry>()
+  const entry = useLoaderData<FullRegistryEntry>()
   return isImplemented(entry) ? (
     <ImplementedDetail entry={entry} />
   ) : (
@@ -92,7 +93,7 @@ function EntryLinks({ entries }: { entries: readonly RegistryEntry[] }) {
   ))
 }
 
-function ImplementedDetail({ entry }: { entry: ImplementedEntry }) {
+function ImplementedDetail({ entry }: { entry: LoadedEntry }) {
   const { installation } = entry
   const plan = resolveInstallPlan(entry, (slug) => getRegistryEntry(slug))
   const direct = plan.entries.filter((each) =>

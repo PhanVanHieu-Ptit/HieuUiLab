@@ -1,14 +1,22 @@
 import { describe, expect, it } from 'vitest'
 
+import { fullRegistry } from '@/test/full-registry'
+
 import { registry } from '.'
-import type { ImplementedEntry, PlannedEntry, RegistryEntry } from './types'
-import { assertValidRegistry, parseSourceImports, validateRegistry } from './validate'
+import type { FullRegistryEntry, ImplementedEntry, LoadedEntry, PlannedEntry } from './types'
+import {
+  assertValidEntryContent,
+  assertValidRegistry,
+  parseSourceImports,
+  validateFullRegistry,
+  validateRegistry,
+} from './validate'
 
 function Example() {
   return null
 }
 
-function implemented(slug: string, overrides: Partial<ImplementedEntry> = {}): ImplementedEntry {
+function implemented(slug: string, overrides: Partial<LoadedEntry> = {}): LoadedEntry {
   return {
     id: slug,
     slug,
@@ -24,6 +32,8 @@ function implemented(slug: string, overrides: Partial<ImplementedEntry> = {}): I
       registryDependencies: [],
       requirements: ['cn-helper'],
     },
+    // The validators are handed the loaded entry; nothing here loads anything.
+    content: () => Promise.reject(new Error('not loaded in this test')),
     source: `import { cn } from '@/lib/cn'\nexport function X() { return null }`,
     examples: [{ id: 'basic', title: 'Basic', component: Example, code: '<X />' }],
     api: {
@@ -49,7 +59,7 @@ function planned(slug: string, overrides: Partial<PlannedEntry> = {}): PlannedEn
 }
 
 /** A block at `slug` that imports each of `dependencies` from components/ui. */
-function block(slug: string, dependencies: string[]): ImplementedEntry {
+function block(slug: string, dependencies: string[]): LoadedEntry {
   return implemented(slug, {
     kind: 'block',
     installation: {
@@ -62,16 +72,40 @@ function block(slug: string, dependencies: string[]): ImplementedEntry {
   })
 }
 
-function messages(entries: readonly RegistryEntry[]): string[] {
-  return validateRegistry(entries).map((issue) => `${issue.entry} ${issue.field}: ${issue.message}`)
+function messages(entries: readonly FullRegistryEntry[]): string[] {
+  return validateFullRegistry(entries).map(
+    (issue) => `${issue.entry} ${issue.field}: ${issue.message}`,
+  )
 }
 
 describe('validateRegistry', () => {
-  it('accepts the real registry', () => {
+  it('accepts the real registry, with and without its content', () => {
     expect(validateRegistry(registry)).toEqual([])
+    expect(validateFullRegistry(fullRegistry)).toEqual([])
     expect(() => {
       assertValidRegistry(registry)
     }).not.toThrow()
+  })
+
+  it('checks the metadata without any content loaded', () => {
+    const light: Partial<LoadedEntry> = implemented('a')
+    delete light.source
+    delete light.examples
+    expect(validateRegistry([light as ImplementedEntry])).toEqual([])
+    expect(validateRegistry([{ ...light, guidelines: [' '] } as ImplementedEntry])).toEqual([
+      expect.objectContaining({ entry: 'a', field: 'guidelines' }),
+    ])
+  })
+
+  it('reports content that disagrees with the metadata, on the entry that loaded it', () => {
+    const entry = implemented('a', {
+      source: `import { Dialog } from 'radix-ui'\nimport { cn } from '@/lib/cn'\nexport function X() { return null }`,
+    })
+    expect(() => {
+      assertValidEntryContent(entry, new Map([[entry.slug, entry]]))
+    }).toThrow(
+      /Invalid registry content:\n- a › installation\.packages: source imports "radix-ui" but it is not declared/,
+    )
   })
 
   it('rejects empty guidelines', () => {
@@ -310,16 +344,16 @@ describe('validateRegistry', () => {
   })
 
   it('rejects a planned entry that carries implementation fields', () => {
-    const disguised = { ...planned('a'), source: 'export {}' } as RegistryEntry
+    const disguised = { ...planned('a'), source: 'export {}' } as unknown as FullRegistryEntry
     expect(messages([disguised])).toContain(
       'a source: a planned entry must not have implementation fields',
     )
   })
 
   it('rejects an implemented entry missing implementation fields', () => {
-    const withoutExamples: Partial<ImplementedEntry> = implemented('a')
+    const withoutExamples: Partial<LoadedEntry> = implemented('a')
     delete withoutExamples.examples
-    expect(messages([withoutExamples as RegistryEntry])).toContain('a examples: is missing')
+    expect(messages([withoutExamples as LoadedEntry])).toContain('a examples: is missing')
   })
 
   it('lists every issue when asserting', () => {

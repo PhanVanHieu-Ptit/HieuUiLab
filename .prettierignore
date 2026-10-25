@@ -2,6 +2,7 @@ dist
 coverage
 playwright-report
 test-results
+perf-results
 pnpm-lock.yaml
 public/r
 src/registry/shadcn/schema

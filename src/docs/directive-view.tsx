@@ -2,9 +2,9 @@ import { lazy, Suspense } from 'react'
 import { Link } from 'react-router'
 
 import { CodeBlock } from '@/components/site/code-block'
-import { ComponentPreview } from '@/components/site/component-preview'
 import { PropsTable } from '@/components/site/props-table'
 import { proseLinkClass, tableWrapClass } from '@/components/site/prose'
+import { RegistryExampleView } from '@/components/site/registry-example-view'
 import { ScrollRegion } from '@/components/site/scroll-region'
 import { StatusBadge } from '@/components/site/status-badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -154,9 +154,13 @@ function RegistryExample({ directive }: { directive: Directive }) {
   const id = directive.attrs.example ?? ''
   const entry = getImplementedEntry(slug)
   if (!entry) return problem(directive, `There is no implemented registry entry "${slug}".`)
-  const example = entry.examples.find((item) => item.id === id)
-  if (!example) return problem(directive, `"${slug}" has no example "${id}".`)
-  return <ComponentPreview example={example} />
+  return (
+    <RegistryExampleView
+      entry={entry}
+      exampleId={id}
+      missing={problem(directive, `"${slug}" has no example "${id}".`)}
+    />
+  )
 }
 
 function Source({ directive }: { directive: Directive }) {

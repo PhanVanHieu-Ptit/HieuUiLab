@@ -2,9 +2,9 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { registry } from '@/registry'
 import { sourceExports } from '@/registry/usage'
 import { isImplemented } from '@/registry/types'
+import { fullRegistry } from '@/test/full-registry'
 
 import { defaultValues } from './controls'
 import { validatePlaygroundExamples, type PlaygroundExample } from './example'
@@ -120,7 +120,7 @@ describe('every example', () => {
       const projectImports = imports.filter(([, , from]) => from?.startsWith('@/'))
       expect(projectImports.length).toBeGreaterThan(0)
       for (const [, names = '', from = ''] of projectImports) {
-        const entry = registry
+        const entry = fullRegistry
           .filter(isImplemented)
           .find(
             (candidate) => `@/${candidate.installation.targetPath}`.replace(/\.tsx$/, '') === from,
@@ -184,7 +184,7 @@ describe('the registry examples', () => {
 
   it('uses the registry definitions: same controls, same defaults', () => {
     for (const slug of ['button', 'input', 'badge']) {
-      const entry = registry.filter(isImplemented).find((candidate) => candidate.slug === slug)
+      const entry = fullRegistry.filter(isImplemented).find((candidate) => candidate.slug === slug)
       const controls = entry?.playground?.controls ?? []
       const shown = example(slug)
       expect(Object.keys(shown.controls)).toEqual(controls.map((control) => control.prop))

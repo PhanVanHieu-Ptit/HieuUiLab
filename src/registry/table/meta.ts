@@ -1,11 +1,5 @@
-import tableSource from '@/components/ui/table.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { TableDemo, TableStaticDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const tableEntry: ImplementedEntry = {
   id: 'table',
@@ -23,26 +17,6 @@ export const tableEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: tableSource,
-  examples: [
-    {
-      id: 'sortable-headers',
-      title: 'Sortable headers',
-      description:
-        'Tab to a header and press Enter or Space. Only the sorted column carries aria-sort.',
-      component: TableDemo,
-      code: demoCode('TableDemo'),
-      preview: { layout: 'fill' },
-    },
-    {
-      id: 'static',
-      title: 'Static table',
-      description: 'A visually hidden caption still names the table.',
-      component: TableStaticDemo,
-      code: demoCode('TableStaticDemo'),
-      preview: { layout: 'fill' },
-    },
-  ],
   guidelines: [
     'Use a table for data with rows and columns that are compared; use a list for anything else.',
     'Always give the table a caption, visible or with sr-only, so it has an accessible name.',
@@ -93,4 +67,5 @@ export const tableEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

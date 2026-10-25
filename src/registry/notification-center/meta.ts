@@ -1,11 +1,4 @@
-import notificationCenterSource from '@/components/blocks/notification-center.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { NotificationCenterDemo, NotificationCenterStatesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const notificationCenterEntry: ImplementedEntry = {
   id: 'notification-center',
@@ -36,27 +29,6 @@ export const notificationCenterEntry: ImplementedEntry = {
       'Relative times are measured from asOf and short dates are formatted in en-US and UTC, so the output is stable; swap the formatter for your locale.',
     ],
   },
-  source: notificationCenterSource,
-  examples: [
-    {
-      id: 'inbox',
-      title: 'Inbox',
-      description:
-        'Example data, invented for this page: 8 notifications held in memory. Changes reset when the page reloads.',
-      component: NotificationCenterDemo,
-      code: demoCode('NotificationCenterDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'states',
-      title: 'Loading, empty, and error',
-      description:
-        'Example only: pick a mock state to see each one. Retry in the error state returns to the inbox.',
-      component: NotificationCenterStatesDemo,
-      code: demoCode('NotificationCenterStatesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'The block is controlled. It never changes a notification itself: update the item in onMarkRead and onMarkAllRead, and pass the new items back in state.',
     'Mark all as read stays focusable and uses aria-disabled while nothing is unread, with a description that says why, instead of disabling it.',
@@ -167,4 +139,5 @@ export const notificationCenterEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

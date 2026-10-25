@@ -1,11 +1,4 @@
-import errorStateSource from '@/components/blocks/error-state.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { ErrorStateDemo, ErrorStatePlainDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const errorStateEntry: ImplementedEntry = {
   id: 'error-state',
@@ -23,23 +16,6 @@ export const errorStateEntry: ImplementedEntry = {
     registryDependencies: ['empty-state', 'button'],
     requirements: ['design-tokens'],
   },
-  source: errorStateSource,
-  examples: [
-    {
-      id: 'retry',
-      title: 'With retry',
-      description: 'The retry comes first; other actions follow it.',
-      component: ErrorStateDemo,
-      code: demoCode('ErrorStateDemo'),
-    },
-    {
-      id: 'no-retry',
-      title: 'Without retry',
-      description: 'When retrying cannot help, explain what the user can do instead.',
-      component: ErrorStatePlainDemo,
-      code: demoCode('ErrorStatePlainDemo'),
-    },
-  ],
   guidelines: [
     'Say what failed in the title and what to do next in the description. Avoid error codes unless the user can act on them.',
     'Offer onRetry only when retrying can succeed, e.g. after a timeout, not after a 404.',
@@ -81,4 +57,5 @@ export const errorStateEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

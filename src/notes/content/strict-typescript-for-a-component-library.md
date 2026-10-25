@@ -51,12 +51,15 @@ const [firstField] = fieldErrors
 if (firstField) setFocusField({ name: firstField.name })
 ```
 
-A registry entry is a union, and a type guard narrows it. Code that touches the install steps or the source has to prove the entry is implemented first.
+A registry entry is a union, and a type guard narrows it. Code that touches the install steps or the source has to prove the entry is implemented first. The guard is generic, so a list of entries whose content is loaded stays that type after `filter(isImplemented)`.
 
 ```ts title="src/registry/types.ts (a union and its guard)"
 export type RegistryEntry = ImplementedEntry | PlannedEntry
-
-export function isImplemented(entry: RegistryEntry): entry is ImplementedEntry {
+// …
+/** Narrows to the implemented entries, keeping whether their content is loaded. */
+export function isImplemented<E extends RegistryEntry>(
+  entry: E,
+): entry is Extract<E, { status: ImplementedStatus }> {
   return entry.status !== 'planned'
 }
 ```

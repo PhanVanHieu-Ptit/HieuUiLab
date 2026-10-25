@@ -39,10 +39,15 @@ export function RegistryIndexPage({ kind, title, description }: RegistryIndexPag
   const resultsId = useId()
 
   function update(next: CatalogQuery, options?: { typing?: boolean }) {
+    const typing = options?.typing === true
     // Typing replaces the history entry; each discrete filter change can be undone with Back.
     setSearchParams(toSearchParams(next), {
-      replace: options?.typing === true,
+      replace: typing,
       preventScrollReset: true,
+      // The search box shows the URL's value. Committed in a transition, as the router does by
+      // default, the box can be put back to its previous text before the new text arrives, which
+      // drops characters typed in quick succession, and keystrokes after the first land at the end.
+      flushSync: typing,
     })
   }
 

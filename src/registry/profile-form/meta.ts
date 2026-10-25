@@ -1,11 +1,4 @@
-import profileFormSource from '@/components/blocks/profile-form.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { ProfileFormDemo, ProfileFormDisabledDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const profileFormEntry: ImplementedEntry = {
   id: 'profile-form',
@@ -34,26 +27,6 @@ export const profileFormEntry: ImplementedEntry = {
     ],
     requirements: ['design-tokens'],
   },
-  source: profileFormSource,
-  examples: [
-    {
-      id: 'editable',
-      title: 'Edit and save',
-      description:
-        'Example only: the mock handler sends nothing. Pick a mock response, then submit.',
-      component: ProfileFormDemo,
-      code: demoCode('ProfileFormDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-    {
-      id: 'disabled',
-      title: 'Locked',
-      description: 'Every control and the submit button are disabled.',
-      component: ProfileFormDisabledDemo,
-      code: demoCode('ProfileFormDisabledDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     '`profileSchema` holds every rule; the markup sets no native constraints, and required markers are derived from the schema.',
     '`onSubmit` receives parsed values (trimmed, empty optional fields as `null`) and returns a `SubmitResult`. Connect it to your own API; this block makes no requests.',
@@ -86,4 +59,5 @@ export const profileFormEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

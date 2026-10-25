@@ -1,11 +1,5 @@
-import paginationSource from '@/components/ui/pagination.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { PaginationDemo, PaginationFewPagesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const paginationEntry: ImplementedEntry = {
   id: 'pagination',
@@ -23,24 +17,6 @@ export const paginationEntry: ImplementedEntry = {
     registryDependencies: ['button'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: paginationSource,
-  examples: [
-    {
-      id: 'many-pages',
-      title: 'Many pages',
-      description:
-        'The first and last page are always shown, with one page either side of the current one.',
-      component: PaginationDemo,
-      code: demoCode('PaginationDemo'),
-    },
-    {
-      id: 'few-pages',
-      title: 'Few pages',
-      description: 'With seven pages or fewer, every page is shown.',
-      component: PaginationFewPagesDemo,
-      code: demoCode('PaginationFewPagesDemo'),
-    },
-  ],
   guidelines: [
     'Name each pagination with aria-label when a page has more than one, e.g. "Orders pages".',
     'Pagination is controlled: keep the page in state (or in the URL) and clamp it when the data shrinks.',
@@ -98,4 +74,5 @@ export const paginationEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

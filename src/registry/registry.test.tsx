@@ -1,6 +1,7 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { fullRegistry } from '@/test/full-registry'
 import { renderRoute } from '@/test/render'
 
 import packageJsonSource from '../../package.json?raw'
@@ -86,7 +87,7 @@ describe('URL slugs', () => {
 })
 
 describe('playgrounds', () => {
-  const withPlayground = registry.filter(isImplemented).filter((entry) => entry.playground)
+  const withPlayground = fullRegistry.filter(isImplemented).filter((entry) => entry.playground)
 
   it('exist for the entries that support them', () => {
     expect(withPlayground.map((entry) => entry.slug)).toEqual([

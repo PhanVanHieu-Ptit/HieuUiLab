@@ -1,6 +1,31 @@
 import { expect, test } from './fixtures'
 
 test.describe('component catalog', () => {
+  // The search box shows the URL's value, and the URL is written as the visitor types. Written in a
+  // transition, the box was put back to its previous text before the new text arrived, so keys
+  // pressed in quick succession were lost. The driver sends keys with no pause between them.
+  test('keeps every character typed in quick succession, at the end and in the middle', async ({
+    page,
+  }) => {
+    await page.goto('/components')
+    const search = page.getByRole('searchbox', { name: 'Search components' })
+
+    await search.click()
+    await page.keyboard.type('checkbox')
+    await expect(search).toHaveValue('checkbox')
+    await expect(page).toHaveURL(/\/components\?q=checkbox$/)
+
+    await search.fill('')
+    await expect(page).toHaveURL(/\/components$/)
+    await search.click()
+    await page.keyboard.type('buton')
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.press('ArrowLeft')
+    await page.keyboard.type('t')
+    await expect(search).toHaveValue('button')
+    await expect(page).toHaveURL(/\/components\?q=button$/)
+  })
+
   test('searches, filters, clears, and opens an entry', async ({ page }) => {
     await page.goto('/components')
     const status = page.getByRole('status').filter({ hasText: /components$/ })

@@ -1,11 +1,4 @@
-import tooltipSource from '@/components/ui/tooltip.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { TooltipSidesDemo, TooltipToolbarDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const tooltipEntry: ImplementedEntry = {
   id: 'tooltip',
@@ -23,25 +16,6 @@ export const tooltipEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: tooltipSource,
-  examples: [
-    {
-      id: 'toolbar',
-      title: 'Icon toolbar',
-      description:
-        'One provider shares the delay: after the first tooltip opens, moving along the toolbar opens the next at once. Each button still has its own aria-label.',
-      component: TooltipToolbarDemo,
-      code: demoCode('TooltipToolbarDemo'),
-    },
-    {
-      id: 'sides',
-      title: 'Placement',
-      description:
-        'Without a provider each tooltip creates its own. Placement flips to stay on screen.',
-      component: TooltipSidesDemo,
-      code: demoCode('TooltipSidesDemo'),
-    },
-  ],
   guidelines: [
     'A tooltip supplements, it never replaces: icon-only buttons still need an `aria-label`, and nothing important may live only in a tooltip.',
     'Tooltips do not open on touch screens. Anything a phone user needs must be visible or in the label.',
@@ -123,4 +97,5 @@ export const tooltipEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

@@ -27,7 +27,7 @@ A well-known alternative is a registry of JSON files that a command-line tool in
 
 ## Implementation example
 
-An entry declares its install contract next to its source. This is the whole contract for `Button`.
+An entry declares its install contract in its metadata file. Its source and examples are in a second file beside it, loaded only where they are shown, so the metadata stays small enough for the navigation to read. This is the whole contract for `Button`.
 
 ```ts title="src/registry/button/meta.ts (the install contract)"
   installation: {
@@ -36,7 +36,6 @@ An entry declares its install contract next to its source. This is the whole con
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: buttonSource,
 ```
 
 The validator compares the declared packages with the imports it finds, in both directions.

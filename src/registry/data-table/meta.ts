@@ -1,11 +1,4 @@
-import dataTableSource from '@/components/blocks/data-table.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { DataTableDemo, DataTableSelectionDemo, DataTableStatesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const dataTableEntry: ImplementedEntry = {
   id: 'data-table',
@@ -40,35 +33,6 @@ export const dataTableEntry: ImplementedEntry = {
     ],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: dataTableSource,
-  examples: [
-    {
-      id: 'sorting-and-pagination',
-      title: 'Sorting and pagination',
-      description:
-        'Sorted by finish time, newest first. Each sortable header cycles ascending, descending, then the original order. Rows with no value sort last.',
-      component: DataTableDemo,
-      code: demoCode('DataTableDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-    {
-      id: 'states',
-      title: 'States',
-      description: 'Headers stay in place while loading, on error, and when there are no rows.',
-      component: DataTableStatesDemo,
-      code: demoCode('DataTableStatesDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-    {
-      id: 'selection',
-      title: 'Selection and bulk action',
-      description:
-        'The header checkbox selects the rows on the current page. Selection is kept while paging, and archiving goes through a confirmation.',
-      component: DataTableSelectionDemo,
-      code: demoCode('DataTableSelectionDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     'Sorting and pagination run in the browser on the rows you pass in. They are intended for up to about 10,000 rows; the tests check correctness at that size, not speed. Only the current page is rendered, and page sizes are capped at 100.',
     'There is no server-side mode, virtualization, multi-column sort, or column resizing. For larger or remote data, sort and page on the server and pass one page of rows with a single page size.',
@@ -234,4 +198,5 @@ export const dataTableEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

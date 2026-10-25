@@ -1,11 +1,5 @@
-import cardSource from '@/components/ui/card.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { CardBasicDemo, CardInteractiveDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const cardEntry: ImplementedEntry = {
   id: 'card',
@@ -23,18 +17,6 @@ export const cardEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: cardSource,
-  examples: [
-    { id: 'basic', title: 'Basic', component: CardBasicDemo, code: demoCode('CardBasicDemo') },
-    {
-      id: 'interactive',
-      title: 'Interactive and dashed',
-      description:
-        'CardLink stretches its hit area over the card; the focus ring is drawn on the card.',
-      component: CardInteractiveDemo,
-      code: demoCode('CardInteractiveDemo'),
-    },
-  ],
   api: {
     parts: [
       {
@@ -73,4 +55,5 @@ export const cardEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

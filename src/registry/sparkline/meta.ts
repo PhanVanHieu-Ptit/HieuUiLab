@@ -1,11 +1,5 @@
-import sparklineSource from '@/components/ui/sparkline.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { SparklineDemo, SparklineTonesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const sparklineEntry: ImplementedEntry = {
   id: 'sparkline',
@@ -26,26 +20,6 @@ export const sparklineEntry: ImplementedEntry = {
       'It draws with currentColor and the status text tokens, so it needs no chart palette and follows light and dark mode.',
     ],
   },
-  source: sparklineSource,
-  examples: [
-    {
-      id: 'basic',
-      title: 'Next to a figure',
-      description: 'Example values, invented for this page.',
-      component: SparklineDemo,
-      code: demoCode('SparklineDemo'),
-      preview: { layout: 'fill' },
-    },
-    {
-      id: 'tones',
-      title: 'Tones and area',
-      description:
-        'The tone only sets the color. Whether a rise is good news is up to the surrounding text.',
-      component: SparklineTonesDemo,
-      code: demoCode('SparklineTonesDemo'),
-      preview: { layout: 'fill' },
-    },
-  ],
   guidelines: [
     'A sparkline has no scale, so always show the numbers it summarises (the latest value, or low and high) as text beside it.',
     'Give it a label that states the takeaway, such as “p95 latency, last 24 hours: low 82 ms, high 190 ms”. Without a label the chart is hidden from assistive technology.',
@@ -107,4 +81,5 @@ export const sparklineEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

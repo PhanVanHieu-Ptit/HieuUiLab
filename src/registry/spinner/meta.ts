@@ -1,13 +1,5 @@
-import { Spinner } from '@/components/ui/spinner'
-import spinnerSource from '@/components/ui/spinner.tsx?raw'
-
-import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { SpinnerDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const spinnerEntry: ImplementedEntry = {
   id: 'spinner',
@@ -24,10 +16,6 @@ export const spinnerEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: spinnerSource,
-  examples: [
-    { id: 'basic', title: 'Basic', component: SpinnerDemo, code: demoCode('SpinnerDemo') },
-  ],
   api: {
     parts: [
       {
@@ -44,8 +32,5 @@ export const spinnerEntry: ImplementedEntry = {
       },
     ],
   },
-  playground: definePlayground(Spinner, {
-    part: 'Spinner',
-    controls: [{ kind: 'text', prop: 'label', default: 'Loading' }],
-  }),
+  content: () => import('./content'),
 }

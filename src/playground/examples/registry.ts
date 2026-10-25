@@ -1,6 +1,6 @@
 import { getImplementedEntry, registryHref } from '@/registry'
 import { playgroundSnippet, resolvePlaygroundProps } from '@/registry/playground'
-import type { PlaygroundControl, PlaygroundValue } from '@/registry/types'
+import type { ImplementedEntryContent, PlaygroundControl, PlaygroundValue } from '@/registry/types'
 import { importPath } from '@/registry/usage'
 
 import { formatImport } from '../code'
@@ -57,11 +57,16 @@ function toPlaygroundValues(values: ControlValues): Record<string, PlaygroundVal
 
 /**
  * An example built from a registry entry's own `playground`, so its controls, defaults, and
- * generated code are the ones the docs validate and the detail page already shows.
+ * generated code are the ones the docs validate and the detail page already shows. The content is
+ * passed in, imported by `index.ts`, because the playground never imports a module at runtime.
  */
-export function registryExample(slug: string, description: string): PlaygroundExample {
+export function registryExample(
+  slug: string,
+  content: ImplementedEntryContent,
+  description: string,
+): PlaygroundExample {
   const entry = getImplementedEntry(slug)
-  const playground = entry?.playground
+  const playground = content.playground
   if (!entry || !playground) throw new Error(`Registry entry "${slug}" has no playground`)
 
   const controls = defineControls(

@@ -4,7 +4,7 @@ import {
   resolvePlaygroundProps,
   type PlaygroundValues,
 } from './playground'
-import type { ApiPart, ImplementedEntry } from './types'
+import type { ApiPart, ImplementedEntry, LoadedEntry } from './types'
 
 /** Whether a source export is a runtime value or only a type. */
 export type ExportKind = 'value' | 'type'
@@ -52,7 +52,7 @@ export function formatImport(names: readonly string[], from: string): string {
 }
 
 /** Every documented export of an entry, as one import statement; types are marked `type`. */
-export function importStatement(entry: ImplementedEntry): string {
+export function importStatement(entry: LoadedEntry): string {
   const exports = sourceExports(entry.source)
   const names = entry.api.parts
     .flatMap(partExportNames)
@@ -62,7 +62,7 @@ export function importStatement(entry: ImplementedEntry): string {
 }
 
 /** Example code for the playground's part with `values`; what the preview renders. */
-export function playgroundCode(entry: ImplementedEntry, values?: PlaygroundValues): string {
+export function playgroundCode(entry: LoadedEntry, values?: PlaygroundValues): string {
   const { playground } = entry
   if (!playground) return ''
   const props = resolvePlaygroundProps(playground, values ?? defaultPlaygroundValues(playground))
@@ -74,6 +74,6 @@ export function playgroundCode(entry: ImplementedEntry, values?: PlaygroundValue
 }
 
 /** A short usage example: the playground's defaults, or else the first example's code. */
-export function usageSnippet(entry: ImplementedEntry): string {
+export function usageSnippet(entry: LoadedEntry): string {
   return entry.playground ? playgroundCode(entry) : entry.examples[0].code
 }

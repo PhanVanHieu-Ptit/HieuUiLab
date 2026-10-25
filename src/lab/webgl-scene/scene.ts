@@ -98,8 +98,13 @@ export function createScene(
 
   const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX_SHADER)
   const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER)
+  if (!vertex || !fragment) {
+    // One may have compiled; it is no use alone.
+    if (vertex) gl.deleteShader(vertex)
+    if (fragment) gl.deleteShader(fragment)
+    return null
+  }
   const program = gl.createProgram()
-  if (!vertex || !fragment) return null
   gl.attachShader(program, vertex)
   gl.attachShader(program, fragment)
   gl.linkProgram(program)

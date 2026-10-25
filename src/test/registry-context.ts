@@ -1,11 +1,11 @@
 import { siteConfig } from '@/config/site'
-import { registry } from '@/registry'
 import { publishedSlugs, shadowsBuiltin } from '@/registry/shadcn/config'
 import { buildShadcnRegistry, type ShadcnRegistry } from '@/registry/shadcn/manifest'
 import type { ShadcnRegistryContext } from '@/registry/shadcn/rules'
 import globalsCss from '@/styles/globals.css?raw'
 import packageJsonSource from '../../package.json?raw'
 
+import { fullRegistry } from './full-registry'
 import { publicAssetPaths, readFile } from './repo-files'
 
 export const packageJson = JSON.parse(packageJsonSource) as {
@@ -15,7 +15,7 @@ export const packageJson = JSON.parse(packageJsonSource) as {
 
 /** What the generator produces today from the real registry. */
 export function builtShadcnRegistry(): ShadcnRegistry {
-  return buildShadcnRegistry(registry, publishedSlugs, siteConfig.githubUrl)
+  return buildShadcnRegistry(fullRegistry, publishedSlugs, siteConfig.githubUrl)
 }
 
 /**
@@ -26,7 +26,7 @@ export function builtShadcnRegistry(): ShadcnRegistry {
 export function shadcnRegistryContext(): ShadcnRegistryContext {
   const { items, index } = builtShadcnRegistry()
   return {
-    entries: registry,
+    entries: fullRegistry,
     publishedSlugs,
     shadowsBuiltin,
     items,

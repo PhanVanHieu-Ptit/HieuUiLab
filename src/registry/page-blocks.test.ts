@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
+import { fullRegistry } from '@/test/full-registry'
 import { forbiddenInSource } from '@/test/source-rules'
 
-import { registry } from './index'
-import { isImplemented, type ImplementedEntry } from './types'
+import { isImplemented, type LoadedEntry } from './types'
 
 /**
  * Rules that keep the page-level blocks usable inside the gallery's resizable preview and safe to
  * copy into a project. They are checked on source text, because jsdom has no layout.
  */
-const pageBlocks = registry.filter(
-  (entry): entry is ImplementedEntry => entry.category === 'pages' && isImplemented(entry),
+const pageBlocks = fullRegistry.filter(
+  (entry): entry is LoadedEntry => entry.category === 'pages' && isImplemented(entry),
 )
 
 const demoSources = import.meta.glob<string>('./*/demos.tsx', {

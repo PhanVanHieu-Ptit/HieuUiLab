@@ -1,11 +1,5 @@
-import notificationItemSource from '@/components/ui/notification-item.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { NotificationItemDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const notificationItemEntry: ImplementedEntry = {
   id: 'notification-item',
@@ -23,17 +17,6 @@ export const notificationItemEntry: ImplementedEntry = {
     registryDependencies: ['button'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: notificationItemSource,
-  examples: [
-    {
-      id: 'list',
-      title: 'Notification list',
-      description: 'Marking one as read removes its dot, its highlight, and its button.',
-      component: NotificationItemDemo,
-      code: demoCode('NotificationItemDemo'),
-      preview: { layout: 'fill' },
-    },
-  ],
   guidelines: [
     'Render items inside a labelled ul; each item is an article named by its title.',
     'Format the time yourself and pass the ISO timestamp too; it is rendered as time dateTime.',
@@ -81,4 +64,5 @@ export const notificationItemEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

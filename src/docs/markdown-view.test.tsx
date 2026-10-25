@@ -3,16 +3,27 @@ import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 
+import { renderSettled } from '@/test/render'
+
 import { parseMarkdown } from './markdown'
 import { MarkdownView } from './markdown-view'
 
-function view(source: string) {
+function page(source: string) {
   const doc = parseMarkdown(`# Title\n\n${source}`)
-  return render(
+  return (
     <MemoryRouter>
       <MarkdownView blocks={doc.blocks} />
-    </MemoryRouter>,
+    </MemoryRouter>
   )
+}
+
+function view(source: string) {
+  return render(page(source))
+}
+
+/** For a page with an example, which loads its code after the first render. */
+function viewSettled(source: string) {
+  return renderSettled(page(source))
 }
 
 describe('MarkdownView', () => {
@@ -173,9 +184,9 @@ describe('MarkdownView directives', () => {
     expect(within(row).getByRole('cell', { name: 'Button' })).toBeInTheDocument()
   })
 
-  it('shows a live example with its code', () => {
-    view('::registry-example{slug="badge" example="variants"}\n')
-    expect(screen.getByRole('tab', { name: 'Preview' })).toBeInTheDocument()
+  it('shows a live example with its code once its content has loaded', async () => {
+    await viewSettled('::registry-example{slug="badge" example="variants"}\n')
+    expect(await screen.findByRole('tab', { name: 'Preview' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Code' })).toBeInTheDocument()
   })
 
@@ -207,9 +218,10 @@ describe('MarkdownView directives', () => {
       '::source{path="src/main.tsx"}',
       '"src/main.tsx" is not in the list of files a page may show.',
     ],
-  ])('replaces %s with a note instead of failing', (directive, message) => {
-    view(`${directive}\n`)
-    const note = screen.getByRole('note')
+  ])('replaces %s with a note instead of failing', async (directive, message) => {
+    await viewSettled(`${directive}\n`)
+    // An example's note appears once the entry's content has loaded and has no such example.
+    const note = await screen.findByRole('note')
     expect(note).toHaveTextContent(message)
     expect(note).toHaveTextContent(/^Cannot show ::/)
   })

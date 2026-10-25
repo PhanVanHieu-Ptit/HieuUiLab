@@ -1,15 +1,4 @@
-import userProfileSettingsSource from '@/components/blocks/user-profile-settings.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import {
-  UserProfileSettingsDemo,
-  UserProfileSettingsOutcomesDemo,
-  UserProfileSettingsStatesDemo,
-} from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const userProfileSettingsEntry: ImplementedEntry = {
   id: 'user-profile-settings',
@@ -44,35 +33,6 @@ export const userProfileSettingsEntry: ImplementedEntry = {
       'The profile form needs a current password to save (see Profile form); your onSaveProfile decides whether it is right.',
     ],
   },
-  source: userProfileSettingsSource,
-  examples: [
-    {
-      id: 'settings',
-      title: 'Account settings',
-      description:
-        'Example only: the mock handlers always succeed and nothing is saved. The person and their preferences are invented.',
-      component: UserProfileSettingsDemo,
-      code: demoCode('UserProfileSettingsDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'outcomes',
-      title: 'Failures and account deletion',
-      description:
-        'Example only: pick what the mock service answers to see rejected and unavailable saves, a failed password change, and deleting an account.',
-      component: UserProfileSettingsOutcomesDemo,
-      code: demoCode('UserProfileSettingsOutcomesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'states',
-      title: 'Loading and error',
-      description: 'Example only: pick a mock state. Retry in the error state loads the settings.',
-      component: UserProfileSettingsStatesDemo,
-      code: demoCode('UserProfileSettingsStatesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'It composes Profile form unchanged, so its validation, required markers, and error handling apply here too. Only the notification preferences and the password form are specific to this block.',
     'All three panels stay mounted, so edits in one tab survive visiting another. The values in state only seed the forms once; to load different data, give the block a new key.',
@@ -236,4 +196,5 @@ export const userProfileSettingsEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

@@ -1,11 +1,4 @@
-import breadcrumbSource from '@/components/ui/breadcrumb.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { BreadcrumbDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const breadcrumbEntry: ImplementedEntry = {
   id: 'breadcrumb',
@@ -23,10 +16,6 @@ export const breadcrumbEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: breadcrumbSource,
-  examples: [
-    { id: 'basic', title: 'Basic', component: BreadcrumbDemo, code: demoCode('BreadcrumbDemo') },
-  ],
   api: {
     parts: [
       {
@@ -64,4 +53,5 @@ export const breadcrumbEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

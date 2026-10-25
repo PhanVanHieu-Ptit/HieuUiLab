@@ -117,22 +117,35 @@ interface RegistryEntryBase {
   tags: readonly RegistryTag[]
 }
 
-/** An entry with real source, examples, and install steps. */
-export interface ImplementedEntry extends RegistryEntryBase {
-  status: ImplementedStatus
-  installation: RegistryInstallation
+/**
+ * What an implemented entry needs only to be shown or copied: its source, its live examples, and
+ * its playground. It is a separate module per entry (`content.ts`), loaded on demand, so the
+ * navigation, the search, and the catalogs do not carry every demo and every source text.
+ */
+export interface ImplementedEntryContent {
   /** Full source of the component file. */
   source: string
   examples: readonly [RegistryExample, ...RegistryExample[]]
+  /** Live prop controls, only for entries that render fully from props and text. */
+  playground?: RegistryPlayground
+}
+
+/** An entry with real source, examples, and install steps; the heavy parts load through `content`. */
+export interface ImplementedEntry extends RegistryEntryBase {
+  status: ImplementedStatus
+  installation: RegistryInstallation
   /**
    * Usage notes and behavioural constraints, shown before the install steps:
    * when to use it, what it must not be used for, and accessibility caveats.
    */
   guidelines?: readonly string[]
   api: RegistryApi
-  /** Live prop controls, only for entries that render fully from props and text. */
-  playground?: RegistryPlayground
+  /** Always `() => import('./content')`; read it through `loadEntryContent`, which caches it. */
+  content: () => Promise<{ content: ImplementedEntryContent }>
 }
+
+/** An implemented entry with its content loaded. */
+export type LoadedEntry = ImplementedEntry & ImplementedEntryContent
 
 /**
  * An entry that does not exist yet. It has no source, examples, or install
@@ -146,6 +159,12 @@ export interface PlannedEntry extends RegistryEntryBase {
 
 export type RegistryEntry = ImplementedEntry | PlannedEntry
 
-export function isImplemented(entry: RegistryEntry): entry is ImplementedEntry {
+/** An entry as the detail page and the generators need it: implemented ones with their content. */
+export type FullRegistryEntry = LoadedEntry | PlannedEntry
+
+/** Narrows to the implemented entries, keeping whether their content is loaded. */
+export function isImplemented<E extends RegistryEntry>(
+  entry: E,
+): entry is Extract<E, { status: ImplementedStatus }> {
   return entry.status !== 'planned'
 }

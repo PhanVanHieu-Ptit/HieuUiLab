@@ -3,6 +3,7 @@ import { Outlet, ScrollRestoration } from 'react-router'
 
 import { CommandMenu } from './command-menu'
 import { NavigationProgress } from './route-fallback'
+import { RouteFocus } from './route-focus'
 import { RouteMetadata } from './route-metadata'
 import { ScrollToHash } from './scroll-to-hash'
 import { SiteFooter } from './site-footer'
@@ -52,6 +53,7 @@ export function SiteLayout() {
       <CommandMenu open={searchOpen} onOpenChange={setSearchOpen} />
       <ScrollRestoration />
       <ScrollToHash />
+      <RouteFocus />
     </div>
   )
 }

@@ -1,3 +1,4 @@
+import { Suspense, use } from 'react'
 import { Link } from 'react-router'
 
 import { Badge } from '@/components/ui/badge'
@@ -11,10 +12,18 @@ import {
 } from '@/components/ui/card'
 import { cn } from '@/lib/cn'
 import { registryHref } from '@/registry'
+import { loadEntryContent } from '@/registry/load'
 import { registryCategories } from '@/registry/taxonomy'
-import { isImplemented, type RegistryEntry } from '@/registry/types'
+import { isImplemented, type ImplementedEntry, type RegistryEntry } from '@/registry/types'
 
+import { DemoErrorBoundary } from './demo-error-boundary'
 import { StatusBadge } from './status-badge'
+
+/** The entry's first example, once its content chunk has arrived. */
+function LivePreview({ entry }: { entry: ImplementedEntry }) {
+  const Example = use(loadEntryContent(entry)).examples[0].component
+  return <Example />
+}
 
 interface RegistryCardProps {
   entry: RegistryEntry
@@ -40,7 +49,7 @@ export function RegistryCard({
   note,
   className,
 }: RegistryCardProps) {
-  const Example = showPreview && isImplemented(entry) ? entry.examples[0].component : undefined
+  const previewed = showPreview && isImplemented(entry) ? entry : undefined
   const planned = !isImplemented(entry)
 
   return (
@@ -49,14 +58,19 @@ export function RegistryCard({
       variant="interactive"
       className={cn('flex-1 overflow-hidden', planned && 'border-dashed', className)}
     >
-      {Example ? (
-        // Above the card's stretched link so the preview stays interactive.
+      {previewed ? (
+        // Above the card's stretched link so the preview stays interactive. The frame, with its
+        // name and minimum height, is there before the example's code is.
         <div
           role="group"
           aria-label={`${entry.name} live preview`}
           className="relative z-10 flex min-h-44 items-center justify-center-safe overflow-x-auto border-b bg-background/60 p-6"
         >
-          <Example />
+          <DemoErrorBoundary>
+            <Suspense fallback={null}>
+              <LivePreview entry={previewed} />
+            </Suspense>
+          </DemoErrorBoundary>
         </div>
       ) : null}
       <CardHeader>

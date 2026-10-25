@@ -2,18 +2,19 @@ import { describe, expect, it } from 'vitest'
 
 import { Button } from '@/components/ui/button'
 
-import { getImplementedEntry, registry } from '.'
+import { getLoadedEntry, fullRegistry } from '@/test/full-registry'
+
 import {
   defaultPlaygroundValues,
   definePlayground,
   playgroundJsx,
   resolvePlaygroundProps,
 } from './playground'
-import { isImplemented, type ImplementedEntry } from './types'
+import { isImplemented, type LoadedEntry } from './types'
 import { importStatement, partExportNames, playgroundCode, sourceExports } from './usage'
 
-function entry(slug: string): ImplementedEntry {
-  const found = getImplementedEntry(slug)
+function entry(slug: string): LoadedEntry {
+  const found = getLoadedEntry(slug)
   if (!found) throw new Error(`No implemented entry "${slug}"`)
   return found
 }
@@ -130,7 +131,7 @@ describe('importStatement', () => {
   })
 
   it('names only exports the source really has, for every entry', () => {
-    for (const each of registry.filter(isImplemented)) {
+    for (const each of fullRegistry.filter(isImplemented)) {
       const exported = sourceExports(each.source)
       const names = each.api.parts.flatMap(partExportNames)
       expect(

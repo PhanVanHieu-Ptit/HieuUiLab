@@ -1,13 +1,5 @@
-import { Textarea } from '@/components/ui/textarea'
-import textareaSource from '@/components/ui/textarea.tsx?raw'
-
-import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { TextareaDemo, TextareaStatesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const textareaEntry: ImplementedEntry = {
   id: 'textarea',
@@ -25,21 +17,6 @@ export const textareaEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: textareaSource,
-  examples: [
-    {
-      id: 'basic',
-      title: 'Labelled textarea',
-      component: TextareaDemo,
-      code: demoCode('TextareaDemo'),
-    },
-    {
-      id: 'states',
-      title: 'Sizes and states',
-      component: TextareaStatesDemo,
-      code: demoCode('TextareaStatesDemo'),
-    },
-  ],
   guidelines: [
     'Give it a visible Label, or put it in a Field.',
     'Auto-growth uses CSS `field-sizing: content`; browsers without it keep the minimum height and a resize handle.',
@@ -60,13 +37,5 @@ export const textareaEntry: ImplementedEntry = {
       },
     ],
   },
-  playground: definePlayground(Textarea, {
-    part: 'Textarea',
-    controls: [
-      { kind: 'text', prop: 'placeholder', default: 'Describe the change' },
-      { kind: 'select', prop: 'size', options: ['sm', 'md', 'lg'], default: 'md' },
-      { kind: 'boolean', prop: 'disabled', default: false },
-    ],
-    staticProps: { 'aria-label': 'Summary' },
-  }),
+  content: () => import('./content'),
 }

@@ -54,7 +54,7 @@ const entries: readonly NoteEntry[] = [
     summary:
       'How a copy-and-own registry keeps its install contract true without a package manager: declared metadata checked against the real source, and what that check cannot see.',
     date: '2026-10-19',
-    updated: '2026-10-22',
+    updated: '2026-10-25',
     tags: ['registry', 'tooling'],
     related: ['strict-typescript-for-a-component-library', 'designing-reusable-component-apis'],
     evidence: [
@@ -159,6 +159,7 @@ const entries: readonly NoteEntry[] = [
     summary:
       'Which compiler and lint settings this library uses, what each one catches in real code, what it costs, and which tool enforces the type-level tests.',
     date: '2026-10-19',
+    updated: '2026-10-25',
     tags: ['typescript', 'components'],
     related: ['react-hook-form-and-zod-in-a-form-library'],
     evidence: [

@@ -1,11 +1,4 @@
-import dataToolbarSource from '@/components/blocks/data-toolbar.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { DataToolbarDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const dataToolbarEntry: ImplementedEntry = {
   id: 'data-toolbar',
@@ -23,18 +16,6 @@ export const dataToolbarEntry: ImplementedEntry = {
     registryDependencies: ['button', 'label', 'search-input', 'select'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: dataToolbarSource,
-  examples: [
-    {
-      id: 'filter-list',
-      title: 'Filtering a list',
-      description:
-        'Type or pick a role: the count is announced politely, and Clear filters appears once anything is filtered.',
-      component: DataToolbarDemo,
-      code: demoCode('DataToolbarDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     'The toolbar holds no state. Keep the search and filter values in your component (or the URL), filter the data with them, and pass the count back.',
     'Give every filter a value that means “not filtered” (defaultValue); Clear filters is shown only while something differs from it.',
@@ -77,4 +58,5 @@ export const dataToolbarEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

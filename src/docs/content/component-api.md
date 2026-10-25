@@ -16,7 +16,7 @@ The API reference has one table per exported part: a component, a hook, a helper
 
 ## What is guaranteed {#guarantees}
 
-The registry validator checks the metadata when the dev server starts and in the unit tests:
+The registry validator checks the metadata when the dev server starts, each entry's source and examples when its page loads in development, and all of it in the unit tests:
 
 - every documented part is a real export of the entry's source, since the Usage tab's import line is built from the part names;
 - every prop has a type and a description, and a prop cannot be both required and have a default;

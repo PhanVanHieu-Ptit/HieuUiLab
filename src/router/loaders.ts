@@ -13,7 +13,8 @@ import { getTemplate } from '@/content/templates'
 import { getNote, type NoteEntry } from '@/notes/manifest'
 import { getRegistryEntry, registry, registryHref } from '@/registry'
 import { suggestEntries } from '@/registry/catalog'
-import type { RegistryKind } from '@/registry/types'
+import { loadEntry } from '@/registry/load'
+import { isImplemented, type FullRegistryEntry, type RegistryKind } from '@/registry/types'
 
 // Loaders only look up local, typed content. They run before a lazy page chunk
 // downloads, so unknown slugs resolve to a 404 and moved URLs redirect without it.
@@ -59,14 +60,15 @@ export function templateLoader({ params }: LoaderFunctionArgs) {
 }
 
 /**
- * An entry of `kind`; a slug of the other kind redirects to its own page, and an
- * unknown slug is a 404 that suggests the closest entries.
+ * An entry of `kind`, with its source and examples loaded; a slug of the other kind redirects to
+ * its own page, and an unknown slug is a 404 that suggests the closest entries. The content is
+ * fetched here, alongside the page chunk, so the page renders with it and does not wait twice.
  */
 export function registryLoader(kind: RegistryKind) {
-  return ({ params }: LoaderFunctionArgs) => {
+  return ({ params }: LoaderFunctionArgs): Promise<FullRegistryEntry> | Response => {
     const slug = slugParam(params)
     const entry = getRegistryEntry(slug, kind)
-    if (entry) return entry
+    if (entry) return isImplemented(entry) ? loadEntry(entry) : Promise.resolve(entry)
     const elsewhere = getRegistryEntry(slug)
     if (elsewhere) return replace(registryHref(elsewhere))
     return notFound(

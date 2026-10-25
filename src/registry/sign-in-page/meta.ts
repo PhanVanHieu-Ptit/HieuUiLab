@@ -1,11 +1,4 @@
-import signInPageSource from '@/components/blocks/sign-in-page.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SignInPageAsideDemo, SignInPageDemo, SignInPageOutcomesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const signInPageEntry: ImplementedEntry = {
   id: 'sign-in-page',
@@ -37,36 +30,6 @@ export const signInPageEntry: ImplementedEntry = {
       'The links are plain anchors that take an href, so they work with any router: wrap or replace them if you want client-side navigation.',
     ],
   },
-  source: signInPageSource,
-  examples: [
-    {
-      id: 'sign-in',
-      title: 'Email and password',
-      description:
-        'Example only: the mock handler accepts anything and creates no session. Nothing is sent.',
-      component: SignInPageDemo,
-      code: demoCode('SignInPageDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'outcomes',
-      title: 'Outcomes and single sign-on',
-      description:
-        'Example only: pick what the mock service answers to see the wrong-password, locked, and unavailable states.',
-      component: SignInPageOutcomesDemo,
-      code: demoCode('SignInPageOutcomesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'aside',
-      title: 'With a side panel',
-      description:
-        'Example content, invented for this page. The panel appears beside the form when the block is wide enough.',
-      component: SignInPageAsideDemo,
-      code: demoCode('SignInPageAsideDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'This block is a UI only. It validates that the fields are filled in and hands the values to onSubmit; it never checks a password, stores a session, or talks to a server.',
     'Do not reveal which half of the credentials was wrong: return one message for both, as the “wrong password” example does.',
@@ -182,4 +145,5 @@ export const signInPageEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }
