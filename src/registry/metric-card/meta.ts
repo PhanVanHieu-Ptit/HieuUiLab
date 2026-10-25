@@ -1,11 +1,5 @@
-import metricCardSource from '@/components/ui/metric-card.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { MetricCardDemo, MetricCardPlainDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const metricCardEntry: ImplementedEntry = {
   id: 'metric-card',
@@ -23,24 +17,6 @@ export const metricCardEntry: ImplementedEntry = {
     registryDependencies: ['card'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: metricCardSource,
-  examples: [
-    {
-      id: 'with-change',
-      title: 'With change',
-      description:
-        'Sentiment decides the color: fewer failed deploys would be positive even though the arrow points down.',
-      component: MetricCardDemo,
-      code: demoCode('MetricCardDemo'),
-      preview: { layout: 'fill' },
-    },
-    {
-      id: 'plain',
-      title: 'Value only',
-      component: MetricCardPlainDemo,
-      code: demoCode('MetricCardPlainDemo'),
-    },
-  ],
   guidelines: [
     'Format the value and change before passing them in; the card does not format numbers or currencies.',
     'Show only figures you can calculate from real data. A metric without a comparison period is better than an invented one.',
@@ -70,4 +46,5 @@ export const metricCardEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

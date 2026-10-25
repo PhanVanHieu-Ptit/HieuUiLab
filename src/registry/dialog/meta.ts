@@ -1,11 +1,5 @@
-import dialogSource from '@/components/ui/dialog.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { DialogDemo, DialogFormDemo, DialogScrollDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const dialogEntry: ImplementedEntry = {
   id: 'dialog',
@@ -23,32 +17,6 @@ export const dialogEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: dialogSource,
-  examples: [
-    {
-      id: 'confirm',
-      title: 'Confirmation',
-      description: 'Uncontrolled. Focus moves into the dialog and returns to the trigger on close.',
-      component: DialogDemo,
-      code: demoCode('DialogDemo'),
-    },
-    {
-      id: 'form',
-      title: 'Controlled form',
-      description:
-        'The form wraps header, body, and footer; submitting saves and closes through open state.',
-      component: DialogFormDemo,
-      code: demoCode('DialogFormDemo'),
-    },
-    {
-      id: 'scroll',
-      title: 'Long content',
-      description:
-        'DialogBody scrolls while the header and footer stay in view, even on small screens.',
-      component: DialogScrollDemo,
-      code: demoCode('DialogScrollDemo'),
-    },
-  ],
   guidelines: [
     'Every dialog needs a `DialogTitle`. Add a `DialogDescription`, or pass `aria-describedby={undefined}` to `DialogContent` when there is none.',
     'Focus moves to the first focusable element on open, Tab stays inside, and Escape or the overlay closes it; focus then returns to the trigger. Use `onOpenAutoFocus` to focus a different element.',
@@ -141,4 +109,5 @@ export const dialogEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

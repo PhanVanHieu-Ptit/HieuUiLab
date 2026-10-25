@@ -22,7 +22,7 @@ src/
   notes/         Engineering notes: the Markdown articles, their manifest, and the validator
   pages/         Route components
   playground/    Control schemas and validation, the example allowlist, stages, workbench UI
-  registry/      One folder per entry (demos.tsx and meta.ts), types, validation, catalog
+  registry/      One folder per entry (meta.ts, content.ts, demos.tsx), types, validation, catalog
   router/        routes.tsx (the route tree), loaders.ts (slug lookups), meta.ts (page metadata)
   styles/        globals.css: tokens, themes, and the shared state utilities
   templates/     Example apps built from blocks, lazy-loaded one by one
@@ -35,9 +35,9 @@ Component files in `src/components/ui/` and `src/components/blocks/` are the fil
 
 ## The registry {#registry}
 
-Each entry has a folder in `src/registry/` with its metadata, examples, and API reference. The entry imports its own source as raw text, so the docs show exactly the file you copy. The sidebar, mobile drawer, search, catalog pages, landing cards, and detail routes are all derived from one typed array, so adding an entry needs no navigation changes.
+Each entry has a folder in `src/registry/`. Its `meta.ts` holds the metadata and the API reference, and its `content.ts` holds the examples and the source, imported as raw text so the docs show exactly the file you copy. The content loads on demand: everything that lists entries reads only the metadata. The sidebar, mobile drawer, search, catalog pages, landing cards, and detail routes are all derived from one typed array, so adding an entry needs no navigation changes.
 
-An entry is either implemented (`stable` or `experimental`), with source, examples, and explicit installation data, or `planned`, with only a description of its scope. They are separate types, so a planned entry cannot be rendered with code or install steps. A validator checks the registry when the dev server starts and in the unit tests. [Component conventions](/docs/component-conventions) lists what it rejects, and [Component API reference](/docs/component-api) shows what each entry documents.
+An entry is either implemented (`stable` or `experimental`), with source, examples, and explicit installation data, or `planned`, with only a description of its scope. They are separate types, so a planned entry cannot be rendered with code or install steps. A validator checks the metadata when the dev server starts, an entry's source and examples when its page loads in development, and everything in the unit tests. [Component conventions](/docs/component-conventions) lists what it rejects, and [Component API reference](/docs/component-api) shows what each entry documents.
 
 The catalog's search, category and tag filters, and sort live in the URL query, so a filtered view can be shared and Back undoes a filter change.
 
@@ -69,7 +69,7 @@ The docs routes are generated from `src/docs/manifest.ts`, one per page and nest
 
 The shell, the home page, and the component and block indexes load up front. Docs pages, registry detail pages, the playground, the labs, notes, case studies, and the about page are lazy routes, each its own chunk. Loaders and route metadata are not lazy, so a 404 or redirect resolves before any page code downloads. Shiki and each lab demo load on demand inside their pages.
 
-A docs page's Markdown text is fetched by its loader, and the Markdown parser loads with the docs page component, so neither is part of the main bundle. An engineering note works the same way, with one chunk per article. The registry itself is still in the main bundle, because the navigation lists every entry and each entry carries its source text.
+A docs page's Markdown text is fetched by its loader, and the Markdown parser loads with the docs page component, so neither is part of the main bundle. An engineering note works the same way, with one chunk per article. The registry's metadata is in the main bundle, because the navigation lists every entry. Each entry's examples and source text are a chunk of their own, loaded by the detail page's loader, by the landing page cards that show a live preview, and by the pages that show one example. A test, `src/registry/entry-graph.test.ts`, fails if anything the app loads first imports one.
 
 ## Documentation {#docs}
 

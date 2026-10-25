@@ -1,11 +1,4 @@
-import searchInputSource from '@/components/ui/search-input.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SearchInputDemo, SearchInputSizesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const searchInputEntry: ImplementedEntry = {
   id: 'search-input',
@@ -23,22 +16,6 @@ export const searchInputEntry: ImplementedEntry = {
     registryDependencies: ['input'],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: searchInputSource,
-  examples: [
-    {
-      id: 'clear',
-      title: 'Controlled with clear',
-      description: 'Clear with the button or Escape; the match count is a polite status.',
-      component: SearchInputDemo,
-      code: demoCode('SearchInputDemo'),
-    },
-    {
-      id: 'sizes',
-      title: 'Sizes and disabled',
-      component: SearchInputSizesDemo,
-      code: demoCode('SearchInputSizesDemo'),
-    },
-  ],
   guidelines: [
     'Put it in a `<form role="search">` so it is reachable as a search landmark.',
     'The clear button only appears for a controlled, non-empty `value` with `onClear`.',
@@ -74,4 +51,5 @@ export const searchInputEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

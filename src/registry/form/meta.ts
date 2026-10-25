@@ -1,11 +1,4 @@
-import formSource from '@/components/ui/form.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { FormFieldDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const formEntry: ImplementedEntry = {
   id: 'form',
@@ -26,17 +19,6 @@ export const formEntry: ImplementedEntry = {
       'Pair it with a schema resolver such as zodResolver from @hookform/resolvers; the adapter itself does not validate.',
     ],
   },
-  source: formSource,
-  examples: [
-    {
-      id: 'invite',
-      title: 'Schema-validated form',
-      description:
-        'Zod holds every rule. Submit empty to see errors; use an @example.org address for a mock server error.',
-      component: FormFieldDemo,
-      code: demoCode('FormFieldDemo'),
-    },
-  ],
   guidelines: [
     'Type the form as `useForm<z.input<S>, unknown, z.output<S>>` so the submit handler receives parsed values.',
     'Derive required markers from the schema, for example by parsing blank values once, instead of restating rules in the UI.',
@@ -115,4 +97,5 @@ export const formEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

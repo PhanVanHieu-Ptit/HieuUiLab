@@ -27,6 +27,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test e2e/a11y.spec.ts",
+    "perf:measure": "node scripts/perf-measure.ts",
     "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {

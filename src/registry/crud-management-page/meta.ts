@@ -1,15 +1,4 @@
-import crudManagementPageSource from '@/components/blocks/crud-management-page.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import {
-  CrudManagementPageDemo,
-  CrudManagementPageFailuresDemo,
-  CrudManagementPageStatesDemo,
-} from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const crudManagementPageEntry: ImplementedEntry = {
   id: 'crud-management-page',
@@ -43,36 +32,6 @@ export const crudManagementPageEntry: ImplementedEntry = {
       'The example record is a team member. To manage something else, edit ManagedMember, memberSchema, the columns, and the form fields together: they are the only parts that know the shape.',
     ],
   },
-  source: crudManagementPageSource,
-  examples: [
-    {
-      id: 'members',
-      title: 'Members',
-      description:
-        'Example data, invented for this page: twelve people held in memory. Add, edit, and delete work until the page reloads. Nothing is sent.',
-      component: CrudManagementPageDemo,
-      code: demoCode('CrudManagementPageDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'failures',
-      title: 'Rejected and failing saves',
-      description:
-        'Example only: pick what the mock service answers. The table never changes, so every failure can be repeated.',
-      component: CrudManagementPageFailuresDemo,
-      code: demoCode('CrudManagementPageFailuresDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'states',
-      title: 'Loading, empty, and error',
-      description:
-        'Example only: pick a mock state. Retry in the error state returns to the members.',
-      component: CrudManagementPageStatesDemo,
-      code: demoCode('CrudManagementPageStatesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'It builds on Data toolbar and Data table, so their behaviour applies: labelled controls, a polite result count, sortable headers, and a table that scrolls inside its own region instead of widening the page.',
     'The page owns only view state: search text, filters, the current page, and which dialog is open. Changing a search or a filter returns to page 1.',
@@ -227,4 +186,5 @@ export const crudManagementPageEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

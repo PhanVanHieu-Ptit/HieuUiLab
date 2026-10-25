@@ -1,11 +1,4 @@
-import multiStepOnboardingSource from '@/components/blocks/multi-step-onboarding.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { MultiStepOnboardingDemo, MultiStepOnboardingOutcomesDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const multiStepOnboardingEntry: ImplementedEntry = {
   id: 'multi-step-onboarding',
@@ -36,27 +29,6 @@ export const multiStepOnboardingEntry: ImplementedEntry = {
       'The steps, fields, and wording are in the source. Edit the schema and the step list together: each step names the fields it validates.',
     ],
   },
-  source: multiStepOnboardingSource,
-  examples: [
-    {
-      id: 'onboarding',
-      title: 'Onboarding',
-      description:
-        'Example only: the mock handler always succeeds and nothing is created. Try leaving a step empty, going back, and the review step.',
-      component: MultiStepOnboardingDemo,
-      code: demoCode('MultiStepOnboardingDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'outcomes',
-      title: 'Server errors',
-      description:
-        'Example only: the answers are filled in. Pick what the mock service answers; “Address taken” sends you back to the Workspace step with the field focused.',
-      component: MultiStepOnboardingOutcomesDemo,
-      code: demoCode('MultiStepOnboardingOutcomesDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'Next checks only the fields of the current step and focuses the first invalid one. Answers are kept when the user goes back, so nothing typed is lost.',
     'The progress list marks the current step with aria-current="step" and says “completed” for finished ones in words, not only with a tick. Steps already reached can be revisited; later steps cannot be skipped to.',
@@ -150,4 +122,5 @@ export const multiStepOnboardingEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

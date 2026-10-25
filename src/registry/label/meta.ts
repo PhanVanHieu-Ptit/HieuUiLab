@@ -1,11 +1,4 @@
-import labelSource from '@/components/ui/label.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { LabelControlsDemo, LabelDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const labelEntry: ImplementedEntry = {
   id: 'label',
@@ -23,24 +16,6 @@ export const labelEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: labelSource,
-  examples: [
-    {
-      id: 'required',
-      title: 'Required field',
-      description: 'The asterisk is hidden from screen readers; the input carries required.',
-      component: LabelDemo,
-      code: demoCode('LabelDemo'),
-    },
-    {
-      id: 'controls',
-      title: 'With checkboxes',
-      description:
-        'Clicking the label toggles the checkbox. A label after a disabled peer control dims.',
-      component: LabelControlsDemo,
-      code: demoCode('LabelControlsDemo'),
-    },
-  ],
   guidelines: [
     'Associate every label with its control through `htmlFor` and the control `id`, or by wrapping the control.',
     'The `required` marker is visual only. Put `required` (or `aria-required`) on the control itself.',
@@ -71,4 +46,5 @@ export const labelEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

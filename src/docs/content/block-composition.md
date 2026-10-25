@@ -39,7 +39,7 @@ The preview is inline, not an iframe, so only container queries follow the switc
 
 ## Where the rules are enforced {#enforcement}
 
-- `src/registry/validate.ts` runs when the dev server starts and in `src/registry/validate.test.ts`. It checks the imports and `registryDependencies` of every entry.
+- `src/registry/validate.ts` checks the metadata when the dev server starts, and in `src/registry/validate.test.ts` it checks every entry's source too. It checks the imports and `registryDependencies` of every entry.
 - `src/registry/page-blocks.test.ts` checks every Pages block: container queries, no forbidden patterns, at least two responsive examples, and complete documentation.
 - `src/templates/templates.test.ts` checks every template and the shared shell against the same forbidden patterns, and limits what they import.
 

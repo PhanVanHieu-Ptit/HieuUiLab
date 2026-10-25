@@ -1,11 +1,5 @@
-import activityListSource from '@/components/blocks/activity-list.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { ActivityListDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const activityListEntry: ImplementedEntry = {
   id: 'activity-list',
@@ -23,17 +17,6 @@ export const activityListEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: activityListSource,
-  examples: [
-    {
-      id: 'feed',
-      title: 'Activity feed',
-      description: 'Times are formatted in UTC here so the example reads the same everywhere.',
-      component: ActivityListDemo,
-      code: demoCode('ActivityListDemo'),
-      preview: { layout: 'fill' },
-    },
-  ],
   guidelines: [
     'Pass entries newest first; the list keeps the order you give it.',
     'Write action as a verb phrase so each entry reads as one sentence: “Mai Tran deployed web to production”.',
@@ -73,4 +56,5 @@ export const activityListEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

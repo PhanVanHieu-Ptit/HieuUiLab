@@ -1,11 +1,4 @@
-import sheetSource from '@/components/ui/sheet.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SheetDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const sheetEntry: ImplementedEntry = {
   id: 'sheet',
@@ -23,16 +16,6 @@ export const sheetEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: sheetSource,
-  examples: [
-    {
-      id: 'sides',
-      title: 'Sides',
-      description: 'The site uses the left sheet for mobile navigation.',
-      component: SheetDemo,
-      code: demoCode('SheetDemo'),
-    },
-  ],
   api: {
     parts: [
       {
@@ -66,4 +49,5 @@ export const sheetEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

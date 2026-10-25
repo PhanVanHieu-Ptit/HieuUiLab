@@ -1,11 +1,4 @@
-import searchFilterToolbarSource from '@/components/blocks/search-filter-toolbar.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SearchFilterToolbarDemo, SearchFilterToolbarViewsDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const searchFilterToolbarEntry: ImplementedEntry = {
   id: 'search-filter-toolbar',
@@ -27,27 +20,6 @@ export const searchFilterToolbarEntry: ImplementedEntry = {
       'The value is plain, serialisable data, so it can live in the URL: parse it from the query string and write each onValueChange back.',
     ],
   },
-  source: searchFilterToolbarSource,
-  examples: [
-    {
-      id: 'toolbar',
-      title: 'Search, filters, and sort',
-      description:
-        'Example data, invented for this page: twelve items held in memory, filtered by the demo itself.',
-      component: SearchFilterToolbarDemo,
-      code: demoCode('SearchFilterToolbarDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-    {
-      id: 'views',
-      title: 'Saved views and active filters',
-      description:
-        'Example data, invented for this page. A view applies a whole set of criteria at once; each active one gets a chip you can remove.',
-      component: SearchFilterToolbarViewsDemo,
-      code: demoCode('SearchFilterToolbarViewsDemo'),
-      preview: { layout: 'fill', height: 'lg', responsive: true },
-    },
-  ],
   guidelines: [
     'It is built on Data toolbar and keeps its behaviour: every control has a visible label, the result count is announced politely, and Clear filters appears only while something differs from its default.',
     'The whole state is one value ({ query, filters, sort }). A saved view is just such a value, and a view reads as pressed when it selects the same results as the current value.',
@@ -177,4 +149,5 @@ export const searchFilterToolbarEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

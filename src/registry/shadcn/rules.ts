@@ -1,4 +1,4 @@
-import { isImplemented, type RegistryEntry } from '../types'
+import { isImplemented, type FullRegistryEntry } from '../types'
 import { parseSourceImports } from '../validate'
 import {
   CN_SOURCE_IMPORT,
@@ -27,7 +27,7 @@ export interface ShadcnIssue {
 
 /** Everything the rules read. Tests build one from the real registry and break one thing at a time. */
 export interface ShadcnRegistryContext {
-  entries: readonly RegistryEntry[]
+  entries: readonly FullRegistryEntry[]
   publishedSlugs: readonly string[]
   shadowsBuiltin: readonly string[]
   items: readonly ShadcnItem[]
@@ -186,7 +186,7 @@ function validateNames(ctx: ShadcnRegistryContext, report: Report) {
 function validateItem(
   ctx: ShadcnRegistryContext,
   item: ShadcnItem,
-  entry: RegistryEntry | undefined,
+  entry: FullRegistryEntry | undefined,
   siteOnlyTokens: readonly string[],
   names: ReadonlySet<string>,
   report: Report,

@@ -3,13 +3,14 @@ import type { DocsContext } from '@/docs/docs-rules'
 import { docSources } from '@/docs/sources'
 import { parseDesignTokens } from '@/docs/tokens'
 import { docsNav, flattenNavItems } from '@/config/site'
-import { getImplementedEntry, registry } from '@/registry'
+import { getImplementedEntry } from '@/registry'
 import { registryRequirements } from '@/registry/packages'
 import { registryCategories } from '@/registry/taxonomy'
 import { isImplemented } from '@/registry/types'
 import css from '@/styles/globals.css?raw'
 import packageJsonSource from '../../package.json?raw'
 
+import { fullRegistry, getLoadedEntry } from './full-registry'
 import { fileExists, listFiles, pathExists, readFile } from './repo-files'
 import { createRouteChecker } from './showcase-context'
 
@@ -64,9 +65,9 @@ export async function createDocsContext(): Promise<DocsContext> {
       hasPart: (slug, part) =>
         getImplementedEntry(slug)?.api.parts.some((item) => item.name === part) ?? false,
       hasExample: (slug, example) =>
-        getImplementedEntry(slug)?.examples.some((item) => item.id === example) ?? false,
+        getLoadedEntry(slug)?.examples.some((item) => item.id === example) ?? false,
       hasCategory: (category) => Object.hasOwn(registryCategories, category),
-      texts: registry
+      texts: fullRegistry
         .filter(isImplemented)
         .flatMap((entry) => [entry.source, ...entry.examples.map((example) => example.code)]),
     },

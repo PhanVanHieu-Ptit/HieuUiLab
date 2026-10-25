@@ -111,6 +111,35 @@ test.describe('responsive layout', () => {
     }
   }
 
+  test('320 pixels: no horizontal overflow on any page, including every registry entry', async ({
+    page,
+  }) => {
+    // The list above is written by hand and covers some entries; the catalogs list them all.
+    test.setTimeout(300_000)
+    await page.setViewportSize({ width: 320, height: 640 })
+    const entryRoutes = new Set<string>()
+    for (const index of ['/components', '/blocks']) {
+      await page.goto(index)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      const hrefs = await page
+        .locator('main')
+        .getByRole('link')
+        .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''))
+      for (const href of hrefs) if (href.startsWith(`${index}/`)) entryRoutes.add(href)
+    }
+    for (const route of routes) {
+      if (route.startsWith('/components/') || route.startsWith('/blocks/')) {
+        expect(entryRoutes, `the catalog lists ${route}`).toContain(route)
+      }
+    }
+    for (const route of new Set([...routes, ...entryRoutes])) {
+      await page.goto(route)
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+      await page.waitForLoadState('networkidle')
+      expect(await horizontalOverflow(page), `overflow on ${route} at 320`).toBeLessThanOrEqual(0)
+    }
+  })
+
   test('the header fits at every width, and shows only the links that fit', async ({ page }) => {
     // Templates joins the bar from `lg` and About from `xl`; below `md` the drawer holds them all.
     const widths = [

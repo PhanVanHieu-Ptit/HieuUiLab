@@ -2,14 +2,14 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
-import { getImplementedEntry } from '@/registry'
-import type { ImplementedEntry } from '@/registry/types'
+import type { LoadedEntry } from '@/registry/types'
 import { importStatement, playgroundCode } from '@/registry/usage'
 import { registryDetailAnchors } from '@/test/docs-context'
+import { getLoadedEntry } from '@/test/full-registry'
 import { renderRoute } from '@/test/render'
 
-function entry(slug: string): ImplementedEntry {
-  const found = getImplementedEntry(slug)
+function entry(slug: string): LoadedEntry {
+  const found = getLoadedEntry(slug)
   if (!found) throw new Error(`No implemented entry "${slug}"`)
   return found
 }

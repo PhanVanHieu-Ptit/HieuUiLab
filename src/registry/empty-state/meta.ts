@@ -1,11 +1,5 @@
-import emptyStateSource from '@/components/blocks/empty-state.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { EmptyStateDemo, EmptyStateSearchDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const emptyStateEntry: ImplementedEntry = {
   id: 'empty-state',
@@ -23,24 +17,6 @@ export const emptyStateEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: emptyStateSource,
-  examples: [
-    {
-      id: 'first-run',
-      title: 'First run',
-      description: 'Explain what belongs here and offer the next step.',
-      component: EmptyStateDemo,
-      code: demoCode('EmptyStateDemo'),
-      preview: { layout: 'fill' },
-    },
-    {
-      id: 'no-results',
-      title: 'No results',
-      component: EmptyStateSearchDemo,
-      code: demoCode('EmptyStateSearchDemo'),
-      preview: { layout: 'fill' },
-    },
-  ],
   api: {
     parts: [
       {
@@ -78,4 +54,5 @@ export const emptyStateEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

@@ -1,11 +1,4 @@
-import tabsSource from '@/components/ui/tabs.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { TabsControlledDemo, TabsLineDemo, TabsPillDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const tabsEntry: ImplementedEntry = {
   id: 'tabs',
@@ -23,24 +16,6 @@ export const tabsEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: tabsSource,
-  examples: [
-    {
-      id: 'line',
-      title: 'Line',
-      description: 'Disabled tabs are skipped by keyboard navigation.',
-      component: TabsLineDemo,
-      code: demoCode('TabsLineDemo'),
-    },
-    { id: 'pill', title: 'Pill', component: TabsPillDemo, code: demoCode('TabsPillDemo') },
-    {
-      id: 'controlled',
-      title: 'Controlled',
-      description: 'The selected tab is state the Back and Next buttons also change.',
-      component: TabsControlledDemo,
-      code: demoCode('TabsControlledDemo'),
-    },
-  ],
   guidelines: [
     'Name the group with `aria-label` (or `aria-labelledby`) on `TabsList`.',
     'Tab moves into the list and then to the panel; arrow keys move between tabs, and Home and End jump to the ends. Disabled tabs are skipped.',
@@ -128,4 +103,5 @@ export const tabsEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

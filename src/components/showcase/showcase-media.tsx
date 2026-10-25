@@ -1,8 +1,8 @@
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router'
 
-import { ComponentPreview } from '@/components/site/component-preview'
 import { DemoSlot } from '@/components/site/demo-slot'
+import { RegistryExampleView } from '@/components/site/registry-example-view'
 import { getExperiment } from '@/content/experiments'
 import type { ShowcaseMedia } from '@/content/showcase-types'
 import { getTemplate } from '@/content/templates'
@@ -27,8 +27,7 @@ function LabDemo({ item }: { item: Extract<ShowcaseMedia, { kind: 'lab-demo' }> 
 
 function RegistryExample({ item }: { item: Extract<ShowcaseMedia, { kind: 'registry-example' }> }) {
   const entry = getImplementedEntry(item.entry, item.entryKind)
-  const example = entry?.examples.find((candidate) => candidate.id === item.example)
-  if (!entry || !example) return null
+  if (!entry) return null
   return (
     <div className="flex flex-col gap-3">
       <p className="max-w-prose text-sm text-muted-foreground">
@@ -40,7 +39,7 @@ function RegistryExample({ item }: { item: Extract<ShowcaseMedia, { kind: 'regis
           Open {entry.name}
         </Link>
       </p>
-      <ComponentPreview example={example} />
+      <RegistryExampleView entry={entry} exampleId={item.example} />
     </div>
   )
 }

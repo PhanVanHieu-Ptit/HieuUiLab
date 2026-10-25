@@ -12,6 +12,7 @@ dist-ssr
 coverage
 playwright-report
 test-results
+perf-results
 blob-report
 playwright/.cache
 playwright/.auth

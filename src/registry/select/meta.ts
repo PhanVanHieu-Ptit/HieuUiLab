@@ -1,11 +1,4 @@
-import selectSource from '@/components/ui/select.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SelectControlledDemo, SelectDemo, SelectFormDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const selectEntry: ImplementedEntry = {
   id: 'select',
@@ -23,31 +16,6 @@ export const selectEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: selectSource,
-  examples: [
-    {
-      id: 'groups',
-      title: 'Grouped options',
-      description: 'Uncontrolled with a default value. Type a letter to jump to a matching option.',
-      component: SelectDemo,
-      code: demoCode('SelectDemo'),
-    },
-    {
-      id: 'controlled',
-      title: 'Controlled',
-      description: 'Disabled options stay visible but are skipped by the arrow keys.',
-      component: SelectControlledDemo,
-      code: demoCode('SelectControlledDemo'),
-    },
-    {
-      id: 'form',
-      title: 'In a form',
-      description:
-        'With name and required, the value is submitted and validated like a native select.',
-      component: SelectFormDemo,
-      code: demoCode('SelectFormDemo'),
-    },
-  ],
   guidelines: [
     'Name the trigger with a Label (`htmlFor` pointing at the `SelectTrigger` id) or `aria-label`; the placeholder is not a name.',
     'Keyboard: Enter, Space, or the arrow keys open the list; arrows move; Enter selects; Escape closes and returns focus; typing jumps to a matching option.',
@@ -170,4 +138,5 @@ export const selectEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

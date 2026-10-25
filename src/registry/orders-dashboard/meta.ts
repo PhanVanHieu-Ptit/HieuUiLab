@@ -1,11 +1,4 @@
-import ordersDashboardSource from '@/components/blocks/orders-dashboard.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { OrdersDashboardDemo, OrdersDashboardEmptyDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const ordersDashboardEntry: ImplementedEntry = {
   id: 'orders-dashboard',
@@ -38,26 +31,6 @@ export const ordersDashboardEntry: ImplementedEntry = {
       'Dates and money are formatted in en-US and UTC so the example output is stable; swap the formatters for your locale.',
     ],
   },
-  source: ordersDashboardSource,
-  examples: [
-    {
-      id: 'dashboard',
-      title: 'Dashboard',
-      description:
-        'Example data, held in memory: 64 orders, 8 activity entries, and 5 notifications. Changes reset when the page reloads.',
-      component: OrdersDashboardDemo,
-      code: demoCode('OrdersDashboardDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-    {
-      id: 'empty',
-      title: 'No data',
-      description: 'Every section has its own empty state.',
-      component: OrdersDashboardEmptyDemo,
-      code: demoCode('OrdersDashboardEmptyDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     'Every metric is calculated from the orders passed in, for the 7 days ending at asOf and the 7 days before. Nothing is fetched and the clock is never read, so the figures are reproducible.',
     'Search ignores case and accents, so “nguyen” finds “Nguyễn”. It matches the order number, customer name, and email.',
@@ -118,4 +91,5 @@ export const ordersDashboardEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

@@ -262,7 +262,7 @@ export const showcaseProjects: readonly ShowcaseProject[] = [
       'A demo’s code is extracted by function name, which relies on the export function convention.',
       'Code shows as plain text for a moment before syntax highlighting loads.',
       'Route metadata is applied in the browser, so a crawler without JavaScript sees only the defaults.',
-      'The registry and the source text it shows are in the main bundle, which makes it larger than it needs to be.',
+      'Each registry entry’s examples and source text are a chunk of their own, so a page that shows many entries downloads many small files after it renders.',
       'There are no pixel-snapshot tests. Accessibility is covered by contrast tests, axe scans of a fixed list of states in Chromium, semantic markup, and keyboard and focus tests.',
       'The site is not deployed yet, so there is no public URL to link.',
       'The repository has no license file yet.',

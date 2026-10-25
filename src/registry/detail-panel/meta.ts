@@ -1,11 +1,4 @@
-import detailPanelSource from '@/components/blocks/detail-panel.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { DetailPanelDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const detailPanelEntry: ImplementedEntry = {
   id: 'detail-panel',
@@ -23,18 +16,6 @@ export const detailPanelEntry: ImplementedEntry = {
     registryDependencies: ['button', 'sheet'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: detailPanelSource,
-  examples: [
-    {
-      id: 'tickets',
-      title: 'List with details',
-      description:
-        'From a 64rem viewport the panel opens beside the list; below that it is a sheet. Resize the window while it is open to see it switch.',
-      component: DetailPanelDemo,
-      code: demoCode('DetailPanelDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     'The panel is controlled: keep the open record’s id in state, and render the panel next to the list in a grid that gains a second column while it is open.',
     'Inline, it is non-modal: the list stays usable, focus moves to the panel heading on open, Escape closes it, and focus returns to the element that opened it (or the last one used outside the panel).',
@@ -78,4 +59,5 @@ export const detailPanelEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

@@ -8,9 +8,9 @@ import { showcaseProjects } from '@/content/showcase-projects'
 import { templates } from '@/content/templates'
 import { labDemos } from '@/lab'
 import { noteHref, notes } from '@/notes/manifest'
-import { getImplementedEntry } from '@/registry'
 import { createRoutes } from '@/router/routes'
 
+import { getLoadedEntry } from './full-registry'
 import { fileContains, fileExists, hasPublicAsset } from './repo-files'
 
 /** Every in-app path the site links to or serves from typed data, for checking `route-link` media. */
@@ -52,7 +52,7 @@ export function createShowcaseContext(): ShowcaseContext {
     hasLabDemo: (slug) =>
       Object.hasOwn(labDemos, slug) && experiments.some((experiment) => experiment.slug === slug),
     hasRegistryExample: (entry, kind, example) =>
-      getImplementedEntry(entry, kind)?.examples.some((item) => item.id === example) ?? false,
+      getLoadedEntry(entry, kind)?.examples.some((item) => item.id === example) ?? false,
     hasTemplate: (slug) => templates.some((template) => template.slug === slug),
     hasPublicAsset,
     routeExists: createRouteChecker(),

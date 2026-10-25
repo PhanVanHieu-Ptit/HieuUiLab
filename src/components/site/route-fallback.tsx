@@ -4,10 +4,14 @@ import { Spinner } from '@/components/ui/spinner'
 
 import { MainContent } from './main-content'
 
-/** Shown in place of a layout while the first page's code loads. */
+/**
+ * Shown in place of a layout while the first page's code loads. It fills the screen under the
+ * header, so the footer starts below the fold: with a shorter fallback the footer sits in view,
+ * and the page arriving pushes it out, which the browser counts as a layout shift.
+ */
 export function RouteFallback() {
   return (
-    <MainContent className="flex flex-1 items-center justify-center py-section">
+    <MainContent className="flex min-h-[calc(100dvh-var(--spacing-header))] flex-1 items-center justify-center py-section">
       <Spinner label="Loading page" />
     </MainContent>
   )

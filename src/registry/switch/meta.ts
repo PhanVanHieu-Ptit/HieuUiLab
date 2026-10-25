@@ -1,13 +1,4 @@
-import { Switch } from '@/components/ui/switch'
-import switchSource from '@/components/ui/switch.tsx?raw'
-
-import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SwitchControlledDemo, SwitchDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const switchEntry: ImplementedEntry = {
   id: 'switch',
@@ -25,22 +16,6 @@ export const switchEntry: ImplementedEntry = {
     registryDependencies: [],
     requirements: ['cn-helper', 'design-tokens', 'state-utilities'],
   },
-  source: switchSource,
-  examples: [
-    {
-      id: 'basic',
-      title: 'Uncontrolled',
-      component: SwitchDemo,
-      code: demoCode('SwitchDemo'),
-    },
-    {
-      id: 'controlled',
-      title: 'Controlled setting',
-      description: 'The hint is linked with aria-describedby and reflects the current state.',
-      component: SwitchControlledDemo,
-      code: demoCode('SwitchControlledDemo'),
-    },
-  ],
   guidelines: [
     'Use a Switch when the change applies immediately; inside a form that is saved later, use a Checkbox.',
     'Keep the label constant ("Autosave"), not a description of the state ("On"); the switch already announces on or off.',
@@ -83,13 +58,5 @@ export const switchEntry: ImplementedEntry = {
       },
     ],
   },
-  playground: definePlayground(Switch, {
-    part: 'Switch',
-    controls: [
-      { kind: 'boolean', prop: 'defaultChecked', label: 'Checked by default', default: false },
-      { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },
-      { kind: 'boolean', prop: 'disabled', default: false },
-    ],
-    staticProps: { 'aria-label': 'Email notifications' },
-  }),
+  content: () => import('./content'),
 }

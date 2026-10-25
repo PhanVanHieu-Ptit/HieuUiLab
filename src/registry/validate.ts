@@ -1,6 +1,13 @@
 import { isPackageName, isRequirementId } from './packages'
 import { isRegistryCategory, isRegistryTag } from './taxonomy'
-import type { ApiPart, ImplementedEntry, PropDoc, RegistryEntry } from './types'
+import type {
+  ApiPart,
+  FullRegistryEntry,
+  ImplementedEntry,
+  LoadedEntry,
+  PropDoc,
+  RegistryEntry,
+} from './types'
 import { partExportNames, sourceExports } from './usage'
 
 export interface RegistryIssue {
@@ -17,8 +24,20 @@ const statuses = new Set(['stable', 'experimental', 'planned'])
 /** Imports a consuming project already has; not listed as install steps. */
 const peerModules = new Set(['react', 'react-dom'])
 const stateUtilityPattern = /\b(?:focus-ring|focus-ring-inset|disabled-state)\b/
+/** What an implemented entry must have, with or without its content loaded. */
+const implementedFields = ['installation', 'api', 'content'] as const
+const implementedContentFields = ['source', 'examples'] as const
 /** Fields only an implemented entry may have; a planned entry carrying one is mislabelled. */
-const implementedOnlyFields = ['installation', 'source', 'examples', 'api'] as const
+const implementedOnlyFields = [
+  'installation',
+  'source',
+  'examples',
+  'api',
+  'content',
+  'playground',
+] as const
+
+type Report = (field: string, message: string) => void
 
 function duplicates(values: readonly string[]): string[] {
   const seen = new Set<string>()
@@ -72,14 +91,14 @@ export function parseSourceImports(source: string): SourceImports {
   return result
 }
 
+/** Everything about an implemented entry that does not need its source or examples. */
 function validateImplemented(
   entry: ImplementedEntry,
   bySlug: ReadonlyMap<string, RegistryEntry>,
-  report: (field: string, message: string) => void,
+  report: Report,
 ) {
-  const { installation, examples, api, source } = entry
+  const { installation, api } = entry
 
-  if (isBlank(source)) report('source', 'is empty')
   if (!targetPathPattern.test(installation.targetPath)) {
     report(
       'installation.targetPath',
@@ -113,6 +132,39 @@ function validateImplemented(
   for (const slug of duplicates(installation.registryDependencies)) {
     report('installation.registryDependencies', `lists "${slug}" more than once`)
   }
+
+  for (const [index, guideline] of (entry.guidelines ?? []).entries()) {
+    if (isBlank(guideline)) report('guidelines', `guideline #${String(index)} is empty`)
+  }
+
+  if (api.parts.length === 0) report('api', 'needs at least one part')
+  for (const name of duplicates(api.parts.map((part) => part.name))) {
+    report('api', `part "${name}" is documented more than once`)
+  }
+  for (const part of api.parts) {
+    for (const name of duplicates(part.props.map((prop) => prop.name))) {
+      report(`api.${part.name}`, `prop "${name}" is documented more than once`)
+    }
+    for (const prop of part.props) {
+      if (isBlank(prop.type) || isBlank(prop.description)) {
+        report(`api.${part.name}`, `prop "${prop.name}" needs a type and a description`)
+      }
+      if (prop.required && prop.default !== undefined) {
+        report(`api.${part.name}`, `prop "${prop.name}" is required but has a default`)
+      }
+    }
+  }
+}
+
+/** What needs the source and the examples: the declared install steps and the documented exports. */
+export function validateEntryContent(
+  entry: LoadedEntry,
+  bySlug: ReadonlyMap<string, RegistryEntry>,
+  report: Report,
+) {
+  const { installation, examples, api, source } = entry
+
+  if (isBlank(source)) report('source', 'is empty')
 
   // The declared install steps must match what the source actually imports.
   if (!isBlank(source)) {
@@ -187,28 +239,6 @@ function validateImplemented(
       report(`examples.${example.id}`, 'has no component')
   }
 
-  for (const [index, guideline] of (entry.guidelines ?? []).entries()) {
-    if (isBlank(guideline)) report('guidelines', `guideline #${String(index)} is empty`)
-  }
-
-  if (api.parts.length === 0) report('api', 'needs at least one part')
-  for (const name of duplicates(api.parts.map((part) => part.name))) {
-    report('api', `part "${name}" is documented more than once`)
-  }
-  for (const part of api.parts) {
-    for (const name of duplicates(part.props.map((prop) => prop.name))) {
-      report(`api.${part.name}`, `prop "${name}" is documented more than once`)
-    }
-    for (const prop of part.props) {
-      if (isBlank(prop.type) || isBlank(prop.description)) {
-        report(`api.${part.name}`, `prop "${prop.name}" needs a type and a description`)
-      }
-      if (prop.required && prop.default !== undefined) {
-        report(`api.${part.name}`, `prop "${prop.name}" is required but has a default`)
-      }
-    }
-  }
-
   // The generated import line names only real exports.
   if (!isBlank(source)) {
     const exported = sourceExports(source)
@@ -238,10 +268,7 @@ function documentedDefault(prop: PropDoc): string | undefined {
   return prop.default?.replace(/^'(.*)'$/, '$1')
 }
 
-function validatePlayground(
-  entry: ImplementedEntry,
-  report: (field: string, message: string) => void,
-) {
+function validatePlayground(entry: LoadedEntry, report: Report) {
   const { playground } = entry
   if (!playground) return
   const field = 'playground'
@@ -328,12 +355,28 @@ function findCycles(entries: readonly RegistryEntry[]): string[] {
   return cycles
 }
 
+function hasContent(entry: ImplementedEntry): entry is LoadedEntry {
+  return implementedContentFields.every((field) => field in entry)
+}
+
 /**
- * Every problem with the registry's metadata. Types catch most mistakes at build
- * time; this catches the rest: duplicates, broken references, entries whose
- * declared install steps drift from their source, and casts around the types.
+ * Every problem with the registry's metadata, which is all the app loads at start. Types catch most
+ * mistakes at build time; this catches the rest: duplicates, broken references, and casts around
+ * the types. What needs an entry's source or examples is `validateFullRegistry`.
  */
 export function validateRegistry(entries: readonly RegistryEntry[]): RegistryIssue[] {
+  return validateEntries(entries, false)
+}
+
+/**
+ * `validateRegistry` plus what needs each entry's loaded content: install steps that drift from the
+ * source, documented exports the source lacks, examples, and the playground.
+ */
+export function validateFullRegistry(entries: readonly FullRegistryEntry[]): RegistryIssue[] {
+  return validateEntries(entries, true)
+}
+
+function validateEntries(entries: readonly RegistryEntry[], withContent: boolean): RegistryIssue[] {
   const issues: RegistryIssue[] = []
   const bySlug = new Map(entries.map((entry) => [entry.slug, entry]))
 
@@ -373,11 +416,15 @@ export function validateRegistry(entries: readonly RegistryEntry[]): RegistryIss
         if (field in entry) report(field, 'a planned entry must not have implementation fields')
       }
     } else {
-      for (const field of implementedOnlyFields) {
+      const required = withContent
+        ? [...implementedFields, ...implementedContentFields]
+        : implementedFields
+      for (const field of required) {
         if (!(field in entry)) report(field, 'is missing')
       }
-      if (implementedOnlyFields.every((field) => field in entry)) {
+      if (implementedFields.every((field) => field in entry)) {
         validateImplemented(entry, bySlug, report)
+        if (withContent && hasContent(entry)) validateEntryContent(entry, bySlug, report)
       }
     }
   })
@@ -401,5 +448,19 @@ export function assertValidRegistry(entries: readonly RegistryEntry[]): void {
   const issues = validateRegistry(entries)
   if (issues.length > 0) {
     throw new Error(`Invalid registry metadata:\n${formatIssues(issues)}`)
+  }
+}
+
+/** Throws when one entry's loaded content disagrees with its metadata; used while developing. */
+export function assertValidEntryContent(
+  entry: LoadedEntry,
+  bySlug: ReadonlyMap<string, RegistryEntry>,
+): void {
+  const issues: RegistryIssue[] = []
+  validateEntryContent(entry, bySlug, (field, message) => {
+    issues.push({ entry: entry.id, field, message })
+  })
+  if (issues.length > 0) {
+    throw new Error(`Invalid registry content:\n${formatIssues(issues)}`)
   }
 }

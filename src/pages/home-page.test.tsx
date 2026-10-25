@@ -57,7 +57,8 @@ describe('HomePage', () => {
     await renderRoute('/')
     const preview = screen.getByRole('group', { name: 'Tabs live preview' })
 
-    await user.click(within(preview).getByRole('tab', { name: 'Activity' }))
+    // The example's code arrives in its own chunk; the frame and its name are there before it.
+    await user.click(await within(preview).findByRole('tab', { name: 'Activity' }))
 
     expect(within(preview).getByRole('tab', { name: 'Activity' })).toHaveAttribute(
       'aria-selected',

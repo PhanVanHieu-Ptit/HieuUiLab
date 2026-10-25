@@ -11,7 +11,7 @@ import {
   resolvePlaygroundProps,
   type PlaygroundValues,
 } from '@/registry/playground'
-import type { ImplementedEntry, PlaygroundControl, RegistryPlayground } from '@/registry/types'
+import type { LoadedEntry, PlaygroundControl, RegistryPlayground } from '@/registry/types'
 import { playgroundCode } from '@/registry/usage'
 
 import { CodeBlock } from './code-block'
@@ -85,7 +85,7 @@ function Control({ control, value, onChange }: ControlProps) {
 }
 
 interface PlaygroundProps {
-  entry: ImplementedEntry
+  entry: LoadedEntry
   playground: RegistryPlayground
 }
 

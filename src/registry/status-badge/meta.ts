@@ -1,13 +1,5 @@
-import { StatusBadge } from '@/components/ui/status-badge'
-import statusBadgeSource from '@/components/ui/status-badge.tsx?raw'
-
-import { definePlayground } from '../playground'
 import type { ImplementedEntry } from '../types'
-import { demoExtractor, nativeProps } from '../utils'
-import { StatusBadgeDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
+import { nativeProps } from '../utils'
 
 export const statusBadgeEntry: ImplementedEntry = {
   id: 'status-badge',
@@ -25,16 +17,6 @@ export const statusBadgeEntry: ImplementedEntry = {
     registryDependencies: ['badge'],
     requirements: ['cn-helper', 'design-tokens'],
   },
-  source: statusBadgeSource,
-  examples: [
-    {
-      id: 'tones',
-      title: 'Tones',
-      description: 'Each invoice status maps to one tone, defined once.',
-      component: StatusBadgeDemo,
-      code: demoCode('StatusBadgeDemo'),
-    },
-  ],
   guidelines: [
     'Keep one map from your domain statuses to tones and labels, and use it everywhere the status appears.',
     'The label is required and is what assistive tech reads; the dot and color only reinforce it.',
@@ -68,17 +50,5 @@ export const statusBadgeEntry: ImplementedEntry = {
       },
     ],
   },
-  playground: definePlayground(StatusBadge, {
-    part: 'StatusBadge',
-    controls: [
-      { kind: 'text', prop: 'children', label: 'Status', default: 'Shipped' },
-      {
-        kind: 'select',
-        prop: 'tone',
-        options: ['neutral', 'info', 'success', 'warning', 'danger'],
-        default: 'neutral',
-      },
-      { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },
-    ],
-  }),
+  content: () => import('./content'),
 }

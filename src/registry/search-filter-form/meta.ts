@@ -1,11 +1,4 @@
-import searchFilterFormSource from '@/components/blocks/search-filter-form.tsx?raw'
-
 import type { ImplementedEntry } from '../types'
-import { demoExtractor } from '../utils'
-import { SearchFilterFormDemo } from './demos'
-import demosSource from './demos.tsx?raw'
-
-const demoCode = demoExtractor(demosSource)
 
 export const searchFilterFormEntry: ImplementedEntry = {
   id: 'search-filter-form',
@@ -33,18 +26,6 @@ export const searchFilterFormEntry: ImplementedEntry = {
     ],
     requirements: ['design-tokens'],
   },
-  source: searchFilterFormSource,
-  examples: [
-    {
-      id: 'orders',
-      title: 'Filter orders',
-      description:
-        'Example only: searches eight sample orders in memory. Try an end date before the start date, or no statuses.',
-      component: SearchFilterFormDemo,
-      code: demoCode('SearchFilterFormDemo'),
-      preview: { layout: 'fill', height: 'lg' },
-    },
-  ],
   guidelines: [
     'The block collects criteria; the parent runs the search and renders the results, so it can also sync filters with the URL.',
     'Cross-field rules live in the schema (`superRefine`) and are reported on the field the user must change, here the end date.',
@@ -81,4 +62,5 @@ export const searchFilterFormEntry: ImplementedEntry = {
       },
     ],
   },
+  content: () => import('./content'),
 }

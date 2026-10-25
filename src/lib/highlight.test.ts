@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { registry } from '@/registry'
 import { isImplemented } from '@/registry/types'
+import { fullRegistry } from '@/test/full-registry'
 import css from '@/styles/globals.css?raw'
 import { contrastOfLuminances, hexLuminance, luminance, themeTokens } from '@/test/color'
 import { listFiles, readFile } from '@/test/repo-files'
@@ -59,7 +59,7 @@ function displayedCode(): { code: string; language: HighlightLanguage }[] {
       samples.push({ code, language: language as HighlightLanguage })
     }
   }
-  for (const entry of registry.filter(isImplemented)) {
+  for (const entry of fullRegistry.filter(isImplemented)) {
     samples.push({ code: entry.source, language: 'tsx' })
     for (const example of entry.examples) samples.push({ code: example.code, language: 'tsx' })
   }
