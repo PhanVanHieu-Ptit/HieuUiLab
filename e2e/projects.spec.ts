@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, skipWithoutWebgl, test } from './fixtures'
 
 const desktop = { width: 1440, height: 900 }
 const mobile = { width: 360, height: 740 }
@@ -174,7 +176,9 @@ test.describe('a project page', () => {
     expect((await frame.boundingBox())?.width).toBe(375)
   })
 
-  test('the geospatial and 3D project runs both experiments in the page', async ({ page }) => {
+  test('the geospatial and 3D project runs the projection explorer in the page', async ({
+    page,
+  }) => {
     await page.setViewportSize(desktop)
     await page.goto('/projects/geospatial-3d-experiments')
 
@@ -187,16 +191,22 @@ test.describe('a project page', () => {
     await expect(newYork).toContainText('No')
     await map.getByRole('slider', { name: 'Centre longitude' }).fill('-75')
     await expect(newYork).toContainText('Yes')
+  })
 
-    // Headless browsers do not always have WebGL, and the scene says so when it does not.
+  test('the geospatial and 3D project runs the WebGL scene in the page', async ({ page }) => {
+    await page.setViewportSize(desktop)
+    await page.goto('/projects/geospatial-3d-experiments')
+
+    // A machine without WebGL gets the scene's own explanation, and the test is reported as
+    // skipped. On CI the scene itself must be on the page.
     const scene = page.getByRole('region', {
       name: 'WebGL scene with motion controls',
       exact: true,
     })
-    await expect(
-      scene
-        .getByRole('img', { name: 'A shaded cube in the site’s primary colour' })
-        .or(scene.getByRole('heading', { name: 'WebGL is unavailable' })),
-    ).toBeVisible()
+    const cube = scene.getByRole('img', { name: 'A shaded cube in the site’s primary colour' })
+    const unavailable = scene.getByRole('heading', { name: 'WebGL is unavailable' })
+    await expect(cube.or(unavailable)).toBeVisible()
+    await skipWithoutWebgl(unavailable, 'This browser has no WebGL, so the scene cannot run.')
+    await expect(cube).toBeVisible()
   })
 })

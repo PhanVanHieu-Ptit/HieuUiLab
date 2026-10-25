@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 // Direct loads and refreshes of every required URL against the production build,
 // so nested paths, lazy chunks, and titles work without client-side navigation first.

@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 const mobile = { width: 360, height: 740 }
 
@@ -48,9 +50,13 @@ test.describe('Select', () => {
 
     const listbox = page.getByRole('listbox')
     await expect(listbox).toBeVisible()
-    // Focus starts on the selected option once the list has positioned itself.
     await expect(page.getByRole('option', { name: 'Recently updated' })).toBeFocused()
     await page.keyboard.press('ArrowDown')
+    // Radix moves focus for an arrow key in a timer (setTimeout in its keydown handler), so an
+    // Enter sent straight after lands on the option that still has focus and re-selects it. Wait
+    // for the move, as a person would see it, before confirming. Without this the test failed
+    // whenever the machine was quick enough to send both keys within the same tick.
+    await expect(page.getByRole('option', { name: 'Name' })).toBeFocused()
     await page.keyboard.press('Enter')
 
     await expect(listbox).toBeHidden()

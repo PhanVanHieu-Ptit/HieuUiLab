@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 const viewports = [
   { name: 'mobile', width: 360, height: 740 },
@@ -146,6 +148,24 @@ test.describe('responsive layout', () => {
     }
   })
 
+  test('the drawer takes over from the header links exactly below 768 pixels', async ({ page }) => {
+    for (const { width, drawer } of [
+      { width: 767, drawer: true },
+      { width: 768, drawer: false },
+    ]) {
+      await page.setViewportSize({ width, height: 800 })
+      await page.goto('/')
+      await expect(
+        page.getByRole('button', { name: 'Open navigation' }),
+        `the menu button at ${String(width)}`,
+      ).toBeVisible({ visible: drawer })
+      await expect(
+        page.getByRole('navigation', { name: 'Main' }),
+        `the header links at ${String(width)}`,
+      ).toBeVisible({ visible: !drawer })
+    }
+  })
+
   test('mobile hides the sidebar and header nav; desktop shows them', async ({ page }) => {
     await page.setViewportSize(viewports[0])
     await page.goto('/components/button')
@@ -182,6 +202,25 @@ test.describe('mobile navigation drawer', () => {
     await page.keyboard.press('Escape')
     await expect(drawer).toBeHidden()
     await expect(trigger).toBeFocused()
+  })
+
+  test('Tab and Shift+Tab never leave the open drawer, however far they go', async ({ page }) => {
+    await page.goto('/')
+    await page.getByRole('button', { name: 'Open navigation' }).click()
+    const drawer = page.getByRole('dialog', { name: 'Hieu UI Lab' })
+    await expect(drawer).toBeVisible()
+
+    // Past the last stop and round again: a trap that leaks shows up at the seam.
+    const stops = await drawer.locator('a[href], button:not([disabled])').count()
+    expect(stops).toBeGreaterThan(10)
+    const insideDrawer = () =>
+      page.evaluate(() => document.activeElement?.closest('[role="dialog"]') != null)
+    for (const key of ['Tab', 'Shift+Tab']) {
+      for (let step = 1; step <= stops + 2; step += 1) {
+        await page.keyboard.press(key)
+        expect(await insideDrawer(), `${key} #${String(step)} left the drawer`).toBe(true)
+      }
+    }
   })
 
   test('works with the pointer and closes after navigating', async ({ page }) => {
@@ -241,6 +280,56 @@ test.describe('theme', () => {
     expect(dark.text).not.toBe(light.text)
     expect(dark.border).not.toBe(light.border)
   })
+
+  test('an explicit Light choice beats a dark system and survives a reload', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await page.goto('/components/button')
+    const html = page.locator('html')
+    await expect(html).toHaveClass(/dark/)
+
+    await page.getByRole('button', { name: 'Theme: System' }).click()
+    await page.getByRole('menuitemradio', { name: 'Light' }).click()
+    await expect(html).not.toHaveClass(/dark/)
+    await expect(page.getByRole('button', { name: 'Theme: Light' })).toBeVisible()
+
+    await page.reload()
+    await expect(html).not.toHaveClass(/dark/)
+    await expect(page.getByRole('button', { name: 'Theme: Light' })).toBeVisible()
+    expect(await page.evaluate(() => localStorage.getItem('hieu-ui-lab:theme'))).toBe('light')
+
+    // The system changing its mind does not move a theme that was chosen.
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await expect(html).not.toHaveClass(/dark/)
+  })
+
+  // The inline script in index.html sets the class before the first paint. With the application's
+  // own scripts refused, nothing else can have set it, so a wrong class here is a flash of the
+  // wrong theme for every visitor.
+  for (const { saved, system, dark } of [
+    { saved: 'dark', system: 'light', dark: true },
+    { saved: 'light', system: 'dark', dark: false },
+    { saved: 'system', system: 'dark', dark: true },
+    { saved: 'system', system: 'light', dark: false },
+  ] as const) {
+    test(`${saved} on a ${system} system is ${dark ? 'dark' : 'light'} before any app script runs`, async ({
+      page,
+    }) => {
+      await page.addInitScript((value) => {
+        localStorage.setItem('hieu-ui-lab:theme', value)
+      }, saved)
+      await page.emulateMedia({ colorScheme: system })
+      await page.route('**/assets/**/*.js', (route) => route.abort())
+
+      await page.goto('/components/button')
+
+      const html = page.locator('html')
+      if (dark) await expect(html).toHaveClass(/dark/)
+      else await expect(html).not.toHaveClass(/dark/)
+      // The application did not start, so the page is still the empty shell.
+      await expect(page.getByRole('heading', { level: 1 })).toHaveCount(0)
+    })
+  }
 })
 
 test.describe('keyboard and focus', () => {
@@ -326,5 +415,35 @@ test.describe('keyboard and focus', () => {
     const trail = page.getByRole('navigation', { name: 'Breadcrumb' })
     await expect(trail.getByRole('link')).toHaveText(['Home', 'Components', 'Navigation'])
     await expect(trail.locator('[aria-current="page"]')).toHaveText('Tabs')
+  })
+})
+
+test.describe('mobile navigation drawer on a touch screen', () => {
+  test.use({ hasTouch: true, viewport: { width: viewports[0].width, height: viewports[0].height } })
+
+  test('opens with a tap; the Close button and a tap outside each dismiss it', async ({ page }) => {
+    await page.goto('/')
+    const trigger = page.getByRole('button', { name: 'Open navigation' })
+    const drawer = page.getByRole('dialog', { name: 'Hieu UI Lab' })
+
+    await trigger.tap()
+    await expect(drawer).toBeVisible()
+    await drawer.getByRole('button', { name: 'Close' }).tap()
+    await expect(drawer).toBeHidden()
+    await expect(trigger).toBeFocused()
+
+    await trigger.tap()
+    await expect(drawer).toBeVisible()
+    // The drawer slides in from the left. Measure it once it has stopped, or the point chosen
+    // below can fall inside where it ends up.
+    await expect.poll(async () => (await drawer.boundingBox())?.x).toBe(0)
+    // The drawer is 85% of the screen wide; what is left of the screen is the overlay.
+    const box = await drawer.boundingBox()
+    expect(box, 'the open drawer has a box').not.toBeNull()
+    const outsideX = (box?.x ?? 0) + (box?.width ?? 0) + 10
+    expect(outsideX, 'there is overlay to the right of the drawer').toBeLessThan(viewports[0].width)
+    await page.touchscreen.tap(outsideX, 400)
+    await expect(drawer).toBeHidden()
+    await expect(trigger).toBeFocused()
   })
 })

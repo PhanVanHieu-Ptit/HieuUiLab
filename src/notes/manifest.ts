@@ -311,13 +311,23 @@ const entries: readonly NoteEntry[] = [
     summary:
       'Parse the token stylesheet, convert OKLCH to luminance, and assert contrast ratios, so a palette tweak that hurts legibility fails a test.',
     date: '2026-10-13',
-    updated: '2026-10-19',
+    updated: '2026-10-24',
     tags: ['accessibility', 'design-tokens', 'testing'],
     evidence: [
       {
         label: 'The contrast test',
         path: 'src/styles/tokens.test.ts',
-        anchor: 'function contrast',
+        anchor: 'meets %d:1',
+      },
+      {
+        label: 'The contrast arithmetic',
+        path: 'src/test/color.ts',
+        anchor: 'export function contrast',
+      },
+      {
+        label: 'The syntax-highlight colors it could not see',
+        path: 'src/lib/highlight.ts',
+        anchor: "'#d73a49': '#cf222e'",
       },
       {
         label: 'The tokens it reads',
@@ -330,9 +340,9 @@ const entries: readonly NoteEntry[] = [
         anchor: 'token tests read globals.css as text',
       },
       {
-        label: 'The statement that no accessibility engine runs',
-        path: 'src/docs/content/testing.md',
-        anchor: 'No automated accessibility engine such as axe runs',
+        label: 'The accessibility engine added afterwards',
+        path: 'e2e/a11y.ts',
+        anchor: 'WCAG_TAGS',
       },
     ],
     load: () => import('./content/contrast-checks-as-unit-tests.md?raw'),

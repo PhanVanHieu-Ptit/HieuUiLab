@@ -1,4 +1,6 @@
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
+
+import { expect, skipWithoutWebgl, test } from './fixtures'
 
 // The unit tests replace the renderer with a stand-in, because jsdom has no WebGL. These tests run
 // the real library in the production build, which is the only place a missing chunk, a shader that
@@ -83,13 +85,16 @@ async function settled(page: Page) {
     .toBe(true)
 }
 
-/** Open the scene and wait for its first draw. Skips where the browser has no WebGL2. */
+/**
+ * Open the scene and wait for its first draw. Where the browser has no WebGL2 this skips, or on CI
+ * fails, because CI is expected to run the real scene.
+ */
 async function openScene(page: Page) {
   await page.goto(ROUTE)
   const canvas = page.locator(CANVAS)
   const unavailable = page.getByRole('heading', { name: '3D scene unavailable' })
   await expect(canvas.or(unavailable)).toBeVisible()
-  test.skip(await unavailable.isVisible(), 'This browser has no WebGL2, so the scene cannot run.')
+  await skipWithoutWebgl(unavailable, 'This browser has no WebGL2, so the scene cannot run.')
   await expect(page.getByRole('status', { name: 'Loading 3D scene' })).toHaveCount(0)
   await expect(stat(page, 'Frames drawn so far')).not.toHaveText('–')
   await settled(page)

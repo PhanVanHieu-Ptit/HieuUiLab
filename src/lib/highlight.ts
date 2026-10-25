@@ -43,6 +43,24 @@ function loadGrammar(highlighter: HighlighterCore, language: 'json' | 'css'): Pr
 }
 
 /**
+ * Colors of Shiki's github-light and github-dark themes that fall under the 4.5:1 WCAG AA minimum
+ * on the code background (`--code`), each swapped for the nearest GitHub value that passes. Every
+ * other color is the theme's own. `highlight.test.ts` measures what the site really displays, so a
+ * theme update that brings a failing color back is reported there.
+ */
+const colorReplacements = {
+  'github-light': {
+    '#d73a49': '#cf222e', // keywords
+    '#e36209': '#bc4c00', // constants and numbers
+    '#22863a': '#1a7f37', // JSX tag names
+    '#6a737d': '#59636e', // comments
+  },
+  'github-dark': {
+    '#6a737d': '#8b949e', // comments
+  },
+}
+
+/**
  * Returns Shiki HTML with light and dark token colors (switched via CSS variables). `ts` is
  * highlighted with the TSX grammar, which is already loaded and reads plain TypeScript the same
  * except for angle-bracket type assertions, which the docs do not use.
@@ -54,6 +72,7 @@ export async function highlightCode(code: string, language: HighlightLanguage): 
     lang: language === 'ts' ? 'tsx' : language,
     themes: { light: 'github-light', dark: 'github-dark' },
     defaultColor: 'light',
+    colorReplacements,
     // Shiki makes its <pre> focusable by default so it can scroll; CodeBlock's scroll region
     // already is, and two tab stops for one area would be noise.
     tabindex: false,

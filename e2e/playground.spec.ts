@@ -1,4 +1,6 @@
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
+
+import { expect, guardNetwork, test } from './fixtures'
 
 const style = (locator: Locator, property: string) =>
   locator.evaluate((node, name) => getComputedStyle(node).getPropertyValue(name), property)
@@ -58,9 +60,13 @@ test.describe('playground', () => {
 
   test('a light frame on a dark page matches a light frame on a light page', async ({
     browser,
+    baseURL,
   }) => {
     async function frameLook(siteTheme: 'light' | 'dark', previewTheme: string) {
+      if (baseURL === undefined) throw new Error('playwright.config.ts must set use.baseURL')
       const context = await browser.newContext()
+      // The fixture guards the test's own context; one opened here needs the guard too.
+      const guard = await guardNetwork(context, baseURL)
       const page = await context.newPage()
       await open(page, '/playground?example=button', siteTheme)
       // Colors transition when the theme changes, and headless Chrome only advances a transition
@@ -84,6 +90,7 @@ test.describe('playground', () => {
         scheme: await style(frame, 'color-scheme'),
       }
       await context.close()
+      expect(guard.blocked, 'requests to somewhere other than the site itself').toEqual([])
       return look
     }
 

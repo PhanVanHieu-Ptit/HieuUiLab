@@ -107,6 +107,7 @@ result.
 | `pnpm registry:failure-test`  | What the real CLI does with bad names, missing files, malformed items, unsafe paths and failing dependencies (network; `--runner npm`, `--show`) |
 | `pnpm registry:verify-schema` | Compare the saved shadcn JSON Schemas with the published ones (network)                                                                          |
 | `pnpm test:e2e`               | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme              |
+| `pnpm test:a11y`              | Only the axe accessibility scans (WCAG 2.1 A and AA rules, light and dark) against the production build; also part of `pnpm test:e2e`            |
 | `pnpm check`                  | Lint, format check, typecheck, tests, build — what CI runs                                                                                       |
 
 Run `pnpm check` before pushing. CI also runs `pnpm docs:check`, `pnpm notes:check` and `pnpm registry:check` on their own, then `pnpm test:e2e`. A second workflow runs the shadcn install and failure tests when the registry files change.

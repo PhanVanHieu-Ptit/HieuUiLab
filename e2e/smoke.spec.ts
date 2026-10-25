@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, skipWithoutWebgl, test } from './fixtures'
 
 test('navigates from home to the Button page and switches a demo to code', async ({ page }) => {
   await page.goto('/')
@@ -77,17 +77,15 @@ test('unknown routes render the not-found page', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Page not found' })).toBeVisible()
 })
 
-test('the WebGL scene starts still under reduced motion, or explains why it cannot run', async ({
-  page,
-}) => {
+test('the WebGL scene starts still under reduced motion and plays on request', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/labs/3d/webgl-scene')
   const paused = page.getByText('Paused because your system asks for reduced motion.')
   const unavailable = page.getByRole('heading', { name: 'WebGL is unavailable' })
   await expect(paused.or(unavailable)).toBeVisible()
+  // Skips on a machine without WebGL; on CI that is a failure, not a pass through the other branch.
+  await skipWithoutWebgl(unavailable, 'This browser has no WebGL, so the scene cannot run.')
 
-  if (await paused.isVisible()) {
-    await page.getByRole('button', { name: 'Play rotation' }).click()
-    await expect(page.getByRole('button', { name: 'Pause rotation' })).toBeVisible()
-  }
+  await page.getByRole('button', { name: 'Play rotation' }).click()
+  await expect(page.getByRole('button', { name: 'Pause rotation' })).toBeVisible()
 })
