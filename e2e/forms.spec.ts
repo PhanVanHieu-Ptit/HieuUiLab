@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 /** One example on a detail page: a region named by the example's heading. */
 function example(page: Page, title: string) {

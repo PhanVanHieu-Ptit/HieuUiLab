@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { expect, test } from './fixtures'
 
 test.describe('component catalog', () => {
   test('searches, filters, clears, and opens an entry', async ({ page }) => {
@@ -27,6 +27,62 @@ test.describe('component catalog', () => {
       .click()
     await expect(page).toHaveURL(/\/components\/button$/)
     await expect(page.getByRole('heading', { level: 1, name: 'Button' })).toBeVisible()
+  })
+
+  test('says when nothing matches, and the empty state clears the search', async ({ page }) => {
+    await page.goto('/components')
+    const status = page.getByRole('status').filter({ hasText: /components$/ })
+    const total = /^(\d+) components$/.exec((await status.textContent()) ?? '')?.[1]
+    expect(total, 'the catalog states how many components it lists').toBeDefined()
+
+    const search = page.getByRole('searchbox', { name: 'Search components' })
+    await search.fill('zzzzqx')
+    await expect(
+      page.getByRole('heading', { level: 2, name: 'No components match these filters' }),
+    ).toBeVisible()
+    await expect(page.getByText('Nothing matches “zzzzqx”')).toBeVisible()
+    await expect(status).toHaveText(`0 of ${total ?? ''} components`)
+    await expect(page.getByRole('list', { name: 'Components results' })).toHaveCount(0)
+
+    // Two buttons share this name while a filter is active: the filter bar's comes first on the
+    // page and the empty state's last, and the empty state is what this test is about.
+    await expect(page.getByRole('button', { name: 'Clear filters' })).toHaveCount(2)
+    await page.getByRole('button', { name: 'Clear filters' }).last().click()
+
+    await expect(page).toHaveURL(/\/components$/)
+    await expect(search).toHaveValue('')
+    await expect(status).toHaveText(`${total ?? ''} components`)
+    await expect(page.getByRole('list', { name: 'Components results' })).toBeVisible()
+  })
+
+  test('Escape clears the search field and the filter in the address', async ({ page }) => {
+    await page.goto('/components')
+    const search = page.getByRole('searchbox', { name: 'Search components' })
+    await search.fill('modal')
+    await expect(page).toHaveURL(/\/components\?q=modal$/)
+
+    await page.keyboard.press('Escape')
+    await expect(search).toHaveValue('')
+    await expect(page).toHaveURL(/\/components$/)
+    await expect(search).toBeFocused()
+  })
+
+  test('sorts by category, keeps every entry, and goes back to name order', async ({ page }) => {
+    await page.goto('/components')
+    const headings = page
+      .getByRole('list', { name: 'Components results' })
+      .getByRole('heading', { level: 2 })
+    const byName = await headings.allTextContents()
+    expect(byName.length).toBeGreaterThan(5)
+
+    await page.getByLabel('Sort by').selectOption('category')
+    await expect(page).toHaveURL(/\/components\?sort=category$/)
+    await expect.poll(() => headings.allTextContents()).not.toEqual(byName)
+    expect([...(await headings.allTextContents())].sort()).toEqual([...byName].sort())
+
+    await page.getByLabel('Sort by').selectOption('name')
+    await expect(page).toHaveURL(/\/components$/)
+    await expect.poll(() => headings.allTextContents()).toEqual(byName)
   })
 })
 

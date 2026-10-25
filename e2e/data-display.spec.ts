@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 const mobile = { width: 360, height: 740 }
 const desktop = { width: 1440, height: 900 }
@@ -39,6 +41,73 @@ test.describe('data table', () => {
     // Next is now at its end but keeps focus.
     await expect(next).toHaveAttribute('aria-disabled', 'true')
     await expect(next).toBeFocused()
+  })
+
+  test('sorts with the pointer: ascending, descending, then no sort', async ({ page }) => {
+    await page.goto('/blocks/data-table')
+    const demo = example(page, 'Sorting and pagination')
+    const service = demo.getByRole('columnheader', { name: 'Service' })
+    const sorted = demo.locator('th[aria-sort]')
+    const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
+
+    // The demo opens sorted by when the deployment finished, newest first.
+    await expect(demo.getByRole('columnheader', { name: 'Finished (UTC)' })).toHaveAttribute(
+      'aria-sort',
+      'descending',
+    )
+    const opening = await rowHeaders(demo)
+
+    await demo.getByRole('button', { name: 'Service' }).click()
+    await expect(service).toHaveAttribute('aria-sort', 'ascending')
+    await expect(sorted).toHaveCount(1)
+    const ascending = await rowHeaders(demo)
+    expect(ascending[0]).toBe('admin')
+    expect(ascending).toEqual([...ascending].sort(collator.compare))
+
+    await demo.getByRole('button', { name: 'Service' }).click()
+    await expect(service).toHaveAttribute('aria-sort', 'descending')
+    const descending = await rowHeaders(demo)
+    expect(descending[0]).toBe('web')
+    expect(descending).toEqual([...descending].sort((a, b) => collator.compare(b, a)))
+
+    // The third click takes the sort away: no column claims one, and the rows are in data order.
+    await demo.getByRole('button', { name: 'Service' }).click()
+    await expect(sorted).toHaveCount(0)
+    const unsorted = await rowHeaders(demo)
+    expect(unsorted).not.toEqual(descending)
+    expect(unsorted).not.toEqual(opening)
+  })
+
+  test('pages with the pointer, and a new page size starts again at page 1', async ({ page }) => {
+    await page.goto('/blocks/data-table')
+    const demo = example(page, 'Sorting and pagination')
+    await expect(demo.getByText('1–5 of 12 deployments')).toBeVisible()
+
+    await demo.getByRole('button', { name: 'Page 3' }).click()
+    await expect(demo.getByText('11–12 of 12 deployments')).toBeVisible()
+    await expect(demo.getByRole('button', { name: 'Page 3' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    expect(await rowHeaders(demo)).toHaveLength(2)
+
+    await demo.getByRole('button', { name: 'Previous page' }).click()
+    await expect(demo.getByText('6–10 of 12 deployments')).toBeVisible()
+    await expect(demo.getByRole('button', { name: 'Page 2' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+
+    // Opened and chosen with the pointer: the keyboard path is covered above.
+    await demo.getByRole('combobox', { name: 'Rows per page' }).click()
+    await page.getByRole('option', { name: '10', exact: true }).click()
+    await expect(demo.getByText('1–10 of 12 deployments')).toBeVisible()
+    expect(await rowHeaders(demo)).toHaveLength(10)
+    await expect(demo.getByRole('button', { name: 'Page 1' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+    await expect(demo.getByRole('button', { name: 'Page 3' })).toHaveCount(0)
   })
 
   test('selects rows with Space and confirms a bulk action', async ({ page }) => {

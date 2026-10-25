@@ -38,6 +38,6 @@ When you write or change a component, check that:
 
 ## What is not covered {#limits}
 
-- No automated accessibility engine, such as axe, runs in this repository. Lint checks static JSX only, and the contrast test checks the token pairs, not arbitrary content placed on them.
+- Axe scans only the states that `e2e/a11y.spec.ts` lists, in Chromium. It reports violations of its rules, cannot decide some items, and does not show that a page is accessible. Lint checks static JSX only, and the contrast test checks the token pairs, not arbitrary content placed on them.
 - Screen reader behavior is not tested beyond the roles, names, and states that the tests assert.
 - A combobox with an editable text field is not implemented: the registry's Combobox entry is planned, and Select is the available choice control.

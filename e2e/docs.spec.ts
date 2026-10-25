@@ -1,4 +1,6 @@
-import { expect, test, type Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+
+import { expect, test } from './fixtures'
 
 // Every documentation page, with the h1 it renders. The sweep below loads each one at three widths
 // in both themes, so a wide table or code block that pushes the page sideways is caught.

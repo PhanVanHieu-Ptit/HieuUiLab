@@ -1,4 +1,6 @@
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
+
+import { expect, skipWithoutWebgl, test } from './fixtures'
 
 // The unit tests replace MapLibre with a stand-in, because jsdom has no WebGL. These tests run the
 // real library in the production build, which is the only place a missing worker file, a failed
@@ -11,13 +13,16 @@ function layerRow(page: Page, name: 'Sites' | 'Service route' | 'Service zones')
   return page.getByRole('switch', { name, exact: true }).locator('xpath=ancestor::li[1]')
 }
 
-/** Open the viewer and wait for its first draw. Skips where the browser has no WebGL2. */
+/**
+ * Open the viewer and wait for its first draw. Where the browser has no WebGL2 this skips, or on CI
+ * fails, because CI is expected to run the real map.
+ */
 async function openViewer(page: Page) {
   await page.goto(ROUTE)
   const canvas = page.locator(CANVAS)
   const unavailable = page.getByRole('heading', { name: 'Interactive map unavailable' })
   await expect(canvas.or(unavailable)).toBeVisible()
-  test.skip(await unavailable.isVisible(), 'This browser has no WebGL2, so the map cannot run.')
+  await skipWithoutWebgl(unavailable, 'This browser has no WebGL2, so the map cannot run.')
   await expect(layerRow(page, 'Sites').getByText('Ready')).toBeVisible()
   await expect(layerRow(page, 'Service route').getByText('Ready')).toBeVisible()
   await expect(layerRow(page, 'Service zones').getByText('Ready')).toBeVisible()

@@ -85,6 +85,25 @@ export default tseslint.config(
     },
   },
   {
+    // `test` from e2e/fixtures.ts refuses requests to other origins and fails the test that made
+    // one. Types still come from '@playwright/test'.
+    files: ['e2e/**/*.spec.ts'],
+    rules: {
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@playwright/test',
+              importNames: ['test', 'expect'],
+              message: "Import test and expect from './fixtures', which guards the network.",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     files: ['eslint.config.js'],
     extends: [js.configs.recommended],
     languageOptions: { globals: globals.node },

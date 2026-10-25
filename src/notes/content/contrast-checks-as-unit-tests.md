@@ -16,7 +16,7 @@ The tokens are written in OKLCH, which contrast formulas do not accept directly,
 
 Three alternatives were considered.
 
-1. **An accessibility engine in a real browser.** This checks the rendered page, including colors that come from composition. The repository has no such engine, and its testing page says so, so this would be a new dependency and a slower test.
+1. **An accessibility engine in a real browser.** This checks the rendered page, including colors that come from composition. When this note was written the repository had no such engine, so it would have been a new dependency and a slower test. One was added afterwards, and the last section says what it found.
 2. **Computed styles from the running page in a Playwright test.** An end-to-end test does check that colors change between themes, but it compares only the body background, the body text, and the header border, and it does not measure contrast.
 3. **Read the stylesheet as text, convert, and assert on pairs of tokens.** This is fast, has no new dependency, and covers every pair in the list on every run.
 
@@ -26,8 +26,8 @@ The third option was chosen. Vite is configured to process CSS only for `?raw` i
 
 Reading tokens is a small function that throws if the block is missing and slices to the first closing brace, so it cannot read past the block it was asked about.
 
-```ts title="src/styles/tokens.test.ts (reading the tokens)"
-function readTokens(selector: string): Tokens {
+```ts title="src/test/color.ts (reading the tokens)"
+export function readTokens(css: string, selector: string): Tokens {
   const start = css.indexOf(`${selector} {`)
   if (start === -1) throw new Error(`No "${selector}" block in globals.css`)
   const body = css.slice(start, css.indexOf('}', start))
@@ -38,12 +38,17 @@ function readTokens(selector: string): Tokens {
   }
   return tokens
 }
+// …
+export function themeTokens(css: string): { light: Tokens; dark: Tokens } {
+  const light = readTokens(css, '.light')
+  return { light, dark: { ...light, ...readTokens(css, '.dark') } }
+}
 ```
 
 The conversion follows the published OKLab matrices, clamps the result to the sRGB gamut, and weights the channels into a luminance. The ratio is the lighter luminance plus a small offset over the darker one plus the same offset.
 
-```ts title="src/styles/tokens.test.ts (the math)"
-function luminance([l, c, h]: Oklch): number {
+```ts title="src/test/color.ts (the math)"
+export function luminance([l, c, h]: Oklch): number {
   const a = c * Math.cos((h * Math.PI) / 180)
   const b = c * Math.sin((h * Math.PI) / 180)
   const l_ = (l + 0.3963377774 * a + 0.2158037573 * b) ** 3
@@ -56,17 +61,20 @@ function luminance([l, c, h]: Oklch): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * bl
 }
 
-function contrast(x: Oklch, y: Oklch): number {
-  const [hi, lo] = [luminance(x), luminance(y)].sort((p, q) => q - p)
-  return ((hi ?? 0) + 0.05) / ((lo ?? 0) + 0.05)
+// …
+export function contrastOfLuminances(x: number, y: number): number {
+  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05)
+}
+
+export function contrast(x: Oklch, y: Oklch): number {
+  return contrastOfLuminances(luminance(x), luminance(y))
 }
 ```
 
-The dark theme is the light tokens with the dark overrides on top, and the list of pairs asks for a higher ratio for text than for the focus ring, which is not text.
+The dark theme is the light tokens with the dark overrides on top, which is what `themeTokens` in the first excerpt builds, and the list of pairs asks for a higher ratio for text than for the focus ring, which is not text.
 
 ```ts title="src/styles/tokens.test.ts (the pairs)"
-const light = readTokens('.light')
-const themes = { light, dark: { ...light, ...readTokens('.dark') } }
+const themes = themeTokens(css)
 // …
 const cases: [string, string, number][] = [
   ...textPairs.map(([fg, bg]): [string, string, number] => [fg, bg, 4.5]),
@@ -101,7 +109,7 @@ Hand-written color math is code the project now maintains. It is small, and it f
 
 The pair list is the real contract. It is easy to extend and easy to forget. The token names are the part that makes the approach pay off: with semantic tokens, a short list covers most of the site, and with raw palette colors in components it would not.
 
-A fast first line of defense is not a replacement for checking real pages. The most useful property of the test is its failure message, which names the token pair and the ratio it needed, so the person who changed a value sees what to fix.
+A fast first line of defense is not a replacement for checking real pages, and the repository has since shown it. When an accessibility engine was added to the end-to-end tests it measured five syntax-highlight colors under 4.5:1 on the code background, in light or dark, that this test could not see: they come from Shiki's own themes, not from the tokens. The fix replaces those colors in `src/lib/highlight.ts`, and `src/lib/highlight.test.ts` now measures every color the site displays against the same `--code` token, reusing the arithmetic above. The most useful property of the test is its failure message, which names the token pair and the ratio it needed, so the person who changed a value sees what to fix.
 
 ## References
 

@@ -72,7 +72,7 @@ export const profile: Profile = {
         {
           label: 'The contrast test',
           path: 'src/styles/tokens.test.ts',
-          anchor: 'function contrast',
+          anchor: 'meets %d:1',
         },
         {
           label: 'The pre-paint theme script',
@@ -136,13 +136,13 @@ export const profile: Profile = {
         {
           label: 'What the testing guide says is not covered',
           path: 'src/docs/content/testing.md',
-          anchor: 'No automated accessibility engine such as axe runs',
+          anchor: 'Axe finds violations of its rules in the states listed above',
         },
       ],
       projects: ['hieu-ui-lab-component-library'],
       notes: ['reduced-motion-beyond-css', 'whole-card-links'],
       boundary:
-        'No automated accessibility engine such as axe runs, and Chromium is the only browser.',
+        'Axe scans a fixed list of states and cannot decide some items; no screen reader test runs, and Chromium is the only browser.',
     },
     {
       id: 'forms',
