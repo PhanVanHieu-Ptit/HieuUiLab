@@ -28,7 +28,9 @@ src/
   templates/     Example apps built from blocks, lazy-loaded one by one
   test/          Test setup and helpers, imported only by tests
 e2e/             Playwright tests
-.github/workflows/ci.yml   The CI workflow
+scripts/         Node scripts: the build output check, deployment checks, registry and performance tools
+vercel.json      Hosting settings: build, single-page-app fallback, headers
+.github/workflows/   ci.yml runs the checks; deploy-verify.yml checks a deployed address
 ```
 
 Component files in `src/components/ui/` and `src/components/blocks/` are the files you copy. Everything else is the site that documents them.

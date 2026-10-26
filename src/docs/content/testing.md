@@ -4,17 +4,18 @@ The lab tests behavior and rules, not pixels. Unit tests check components, route
 
 ## Layers {#layers}
 
-| Layer            | Tool                                       | Runs with                                          | Covers                                                                   |
-| ---------------- | ------------------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------------ |
-| Static checks    | ESLint, Prettier, TypeScript               | `pnpm lint`, `pnpm format:check`, `pnpm typecheck` | Types, accessibility lint rules, formatting                              |
-| Unit and content | Vitest, Testing Library, user-event        | `pnpm test`                                        | Components, hooks, routes, registry data, docs, contrast                 |
-| End to end       | Playwright (Chromium) against `pnpm build` | `pnpm test:e2e`                                    | Keyboard flows, routing, overflow at four widths, both themes, axe rules |
+| Layer            | Tool                                       | Runs with                                                 | Covers                                                                               |
+| ---------------- | ------------------------------------------ | --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Static checks    | ESLint, Prettier, TypeScript               | `pnpm lint`, `pnpm format:check`, `pnpm typecheck`        | Types, accessibility lint rules, formatting                                          |
+| Unit and content | Vitest, Testing Library, user-event        | `pnpm test`                                               | Components, hooks, routes, registry data, docs, contrast                             |
+| End to end       | Playwright (Chromium) against `pnpm build` | `pnpm test:e2e`                                           | Keyboard flows, routing, overflow at four widths, both themes, axe rules             |
+| Build and host   | Node scripts, Playwright                   | `pnpm dist:check`, `pnpm deploy:smoke`, `pnpm deploy:e2e` | The build output, and a deployed address (see [Deployment](/docs/deployment#verify)) |
 
 `pnpm check` runs the static checks, the unit tests, and the build, which is what CI runs before the end-to-end tests. Run it before you push.
 
 ## Unit tests {#unit}
 
-Vitest runs every `src/**/*.test.ts` and `*.test.tsx` file in jsdom. Test files import `describe`, `it`, and `expect` from `vitest`, because globals are off. `src/test/setup.ts` adds the pieces jsdom lacks: `matchMedia` (never matching), `ResizeObserver`, `scrollIntoView`, pointer capture, `window.scrollTo`, and a canvas context that reports none.
+Vitest runs every `src/**/*.test.ts` and `*.test.tsx` file in jsdom, and the `scripts/**/*.test.ts` files that test the deployment checks. Test files import `describe`, `it`, and `expect` from `vitest`, because globals are off. `src/test/setup.ts` adds the pieces jsdom lacks: `matchMedia` (never matching), `ResizeObserver`, `scrollIntoView`, pointer capture, `window.scrollTo`, and a canvas context that reports none.
 
 - **Components** are tested with Testing Library: query by role and accessible name, and use `userEvent` for the keyboard (Tab, Enter, Space, and the arrows). Create `userEvent.setup()` before `render` when a test needs the clipboard, because the copy button checks for it when it mounts.
 - **Routes** are tested through `renderRoute(path)` in `src/test/render.tsx`. It renders the real route tree in a memory router and waits for loaders and lazy pages. `renderSettled` in the same file is `render` inside an awaited `act`, which a component that loads its code with `use` needs: with the synchronous `render` it stays on its fallback. `src/router/routes.test.tsx` lists every required route and checks one `h1`, one `main`, the document title, and the description.
@@ -65,7 +66,7 @@ Install the browser once. To run one file, pass it to Playwright, for example `p
 
 ## CI {#ci}
 
-`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests, on Ubuntu with Node.js 24. In order: install with the frozen lockfile, lint, format check, typecheck, `pnpm docs:check`, `pnpm notes:check`, `pnpm registry:check`, unit tests, build, then the Playwright tests. If a step fails, the workflow uploads the Playwright HTML report and the traces of tests that needed a retry. A new `*.test.ts` file runs in CI without a workflow change; a new `package.json` script does not, unless the workflow calls it.
+`.github/workflows/ci.yml` runs on pushes to `main` and on pull requests, on Ubuntu with Node.js 24. In order: install with the frozen lockfile, lint, format check, typecheck, `pnpm docs:check`, `pnpm notes:check`, `pnpm registry:check`, unit tests, build, `pnpm dist:check` on the build output, then the Playwright tests. If a step fails, the workflow uploads the Playwright HTML report and the traces of tests that needed a retry. A new `*.test.ts` file runs in CI without a workflow change; a new `package.json` script does not, unless the workflow calls it.
 
 ## What is not tested {#gaps}
 
@@ -73,5 +74,5 @@ Install the browser once. To run one file, pass it to Playwright, for example `p
 - Axe finds violations of its rules in the states listed above; a clean scan does not show that a page is accessible. It cannot decide some items, for example the contrast of sidebar links that a scroll region partly covers, and those are listed for review, not counted as passes. No screen reader, zoom, or forced-colors test runs, and Chromium is the only browser.
 - No coverage was measured, so this page makes no claim about how much of the code the tests run.
 - The map viewer's online basemap is chosen at build time and is not in the build the end-to-end tests use.
-- The site is not deployed, so nothing tests a live URL.
+- The site is not deployed. `pnpm deploy:smoke` and `pnpm deploy:e2e` can test a live address, and they are checked against a local server that applies `vercel.json`, but no run against a real host has happened. [Deployment](/docs/deployment#checked) lists what has and has not been checked.
 - No test contacts a map tile provider. The map viewer's optional online basemap is tested against stand-ins only.

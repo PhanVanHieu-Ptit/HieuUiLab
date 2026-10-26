@@ -34,7 +34,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: false,
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
+    // scripts/lib holds the pure rules of the deploy checks, tested the same way as src/docs.
+    include: ['src/**/*.test.{ts,tsx}', 'scripts/**/*.test.ts'],
     // Process CSS only for ?raw imports (token tests read globals.css as text).
     css: { include: [/\.css\?raw$/] },
   },

@@ -41,6 +41,10 @@ jobs:
       - run: pnpm registry:check
       - run: pnpm test
       - run: pnpm build
+      # The files the site needs exist, index.html loads only root-absolute files, no source maps, and
+      # no VITE_ setting other than the map settings, secret or credential is in the output. No
+      # VITE_ variable is set in this workflow, so the tests and the build stay offline.
+      - run: pnpm dist:check
 
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e

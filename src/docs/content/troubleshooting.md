@@ -54,6 +54,12 @@ The registry validator found an entry whose metadata no longer matches its sourc
 
 Browsers expose the clipboard only in secure contexts, so a copy button is hidden where it cannot work, for example on a page served over plain HTTP from a host other than `localhost`. The code beside it is still shown.
 
+## Deploying the site {#deploying}
+
+### A deployment fails or misbehaves {#deployment}
+
+The build, routing, environment, and map symptoms of a deployment, with their causes and fixes, are in [Deployment](/docs/deployment#troubleshooting).
+
 ## Writing the docs {#docs}
 
 ### `pnpm format:check` fails on a Markdown file {#format}

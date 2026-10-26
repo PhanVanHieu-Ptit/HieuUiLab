@@ -1,0 +1,86 @@
+name: Verify deployment
+
+# Asks a deployed site the questions the build cannot answer: whether the host sends a nested URL
+# to index.html, returns 404 (not index.html) for a missing script, sends the headers in
+# vercel.json, and serves the map worker and the registry files. `pnpm deploy:smoke` makes the HTTP
+# requests; `pnpm deploy:e2e` runs the browser tests that matter for a host against the same address.
+#
+# It runs by hand for any address (Actions > Verify deployment > Run workflow), and after Vercel
+# reports a successful Production deployment through the GitHub integration. Previews are not
+# checked automatically: Vercel's standard protection puts a login in front of them, and a red
+# mark on every pull request for something the author did not break is worse than a manual run.
+# For a protected preview, add the project's automation bypass secret as the repository secret
+# VERCEL_AUTOMATION_BYPASS_SECRET.
+#
+# This workflow has not run yet, because the site has not been deployed. Its first run is the first
+# test of it; see /docs/deployment.
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Address of the deployment, such as https://hieu-ui-lab.vercel.app'
+        required: true
+        type: string
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+      startsWith(github.event.deployment_status.environment, 'Production'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Passed through the environment, never written into a command line.
+      DEPLOY_URL: ${{ inputs.url || github.event.deployment_status.environment_url }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+    steps:
+      - name: Check the address
+        run: |
+          case "$DEPLOY_URL" in
+            https://*) echo "Verifying $DEPLOY_URL" ;;
+            *) echo "::error::The address must start with https:// (got '$DEPLOY_URL')"; exit 1 ;;
+          esac
+
+      # For a deployment, the commit that was deployed.
+      - uses: actions/checkout@v7
+
+      # Version comes from the packageManager field in package.json.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: HTTP checks
+        run: pnpm deploy:smoke "$DEPLOY_URL"
+
+      - run: pnpm exec playwright install --with-deps chromium
+
+      - name: Browser checks
+        run: pnpm deploy:e2e
+        env:
+          E2E_BASE_URL: ${{ env.DEPLOY_URL }}
+
+      # Links to other sites depend on servers this repository does not control: reported, never a
+      # reason to call the deployment broken.
+      - name: Links to other sites
+        continue-on-error: true
+        run: pnpm deploy:links
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+          retention-days: 7

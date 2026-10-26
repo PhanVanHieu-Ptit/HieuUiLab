@@ -97,7 +97,7 @@ MapLibre parses map data in a web worker. A bundled app cannot find that worker 
 
 MapLibre keeps one shared worker for the life of the page, so leaving the map and coming back reuses it. Removing the map releases its canvas, listeners, and graphics context.
 
-No content security policy is configured, and the site is not deployed. If you add a policy, MapLibre's documentation asks for `worker-src 'self'` and `img-src data: blob: 'self'`. An online basemap also needs `connect-src` for the style's host, and the hosts of the tiles and fonts that the style names.
+No content security policy is configured, and the site is not deployed; [Deployment](/docs/deployment) covers building for a host, setting these variables there, and checking that the worker is served. If you add a policy, MapLibre's documentation asks for `worker-src 'self'` and `img-src data: blob: 'self'`. An online basemap also needs `connect-src` for the style's host, and the hosts of the tiles and fonts that the style names.
 
 ## How it is tested {#testing}
 

@@ -236,9 +236,9 @@ export const profile: Profile = {
           anchor: 'export function validateDocs',
         },
         {
-          label: 'Where the README records that deployment is not set up',
+          label: 'Where the README records that the site is configured but not deployed',
           path: 'README.md',
-          anchor: 'Not set up',
+          anchor: 'Configured for Vercel, not deployed',
         },
       ],
       projects: ['hieu-ui-lab-platform'],
