@@ -17,6 +17,9 @@ blob-report
 playwright/.cache
 playwright/.auth
 
+# Vercel CLI link (project and organisation ids)
+.vercel
+
 # Env
 *.local
 .env

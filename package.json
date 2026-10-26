@@ -28,7 +28,12 @@
     "test:e2e": "playwright test",
     "test:a11y": "playwright test e2e/a11y.spec.ts",
     "perf:measure": "node scripts/perf-measure.ts",
-    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build"
+    "dist:check": "node scripts/check-dist.ts",
+    "deploy:serve": "node scripts/serve-dist.ts",
+    "deploy:smoke": "node scripts/smoke-deployment.ts",
+    "deploy:e2e": "playwright test e2e/routes.spec.ts e2e/smoke.spec.ts e2e/maplibre-viewer.spec.ts e2e/three-scene.spec.ts e2e/external-links.spec.ts",
+    "deploy:links": "node scripts/check-external-links.ts",
+    "check": "pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build && pnpm dist:check"
   },
   "dependencies": {
     "@fontsource-variable/ibm-plex-sans": "^5.3.0",
@@ -63,6 +68,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "^0.186.0",
+    "@vercel/routing-utils": "6.6.0",
     "@vitejs/plugin-react": "^6.1.2",
     "ajv": "^8.20.0",
     "eslint": "^9.39.5",

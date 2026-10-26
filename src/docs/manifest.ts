@@ -165,6 +165,24 @@ export const docGroups: readonly DocGroup[] = [
         load: () => import('./content/map-viewer.md?raw'),
       },
       {
+        id: 'deployment',
+        slug: 'deployment',
+        title: 'Deployment',
+        description:
+          'Build for production, host the site on Vercel, keep secrets out of the bundle, and check a deployment.',
+        keywords: [
+          'vercel',
+          'hosting',
+          'production',
+          'environment variables',
+          'secrets',
+          'rewrites',
+          'spa',
+          'ci',
+        ],
+        load: () => import('./content/deployment.md?raw'),
+      },
+      {
         id: 'block-composition',
         slug: 'block-composition',
         title: 'Block composition',

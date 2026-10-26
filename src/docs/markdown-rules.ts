@@ -16,6 +16,7 @@ export const ROOT_FILES = new Set([
   'CHANGELOG.md',
   'index.html',
   'vite.config.ts',
+  'vercel.json',
   'playwright.config.ts',
   'eslint.config.js',
   'tsconfig.json',

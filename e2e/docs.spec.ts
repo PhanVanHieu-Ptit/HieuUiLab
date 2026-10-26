@@ -16,6 +16,8 @@ const pages = [
   ['/docs/component-conventions/adding-a-component', 'Adding a component'],
   ['/docs/form-integration', 'Form integration'],
   ['/docs/data-table', 'DataTable usage'],
+  ['/docs/map-viewer', 'Map viewer and basemaps'],
+  ['/docs/deployment', 'Deployment'],
   ['/docs/block-composition', 'Block composition'],
   ['/docs/block-composition/page-blocks', 'Adding a page block'],
   ['/docs/block-composition/templates', 'Adding a template'],
