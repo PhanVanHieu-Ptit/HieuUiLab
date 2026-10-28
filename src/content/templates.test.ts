@@ -35,6 +35,29 @@ describe('template manifests', () => {
     }
   })
 
+  it.each(templates)(
+    '$slug lists every file of its own it imports, so it can be copied',
+    (template) => {
+      const listed = new Set([...template.files, ...template.mockData.map((item) => item.path)])
+      const wanted = new Set<string>()
+      for (const path of template.files) {
+        const source = readFile(path)
+        expect(source, path).toBeDefined()
+        for (const match of (source ?? '').matchAll(/from '@\/(registry|templates)\/([^']+)'/g)) {
+          const base = `src/${match[1] ?? ''}/${match[2] ?? ''}`
+          const resolved = [`${base}.ts`, `${base}.tsx`].find((candidate) => fileExists(candidate))
+          expect(resolved, `${path} imports ${match[0]}, which is not a file`).toBeDefined()
+          if (resolved !== undefined) wanted.add(resolved)
+        }
+      }
+      for (const path of wanted) {
+        expect(listed.has(path), `${template.slug} imports ${path}, which it does not list`).toBe(
+          true,
+        )
+      }
+    },
+  )
+
   it.each(templates)('$slug lists exactly the blocks its source imports', (template) => {
     const source = readFile(template.files[0])
     expect(source, template.files[0]).toBeDefined()

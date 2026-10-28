@@ -8,7 +8,10 @@ export interface ShellView<Id extends string> {
   id: Id
   label: string
   icon: ReactNode
-  /** A count or short marker beside the label, with the words a screen reader should hear. */
+  /**
+   * A count or short marker beside the label. `label` is what a screen reader hears for it and must
+   * start with `text` ("3 unread" for 3), because the button's name has to contain what is visible.
+   */
   badge?: { text: string; label: string }
 }
 
@@ -60,8 +63,10 @@ export function TemplateShell<Id extends string>({
                   variant={view.id === activeView ? 'secondary' : 'ghost'}
                   size="sm"
                   aria-current={view.id === activeView ? 'page' : undefined}
-                  // The name starts with the visible label and adds what the badge means.
-                  aria-label={view.badge ? `${view.label}, ${view.badge.label}` : undefined}
+                  // The visible text is the label and the badge's text ("Notifications 4"), and the name
+                  // has to contain it (WCAG 2.5.3, label in name). The badge's label starts with its
+                  // text ("4 unread"), so a comma between them would break that.
+                  aria-label={view.badge ? `${view.label} ${view.badge.label}` : undefined}
                   className="w-full justify-start"
                   onClick={() => {
                     onViewChange(view.id)
@@ -70,9 +75,14 @@ export function TemplateShell<Id extends string>({
                   {view.icon}
                   {view.label}
                   {view.badge ? (
-                    <Badge variant="primary" size="sm" className="ml-auto">
-                      {view.badge.text}
-                    </Badge>
+                    <>
+                      {/* A space between the label and the count: the button is a flex box, so it is
+                          not drawn, but without it the text reads "Notifications4" to a checker that
+                          joins the text nodes, and the name could not contain it. */}{' '}
+                      <Badge variant="primary" size="sm" className="ml-auto">
+                        {view.badge.text}
+                      </Badge>
+                    </>
                   ) : null}
                 </Button>
               </li>

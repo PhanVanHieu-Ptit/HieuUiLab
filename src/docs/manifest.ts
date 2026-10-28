@@ -256,6 +256,35 @@ export const docGroups: readonly DocGroup[] = [
       },
     ],
   },
+  {
+    id: 'release',
+    title: 'Release',
+    pages: [
+      {
+        id: 'release-readiness',
+        slug: 'release-readiness',
+        title: 'Release readiness',
+        description:
+          'What was verified for version 0.1.0, with the evidence, and the checklist for cutting it.',
+        load: () => import('./content/release-readiness.md?raw'),
+      },
+      {
+        id: 'known-limitations',
+        slug: 'known-limitations',
+        title: 'Known limitations',
+        description: 'What version 0.1.0 does not do or did not check, and what would settle it.',
+        load: () => import('./content/known-limitations.md?raw'),
+      },
+      {
+        id: 'reproducing-checks',
+        slug: 'reproducing-checks',
+        title: 'Reproduce the quality checks',
+        description:
+          'Every check, the command that runs it, what a pass shows, and what it does not.',
+        load: () => import('./content/reproducing-checks.md?raw'),
+      },
+    ],
+  },
 ]
 
 /** Old URLs that now live elsewhere. The router replaces them, so Back does not bounce. */

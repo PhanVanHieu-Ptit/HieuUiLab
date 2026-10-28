@@ -50,8 +50,10 @@ function withInlineCode(text: string) {
 /** Detail page for one registry entry, loaded by the route's `registryLoader`. */
 export function RegistryDetailPage() {
   const entry = useLoaderData<FullRegistryEntry>()
+  // Keyed by slug: moving from one entry to another through the sidebar reuses this route, and
+  // without a key the Playground and the code tab would keep the previous entry's state.
   return isImplemented(entry) ? (
-    <ImplementedDetail entry={entry} />
+    <ImplementedDetail key={entry.slug} entry={entry} />
   ) : (
     <PlannedDetail entry={entry} />
   )
@@ -164,11 +166,11 @@ function ImplementedDetail({ entry }: { entry: LoadedEntry }) {
           description="Entries are copied into your project, not installed from a package. Follow these steps in order."
         />
         <ol className="flex list-decimal flex-col gap-5 pl-5 marker:text-sm marker:text-muted-foreground">
-          {installation.requirements.length > 0 ? (
+          {plan.requirements.length > 0 ? (
             <li className="space-y-2 pl-1">
               <h3 className={subheading}>Set up the requirements</h3>
               <ul className={bulletList}>
-                {installation.requirements.map((id) => {
+                {plan.requirements.map((id) => {
                   const requirement = registryRequirements[id]
                   return (
                     <li key={id}>

@@ -39,5 +39,6 @@ When you write or change a component, check that:
 ## What is not covered {#limits}
 
 - Axe scans only the states that `e2e/a11y.spec.ts` lists, in Chromium. It reports violations of its rules, cannot decide some items, and does not show that a page is accessible. Lint checks static JSX only, and the contrast test checks the token pairs, not arbitrary content placed on them.
+- The border of a form control is faint. The `--input` token measures 1.39:1 against the page background in the light theme and 1.65:1 in the dark theme, and success criterion 1.4.11 (non-text contrast) asks for 3:1 where the border shows the control. Neither axe nor the contrast test checks it. The focus ring passes, so a focused control is clear. [Known limitations](/docs/known-limitations#accessibility) has the details.
 - Screen reader behavior is not tested beyond the roles, names, and states that the tests assert.
 - A combobox with an editable text field is not implemented: the registry's Combobox entry is planned, and Select is the available choice control.

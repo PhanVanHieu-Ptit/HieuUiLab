@@ -53,8 +53,24 @@ export function Button({
   const classes = cn(buttonVariants({ variant, size }), className)
 
   if (asChild) {
+    // The child is not a <button>, so `disabled` means nothing to it. State the same thing with
+    // ARIA, let `disabled-state` dim it, and cancel the click a keyboard can still send.
+    const inert = disabled === true || loading
     return (
-      <Slot.Root className={classes} {...props}>
+      <Slot.Root
+        className={classes}
+        aria-busy={loading || undefined}
+        aria-disabled={inert || undefined}
+        data-disabled={inert ? '' : undefined}
+        {...props}
+        onClick={
+          inert
+            ? (event) => {
+                event.preventDefault()
+              }
+            : props.onClick
+        }
+      >
         {children}
       </Slot.Root>
     )

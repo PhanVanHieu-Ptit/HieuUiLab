@@ -8,9 +8,16 @@ import { StatusBadge } from './status-badge'
 
 describe('StatusBadge', () => {
   it('writes the status out and hides the decorative dot', () => {
-    const { container } = render(<StatusBadge tone="danger">Failed</StatusBadge>)
+    const { container } = render(<StatusBadge tone="destructive">Failed</StatusBadge>)
     expect(screen.getByText('Failed')).toHaveClass('text-destructive')
     expect(container.querySelector('[aria-hidden="true"]')).not.toBeNull()
+  })
+
+  it('names its failing tone like Button, Badge, and Alert do', () => {
+    // `danger` was renamed to `destructive` before 0.1.0, so that one word means one thing.
+    // @ts-expect-error `danger` is not a tone.
+    const { container } = render(<StatusBadge tone="danger">Failed</StatusBadge>)
+    expect(container).toHaveTextContent('Failed')
   })
 })
 

@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react'
+import { act, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
@@ -140,6 +140,24 @@ describe('RegistryDetailPage', () => {
     ])
   })
 
+  it('lists the setup that its registry dependencies need, not only its own', async () => {
+    // Error state declares only the design tokens. The cn helper and the state utilities come in
+    // through Button and Empty state, and a reader who skips those entries needs them too.
+    await renderRoute('/blocks/error-state')
+
+    const installation = screen.getByRole('region', { name: 'Installation' })
+    const step = within(installation)
+      .getByRole('heading', { name: 'Set up the requirements' })
+      .closest('li')
+    expect(step).not.toBeNull()
+    if (!step) return
+    expect(
+      within(step)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(['cn helper', 'Design tokens', 'State utilities'])
+  })
+
   it('redirects an entry requested under another category to its own page', async () => {
     const { router } = await renderRoute('/components/resource-list')
     expect(router.state.location.pathname).toBe('/blocks/resource-list')
@@ -185,6 +203,31 @@ describe('RegistryDetailPage playground', () => {
     await user.click(within(playground()).getByRole('tab', { name: 'Code' }))
     expect(within(playground()).getByRole('tabpanel', { name: 'Code' })).toHaveTextContent(
       '<Button variant="destructive" loading>Publish</Button>',
+    )
+  })
+
+  it('starts over with the next entry’s defaults when you move to another entry', async () => {
+    const user = userEvent.setup()
+    const { router } = await renderRoute('/components/button')
+    await user.selectOptions(within(playground()).getByRole('combobox', { name: 'Variant' }), [
+      'destructive',
+    ])
+    expect(previewed('button')).toHaveTextContent('Save changes')
+
+    // The sidebar link keeps the same route, so the page component is reused for the new entry.
+    await act(() => router.navigate('/components/badge'))
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { level: 1, name: 'Badge' })).toBeInTheDocument()
+    })
+
+    const preview = screen.getByRole('group', { name: 'Badge preview' })
+    expect(preview).toHaveTextContent('Beta')
+    expect(preview).not.toHaveTextContent('Save changes')
+    expect(within(playground()).getByRole('combobox', { name: 'Variant' })).toHaveValue('neutral')
+    expect(within(playground()).queryByRole('button', { name: 'Reset' })).toBeNull()
+    await user.click(within(playground()).getByRole('tab', { name: 'Code' }))
+    expect(within(playground()).getByRole('tabpanel', { name: 'Code' })).toHaveTextContent(
+      '<Badge>Beta</Badge>',
     )
   })
 

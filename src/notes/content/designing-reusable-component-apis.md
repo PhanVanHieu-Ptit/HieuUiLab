@@ -35,14 +35,30 @@ export interface ButtonProps extends ComponentProps<'button'>, VariantProps<type
 }
 ```
 
-Its body has two branches. In the first, `asChild` renders a `Slot.Root` and passes the class names and the remaining props to the child. In the second, the component renders its own `button` with a safe default `type`, the loading state, and the same spread.
+Its body has two branches. In the first, `asChild` renders a `Slot.Root` and passes the class names and the remaining props to the child. The child is not a `button`, so `disabled` and `loading` cannot be set on it as attributes; the branch states them with ARIA and cancels the click instead. In the second, the component renders its own `button` with a safe default `type`, the loading state, and the same spread.
 
 ```tsx title="src/components/ui/button.tsx (the two branches)"
 const classes = cn(buttonVariants({ variant, size }), className)
 
 if (asChild) {
+  // The child is not a <button>, so `disabled` means nothing to it. State the same thing with
+  // ARIA, let `disabled-state` dim it, and cancel the click a keyboard can still send.
+  const inert = disabled === true || loading
   return (
-    <Slot.Root className={classes} {...props}>
+    <Slot.Root
+      className={classes}
+      aria-busy={loading || undefined}
+      aria-disabled={inert || undefined}
+      data-disabled={inert ? '' : undefined}
+      {...props}
+      onClick={
+        inert
+          ? (event) => {
+              event.preventDefault()
+            }
+          : props.onClick
+      }
+    >
       {children}
     </Slot.Root>
   )

@@ -114,16 +114,16 @@ A passing build shows that the files exist. It does not show that a host serves 
 The commands:
 
 ```bash title="HTTP checks"
-pnpm deploy:smoke https://your-deployment.vercel.app
+pnpm deploy:smoke https://<your-deployment>.vercel.app
 ```
 
 ```bash title="HTTP checks on a protected preview"
-VERCEL_AUTOMATION_BYPASS_SECRET=… pnpm deploy:smoke https://your-preview.vercel.app
+VERCEL_AUTOMATION_BYPASS_SECRET=… pnpm deploy:smoke https://<your-preview>.vercel.app
 ```
 
 ```bash title="browser checks"
 pnpm exec playwright install chromium
-E2E_BASE_URL=https://your-deployment.vercel.app pnpm deploy:e2e
+E2E_BASE_URL=https://<your-deployment>.vercel.app pnpm deploy:e2e
 ```
 
 The bypass secret is sent to that address only and is never printed. Set the same variable for `pnpm deploy:e2e` on a protected preview.

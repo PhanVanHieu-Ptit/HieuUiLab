@@ -136,6 +136,18 @@ describe('RegistryIndexPage', () => {
     expect(cardTitles()).toHaveLength(components.length)
   })
 
+  it('keeps the searchbox pointing at an element when nothing matches', async () => {
+    // aria-controls must name an element that exists (aria-valid-attr-value); with no results the
+    // empty state is what the search controls.
+    await renderRoute('/components?q=nothing-matches-this')
+    const search = screen.getByRole('searchbox', { name: 'Search components' })
+    const controlled = search.getAttribute('aria-controls')
+    expect(controlled).not.toBeNull()
+    const target = document.getElementById(controlled ?? '')
+    expect(target).not.toBeNull()
+    expect(target).toHaveTextContent('No components match these filters')
+  })
+
   it('suggests close names for a mistyped search', async () => {
     await renderRoute('/components?q=buton')
     const suggestions = screen.getByRole('navigation', { name: 'Search suggestions' })

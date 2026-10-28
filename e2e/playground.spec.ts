@@ -344,3 +344,25 @@ test.describe('playground', () => {
     await expect(page).toHaveURL(/example=nope$/)
   })
 })
+
+test.describe('the playground on an entry page', () => {
+  test('starts over with the next entry’s defaults when a sidebar link is followed', async ({
+    page,
+  }) => {
+    await page.goto('/components/button')
+    const form = page.getByRole('form', { name: 'Playground controls' })
+    await form.getByRole('combobox', { name: 'Variant' }).selectOption('destructive')
+    await expect(page.getByRole('group', { name: 'Button preview' })).toHaveText('Save changes')
+
+    // The sidebar keeps the same route, so the page component is reused for the next entry.
+    await page
+      .getByRole('navigation', { name: 'Registry' })
+      .getByRole('link', { name: 'Badge', exact: true })
+      .click()
+    await expect(page.getByRole('heading', { level: 1, name: 'Badge' })).toBeVisible()
+
+    await expect(form.getByRole('combobox', { name: 'Variant' })).toHaveValue('neutral')
+    await expect(page.getByRole('group', { name: 'Badge preview' })).toHaveText('Beta')
+    await expect(form.getByRole('button', { name: 'Reset' })).toHaveCount(0)
+  })
+})

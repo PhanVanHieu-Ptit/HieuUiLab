@@ -131,7 +131,7 @@ export const periods: Readonly<Record<string, DashboardPeriod>> = {
         id: 'search',
         name: 'Search relevance',
         figure: '96 tasks',
-        status: { label: 'Blocked', tone: 'danger' },
+        status: { label: 'Blocked', tone: 'destructive' },
       },
       {
         id: 'docs',

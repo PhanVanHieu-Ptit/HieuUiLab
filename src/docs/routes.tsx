@@ -9,7 +9,7 @@ import { DOCS_BASE, docGroups, docRedirects, type DocEntry, type DocGroup } from
 // The page component and the Markdown parser behind it load when a docs route matches.
 const docsRoutePage = () => import('./docs-route-page')
 
-const lazyPage = () => ({ Component: async () => (await docsRoutePage()).DocsRoutePage })
+const lazyPage = () => async () => ({ Component: (await docsRoutePage()).DocsRoutePage })
 
 function pageHandle(entry: DocEntry, parents: readonly Crumb[] = []): RouteHandle {
   return {
@@ -47,7 +47,7 @@ function pageRoute(entry: DocEntry, group: DocGroup | undefined): RouteObject {
  * The children of the `docs` route, generated from the manifest: one route per page, a redirect
  * per moved URL, and a catch-all that turns any other path under `/docs` into a 404 inside the
  * docs layout (sidebar kept) with "did you mean" links. A function, not a constant, for the
- * reason given on `createRoutes`: React Router mutates each route's `lazy` object.
+ * reason given on `createRoutes`: React Router replaces each route's `lazy` in place.
  */
 export function createDocsRoutes(): RouteObject[] {
   return [

@@ -2,6 +2,16 @@
   "name": "hieu-ui-lab",
   "private": true,
   "version": "0.1.0",
+  "description": "A React, TypeScript, and Tailwind CSS component lab: a registry of copy-and-own components and page blocks, with documentation, a playground, and example apps.",
+  "license": "MIT",
+  "author": "Hieu (https://github.com/PhanVanHieu-Ptit)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PhanVanHieu-Ptit/HieuUiLab.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PhanVanHieu-Ptit/HieuUiLab/issues"
+  },
   "type": "module",
   "packageManager": "pnpm@11.15.1",
   "engines": {

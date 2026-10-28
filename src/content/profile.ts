@@ -314,13 +314,13 @@ export const profile: Profile = {
     {
       id: 'performance',
       title: 'Measuring frontend performance',
-      why: 'The repository records that the registry source is still in the main bundle, but it has no way to measure what that costs.',
+      why: 'The repository can measure a production build in a lab, but I have not yet worked out what those numbers say about real visitors.',
       today:
-        'There is no bundle analyzer or measurement code, so this site makes no performance claim.',
+        'pnpm perf:measure runs a production build in headless Chromium on one machine and does not commit its results. There is no field data, so this site makes no performance claim.',
       evidence: {
-        label: 'The note listing the missing measurement',
+        label: 'The note saying the measurements are lab runs on one machine',
         path: 'src/notes/README.md',
-        anchor: 'no bundle analyzer or measurement code',
+        anchor: 'makes lab runs on one machine',
       },
     },
   ],

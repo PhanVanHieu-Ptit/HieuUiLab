@@ -119,9 +119,10 @@ export function Playground({ entry, playground }: PlaygroundProps) {
               aria-label={`${playground.part} preview`}
               className="flex min-h-40 items-center justify-center-safe overflow-x-auto rounded-lg border bg-surface p-6 text-surface-foreground sm:p-10"
             >
-              <DemoErrorBoundary>
-                {/* Remount on change, so initial-state props such as defaultChecked apply. */}
-                <Component key={JSON.stringify(props)} {...Object.fromEntries(props)} />
+              {/* Remount on change, so initial-state props such as defaultChecked apply, and a
+                  combination of props that throws is left behind when a control changes. */}
+              <DemoErrorBoundary key={JSON.stringify(props)}>
+                <Component {...Object.fromEntries(props)} />
               </DemoErrorBoundary>
             </div>
           </TabsContent>

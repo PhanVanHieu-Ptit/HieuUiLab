@@ -35,7 +35,7 @@ export function RegistryExampleView({
   missing?: ReactNode
 }) {
   return (
-    <DemoErrorBoundary>
+    <DemoErrorBoundary key={`${entry.slug}:${exampleId}`}>
       <Suspense fallback={<div className="min-h-40" aria-hidden="true" />}>
         <LoadedExample entry={entry} exampleId={exampleId} missing={missing} />
       </Suspense>

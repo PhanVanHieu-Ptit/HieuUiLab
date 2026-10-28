@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import { DocsPage } from './docs-page'
-import { findDocById, type DocNode } from './manifest'
+import { docNodes, findDocById, type DocNode } from './manifest'
 
 function node(id: string): DocNode {
   const found = findDocById(id)
@@ -104,7 +104,11 @@ describe('DocsPage', () => {
     expect(within(pager).getAllByRole('link')).toHaveLength(1)
     expect(within(pager).getByRole('link')).toHaveAccessibleName(/^Next/)
     document.body.replaceChildren()
-    page('changelog', '# Changelog\n\n## Unreleased\n\n- A change.\n')
+    // Whatever page the manifest ends with: the test is about the end of the list, not one page.
+    const last = docNodes.at(-1)
+    expect(last).toBeDefined()
+    if (!last) return
+    page(last.entry.id, `# ${last.entry.title}\n\n## A\n\nText.\n`)
     pager = screen.getByRole('navigation', { name: 'Docs pager' })
     expect(within(pager).getAllByRole('link')).toHaveLength(1)
     expect(within(pager).getByRole('link')).toHaveAccessibleName(/^Previous/)

@@ -142,7 +142,7 @@ const healthLabel: Record<ServiceHealth, string> = {
 const healthTone: Record<ServiceHealth, StatusTone> = {
   operational: 'success',
   degraded: 'warning',
-  outage: 'danger',
+  outage: 'destructive',
   maintenance: 'info',
 }
 const sparklineTone: Record<ServiceHealth, SparklineTone> = {
@@ -159,7 +159,7 @@ const severityLabel: Record<IncidentSeverity, string> = {
 const severityTone: Record<IncidentSeverity, StatusTone> = {
   minor: 'info',
   major: 'warning',
-  critical: 'danger',
+  critical: 'destructive',
 }
 const incidentStatusLabel: Record<IncidentStatus, string> = {
   investigating: 'Investigating',

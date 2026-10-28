@@ -108,7 +108,8 @@ export function TemplateDetailPage() {
           anchorLabel="Live preview"
           description={template.scenario}
         />
-        <DemoErrorBoundary>
+        {/* Keyed by template: a failure in one preview must not follow the visitor to the next. */}
+        <DemoErrorBoundary key={template.slug}>
           <Suspense fallback={<PreviewFallback />}>
             <TemplatePreview template={template} />
           </Suspense>
@@ -195,7 +196,7 @@ export function TemplateDetailPage() {
           id="files"
           title="Files and example data"
           anchorLabel="Files and example data"
-          description="To use a template, copy its component and the shared shell, then add each block it uses from the block’s own page. Replace the example data with your own."
+          description="To use a template, copy the source files listed here, then add each block and component its source imports from that entry’s own page. Replace the example data with your own."
         />
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="flex flex-col gap-2">

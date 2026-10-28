@@ -1,4 +1,4 @@
-import { registryRequirements, type PackageName } from './packages'
+import { registryRequirements, type PackageName, type RequirementId } from './packages'
 import { isImplemented, type ImplementedEntry, type RegistryEntry } from './types'
 
 export interface InstallPlan {
@@ -6,6 +6,12 @@ export interface InstallPlan {
   entries: ImplementedEntry[]
   /** Every npm package needed by the entry, its registry dependencies, and their requirements. */
   packages: PackageName[]
+  /**
+   * Every project setup step the entry and its registry dependencies expect, in the order
+   * `registryRequirements` lists them. An entry that only reaches the cn helper through Button
+   * still needs it.
+   */
+  requirements: RequirementId[]
 }
 
 /**
@@ -32,12 +38,17 @@ export function resolveInstallPlan(
   visit(entry)
 
   const packages = new Set<PackageName>()
+  const needed = new Set<RequirementId>()
   for (const item of [...ordered, entry]) {
     for (const name of item.installation.packages) packages.add(name)
     for (const id of item.installation.requirements) {
+      needed.add(id)
       for (const name of registryRequirements[id].packages) packages.add(name)
     }
   }
+  const requirements = (Object.keys(registryRequirements) as RequirementId[]).filter((id) =>
+    needed.has(id),
+  )
 
-  return { entries: ordered, packages: [...packages].sort() }
+  return { entries: ordered, packages: [...packages].sort(), requirements }
 }

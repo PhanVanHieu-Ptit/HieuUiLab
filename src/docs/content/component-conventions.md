@@ -5,7 +5,7 @@ Every entry in `src/components/ui/` and `src/components/blocks/` is written the 
 ## Files and exports {#files}
 
 - **One flat file per entry**, at `src/components/ui/<slug>.tsx` for a component or `src/components/blocks/<slug>.tsx` for a block. Tests sit next to it as `<name>.test.tsx`; some related components share one test file, such as `inputs.test.tsx`.
-- **Named exports only**, and no barrel `index.ts` files. Props interfaces are exported beside their component, for example `ButtonProps`.
+- **Named exports only**, and no barrel `index.ts` files. A component whose props go beyond the native element's exports its props interface beside it, for example `ButtonProps`. One that takes only the native element's or a Radix part's props, such as `Kbd`, `Skeleton`, or the parts of `Table`, exports none, and its props are `ComponentProps<'kbd'>` and so on.
 - **Compound components** are separate exported functions with a shared prefix: `Card`, `CardHeader`, `CardContent`; `Dialog`, `DialogContent`, `DialogTitle`. A part that needs its parent throws a clear error when used outside it, as the parts of `Field` do.
 - **Radix primitives** come from the single `radix-ui` package. A simple primitive is re-exported (`Select` is `SelectPrimitive.Root`), and a part that needs styling is wrapped in a function.
 
@@ -14,7 +14,7 @@ Every entry in `src/components/ui/` and `src/components/blocks/` is written the 
 - Props extend the native element's: `ComponentProps<'button'>`, or `ComponentProps<typeof SomePrimitive.Part>` for a Radix part. In React 19, `ref` is an ordinary prop, so entries do not use `forwardRef`.
 - **Variants** use `class-variance-authority`. The component's props extend `VariantProps<typeof variants>`, and the variants function is exported when callers need it (`buttonVariants`, `badgeVariants`). Button, Input, and Select's trigger share one `sm`, `md`, `lg` size scale.
 - **`asChild`** renders the single child element in place of the component's own, merging props onto it with `Slot.Root` from `radix-ui`. Button, Card, and Breadcrumb links take it as a prop; `FieldControl` in Field uses the same `Slot` to merge ids and ARIA attributes onto its one child.
-- **Safe defaults.** A button's `type` is `"button"` unless you set it, so it never submits a form by accident, and `loading` disables it and sets `aria-busy`.
+- **Safe defaults.** A button's `type` is `"button"` unless you set it, so it never submits a form by accident, and `loading` disables it and sets `aria-busy`. With `asChild` the child is not a button, so `loading` and `disabled` become `aria-busy`, `aria-disabled`, and `data-disabled` on it, and its click is cancelled.
 
 ## Styling {#styling}
 

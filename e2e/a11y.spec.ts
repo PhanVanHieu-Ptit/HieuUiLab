@@ -157,6 +157,68 @@ const states: State[] = [
       await expect(page.getByRole('option').first()).toBeVisible()
     },
   },
+  // Pages and states that a visitor reaches off the critical flows. They were not scanned before the
+  // release audit; each is a page of its own, so a fault here is a fault the visitor can land on.
+  ...[
+    ['the about page', '/about'],
+    ['the blocks catalog', '/blocks'],
+    ['the templates index', '/templates'],
+    ['the projects index', '/projects'],
+    ['a project page', '/projects/contrast-tested-design-system'],
+    ['the notes index', '/notes'],
+    ['an article', '/notes/theme-without-flash'],
+    ['the labs index', '/labs'],
+    ['the maps category', '/labs/maps'],
+    ['the 3D category', '/labs/3d'],
+    ['a documentation page with tables', '/docs/shadcn-registry'],
+    ['a planned component page', '/components/combobox'],
+  ].map(([name, path]): State => ({
+    name: name ?? path ?? 'a page',
+    prepare: (page, theme) => open(page, path ?? '/', theme),
+  })),
+  // The three templates share a shell, and each has its own badge on a view button.
+  ...[
+    ['the admin dashboard template', 'admin-dashboard'],
+    ['the operations monitoring template', 'operations-monitoring'],
+    ['the data management workspace template', 'data-management-workspace'],
+  ].map(([name, slug]): State => ({
+    name: name ?? 'a template',
+    async prepare(page, theme) {
+      await open(page, `/templates/${slug ?? ''}`, theme)
+      await expect(page.getByRole('heading', { name: 'Live preview' })).toBeVisible()
+      await expect(page.getByText('This demo couldn’t load')).toHaveCount(0)
+      // The template's own navigation is there once its chunk has loaded.
+      await expect(page.getByRole('navigation', { name: /sections$/i }).first()).toBeVisible()
+    },
+  })),
+  {
+    name: 'the catalog with no results',
+    async prepare(page, theme) {
+      await open(page, '/components?q=zzzzqx', theme)
+      await expect(page.getByText(/no components/i).first()).toBeVisible()
+    },
+  },
+  {
+    name: 'the not-found page',
+    async prepare(page, theme) {
+      await open(page, '/no-such-page', theme)
+      await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible()
+    },
+  },
+  {
+    name: 'the error page, after a page script cannot be loaded',
+    async prepare(page, theme) {
+      await open(page, '/', theme)
+      await page.route('**/assets/about-page-*.js', (route) => route.abort('failed'))
+      await page
+        .getByRole('navigation', { name: 'Main' })
+        .getByRole('link', { name: 'About' })
+        .click()
+      await expect(
+        page.getByRole('heading', { level: 1, name: 'Something went wrong' }),
+      ).toBeVisible()
+    },
+  },
   {
     name: 'a dialog on a phone screen',
     viewport: phone,

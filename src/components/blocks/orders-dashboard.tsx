@@ -62,7 +62,7 @@ const statusTones: Record<OrderStatus, StatusTone> = {
   processing: 'info',
   shipped: 'neutral',
   delivered: 'success',
-  cancelled: 'danger',
+  cancelled: 'destructive',
 }
 
 const channelLabels: Record<OrderChannel, string> = {

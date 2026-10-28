@@ -120,7 +120,7 @@ const deployments: readonly Deployment[] = [
   },
 ]
 
-const statusTone = { live: 'success', building: 'info', failed: 'danger' } as const
+const statusTone = { live: 'success', building: 'info', failed: 'destructive' } as const
 const statusLabel = { live: 'Live', building: 'Building', failed: 'Failed' }
 const finished = new Intl.DateTimeFormat('en-US', {
   dateStyle: 'medium',

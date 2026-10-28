@@ -51,7 +51,7 @@ describe('OperationsMonitoringTemplate', () => {
     const user = userEvent.setup()
     render(<OperationsMonitoringTemplate />)
     const button = () => within(nav()).getByRole('button', { name: /^Alerts/ })
-    expect(button()).toHaveAccessibleName(`Alerts, ${String(open.length)} unread`)
+    expect(button()).toHaveAccessibleName(`Alerts ${String(open.length)} unread`)
 
     await goTo(user, /^Alerts/)
     expect(screen.getByRole('heading', { level: 2, name: 'Alerts' })).toBeVisible()
@@ -62,7 +62,7 @@ describe('OperationsMonitoringTemplate', () => {
     const first = open[0]
     if (!first) throw new Error('The example data has no open incident.')
     await user.click(screen.getByRole('button', { name: `Mark as read: ${first.title}` }))
-    expect(button()).toHaveAccessibleName(`Alerts, ${String(open.length - 1)} unread`)
+    expect(button()).toHaveAccessibleName(`Alerts ${String(open.length - 1)} unread`)
 
     await user.click(screen.getByRole('button', { name: 'Mark all as read' }))
     expect(button()).toHaveAccessibleName('Alerts')

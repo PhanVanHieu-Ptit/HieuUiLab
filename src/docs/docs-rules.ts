@@ -307,36 +307,98 @@ function validateTable(
   }
 }
 
+/** `0.1.0`, or `0.1.0 - 2026-10-27` once it has been tagged. */
+const VERSION_SECTION = /^(\d+)\.(\d+)\.(\d+)(?: - (\d{4}-\d{2}-\d{2}))?$/
+
+/** A real calendar date: Date.parse accepts 2026-02-30 and rolls it over, so compare the round trip. */
+function isRealDate(value: string): boolean {
+  return (
+    ISO_DATE.test(value) &&
+    !Number.isNaN(Date.parse(value)) &&
+    new Date(value).toISOString().startsWith(value)
+  )
+}
+
+/** Negative when `a` is the older version. */
+function compareVersions(a: readonly number[], b: readonly number[]): number {
+  for (let index = 0; index < 3; index += 1) {
+    const difference = (a[index] ?? 0) - (b[index] ?? 0)
+    if (difference !== 0) return difference
+  }
+  return 0
+}
+
+/**
+ * The changelog is `Unreleased`, then the versions that were prepared or tagged (`0.1.0`, or
+ * `0.1.0 - 2026-10-27` once it has a tag), then the days on which pull requests merged. Each is
+ * newest first. A version without a date has not been tagged, and only the newest may be that.
+ * `Unreleased` may say "Nothing yet." right after a release; every other section lists changes.
+ */
 function validateChangelog(page: Page, report: Report): void {
   const id = page.node.entry.id
-  const sections = page.doc.blocks.reduce<{ title: string; hasList: boolean }[]>((all, block) => {
-    if (block.type === 'heading' && block.depth === 2)
-      all.push({ title: block.text, hasList: false })
-    else if (block.type === 'list') {
-      const last = all.at(-1)
-      if (last) last.hasList = true
-    }
-    return all
-  }, [])
+  const sections = page.doc.blocks.reduce<{ title: string; hasList: boolean; text: string[] }[]>(
+    (all, block) => {
+      if (block.type === 'heading' && block.depth === 2)
+        all.push({ title: block.text, hasList: false, text: [] })
+      else if (block.type === 'list') {
+        const last = all.at(-1)
+        if (last) last.hasList = true
+      } else if (block.type === 'paragraph') {
+        all.at(-1)?.text.push(plainText(block.children).trim())
+      }
+      return all
+    },
+    [],
+  )
   if (sections[0]?.title !== 'Unreleased') report(id, 'the first ## section must be "Unreleased"')
-  let previous: string | undefined
+
+  let previousVersion: number[] | undefined
+  let previousVersionTitle = ''
+  let previousDay: string | undefined
+  const taggedOn: string[] = []
   for (const section of sections.slice(1)) {
-    // Date.parse accepts 2026-02-30 and rolls it over, so compare the round trip too.
-    const valid =
-      ISO_DATE.test(section.title) &&
-      !Number.isNaN(Date.parse(section.title)) &&
-      new Date(section.title).toISOString().startsWith(section.title)
-    if (!valid) {
+    const version = VERSION_SECTION.exec(section.title)
+    if (version) {
+      const numbers = [Number(version[1]), Number(version[2]), Number(version[3])]
+      const tagged = version[4]
+      if (previousDay !== undefined) {
+        report(id, `version ${section.title} must come before the dated sections`)
+      } else if (previousVersion !== undefined && compareVersions(numbers, previousVersion) >= 0) {
+        report(
+          id,
+          `version ${section.title} must come before ${previousVersionTitle}; newest first`,
+        )
+      } else if (previousVersion !== undefined && !previousVersionTitle.includes(' - ')) {
+        report(id, `${previousVersionTitle} has no date, so it must be the newest version`)
+      }
+      if (tagged !== undefined && !isRealDate(tagged)) {
+        report(id, `section "${section.title}" must end in a real date like 0.1.0 - 2026-10-27`)
+      }
+      previousVersion = numbers
+      previousVersionTitle = section.title
+      if (tagged !== undefined) taggedOn.push(tagged)
+      continue
+    }
+    if (!isRealDate(section.title)) {
       report(id, `section "${section.title}" must be a date like 2026-10-16`)
       continue
     }
-    if (previous !== undefined && section.title >= previous) {
-      report(id, `section ${section.title} must come before ${previous}; newest first`)
+    if (previousDay !== undefined && section.title >= previousDay) {
+      report(id, `section ${section.title} must come before ${previousDay}; newest first`)
     }
-    previous = section.title
+    previousDay = section.title
   }
-  for (const section of sections) {
-    if (!section.hasList) report(id, `section "${section.title}" lists no changes`)
+  // A release is cut after the pull requests it holds, and may be cut the day the last one merged.
+  const newestDay = sections.find((section) => isRealDate(section.title))?.title
+  for (const tagged of taggedOn) {
+    if (newestDay !== undefined && tagged < newestDay) {
+      report(id, `a version dated ${tagged} is older than the section ${newestDay} below it`)
+    }
+  }
+  for (const [index, section] of sections.entries()) {
+    const nothingYet =
+      index === 0 && section.text.length === 1 && section.text[0] === 'Nothing yet.'
+    if (!section.hasList && !nothingYet) report(id, `section "${section.title}" lists no changes`)
   }
 }
 
