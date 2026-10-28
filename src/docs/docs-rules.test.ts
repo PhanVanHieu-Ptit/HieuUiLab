@@ -562,8 +562,70 @@ describe('the changelog', () => {
   })
 
   it('wants changes under every section', () => {
-    expect(changelog('## Unreleased\n\nNothing yet.\n')).toContain(
+    expect(changelog('## Unreleased\n\nA sentence.\n')).toContain(
       'section "Unreleased" lists no changes',
     )
+    expect(changelog(`## Unreleased\n${entry}\n## 2026-10-16\n\nA sentence.\n`)).toContain(
+      'section "2026-10-16" lists no changes',
+    )
+  })
+
+  it('lets Unreleased say "Nothing yet." and no other section', () => {
+    expect(changelog('## Unreleased\n\nNothing yet.\n')).toEqual([])
+    expect(changelog(`## Unreleased\n\nNothing yet.\n\n## 2026-10-16\n${entry}`)).toEqual([])
+    expect(changelog(`## Unreleased\n${entry}\n## 2026-10-16\n\nNothing yet.\n`)).toContain(
+      'section "2026-10-16" lists no changes',
+    )
+  })
+
+  describe('versions', () => {
+    it('accepts a version between Unreleased and the dates, tagged or not', () => {
+      expect(
+        changelog(`## Unreleased\n${entry}\n## 0.1.0\n${entry}\n## 2026-10-16\n${entry}`),
+      ).toEqual([])
+      expect(
+        changelog(
+          `## Unreleased\n${entry}\n## 0.1.0 - 2026-10-27\n${entry}\n## 2026-10-16\n${entry}`,
+        ),
+      ).toEqual([])
+      // Tagged the day the last pull request merged.
+      expect(
+        changelog(
+          `## Unreleased\n${entry}\n## 0.1.0 - 2026-10-16\n${entry}\n## 2026-10-16\n${entry}`,
+        ),
+      ).toEqual([])
+    })
+
+    it('wants versions newest first, with only the newest left untagged', () => {
+      expect(
+        changelog(`## Unreleased\n${entry}\n## 0.1.0 - 2026-10-20\n${entry}\n## 0.2.0\n${entry}`),
+      ).toContain('version 0.2.0 must come before 0.1.0 - 2026-10-20; newest first')
+      expect(
+        changelog(`## Unreleased\n${entry}\n## 0.1.0\n${entry}\n## 0.0.9 - 2026-10-01\n${entry}`),
+      ).toContain('0.1.0 has no date, so it must be the newest version')
+      expect(
+        changelog(`## Unreleased\n${entry}\n## 0.2.0\n${entry}\n## 0.1.0\n${entry}`),
+      ).toContain('0.2.0 has no date, so it must be the newest version')
+    })
+
+    it('wants versions above the dated sections and tag dates that are real and not too old', () => {
+      expect(
+        changelog(`## Unreleased\n${entry}\n## 2026-10-16\n${entry}\n## 0.1.0\n${entry}`),
+      ).toContain('version 0.1.0 must come before the dated sections')
+      expect(changelog(`## Unreleased\n${entry}\n## 0.1.0 - 2026-02-30\n${entry}`)).toContain(
+        'section "0.1.0 - 2026-02-30" must end in a real date like 0.1.0 - 2026-10-27',
+      )
+      expect(
+        changelog(
+          `## Unreleased\n${entry}\n## 0.1.0 - 2026-10-01\n${entry}\n## 2026-10-16\n${entry}`,
+        ),
+      ).toContain('a version dated 2026-10-01 is older than the section 2026-10-16 below it')
+    })
+
+    it('does not take a loose number for a version', () => {
+      expect(changelog(`## Unreleased\n${entry}\n## v0.1\n${entry}`)).toContain(
+        'section "v0.1" must be a date like 2026-10-16',
+      )
+    })
   })
 })

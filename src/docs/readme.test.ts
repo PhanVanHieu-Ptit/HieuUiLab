@@ -47,6 +47,24 @@ describe('README.md', () => {
   })
 })
 
+describe('README.md scripts table', () => {
+  it('lists every script in package.json, and only scripts that exist', () => {
+    const readme = readFile('README.md') ?? ''
+    const manifest = JSON.parse(readFile('package.json') ?? '{}') as {
+      scripts?: Record<string, string>
+    }
+    const scripts = Object.keys(manifest.scripts ?? {})
+    const documented = [...readme.matchAll(/^\| `pnpm ([\w:-]+)(?: [^`]*)?`\s+\|/gm)].map(
+      (match) => match[1] ?? '',
+    )
+
+    expect(scripts.length).toBeGreaterThan(20)
+    // perf:measure was added in a pull request and left out of the table without any test noticing.
+    expect(scripts.filter((script) => !documented.includes(script))).toEqual([])
+    expect(documented.filter((script) => !scripts.includes(script))).toEqual([])
+  })
+})
+
 describe('validateReadme', () => {
   const ctx: ReadmeContext = {
     pathExists: (path) => ['src/docs', 'src/docs/manifest.ts', 'package.json'].includes(path),

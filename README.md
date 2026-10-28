@@ -30,7 +30,6 @@ copyable source, props documentation, and tests.
 | Registry entry `Combobox`                                                                                                                                                                                                                                                                                                                                                                         | Planned — its page says so; nothing built                                                                                                                                       |
 | Engineering notes at `/notes`: Markdown articles with tags, detail pages, and related articles, checked against the repository                                                                                                                                                                                                                                                                    | Implemented, unit + end-to-end tested; validated by `pnpm notes:check`                                                                                                          |
 | Case studies and the project showcase                                                                                                                                                                                                                                                                                                                                                             | Typed local data in `src/content/`                                                                                                                                              |
-| MapLibre                                                                                                                                                                                                                                                                                                                                                                                          | Planned — not implemented                                                                                                                                                       |
 | CI (GitHub Actions)                                                                                                                                                                                                                                                                                                                                                                               | Implemented: runs lint, format check, typecheck, unit tests, build, a check of the build output, and e2e on pushes to `main` and on pull requests                               |
 | Deployment                                                                                                                                                                                                                                                                                                                                                                                        | Configured for Vercel, not deployed: `vercel.json`, a build-output check, and checks for a live address exist, but no deployment has been made or verified (`/docs/deployment`) |
 
@@ -97,35 +96,41 @@ The documentation is Markdown in `src/docs/content/`, rendered at `/docs` and li
 the Changelog page. To add or change a page, see `src/docs/README.md`; `pnpm docs:check` validates the
 result.
 
+The release pages are under Release in the docs: Release readiness (`src/docs/content/release-readiness.md`:
+what was verified for 0.1.0, and the release checklist), Known limitations
+(`src/docs/content/known-limitations.md`), and Reproduce the quality checks
+(`src/docs/content/reproducing-checks.md`: every check, with the command that runs it).
+
 ## Scripts
 
-| Script                        | Purpose                                                                                                                                                   |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`                    | Start the dev server                                                                                                                                      |
-| `pnpm build`                  | Typecheck and build for production into `dist/`                                                                                                           |
-| `pnpm preview`                | Serve the production build                                                                                                                                |
-| `pnpm dist:check`             | Check `dist/` after a build: required files, root-absolute asset paths, no source maps, no stray `VITE_` setting, secret, or credential in the output     |
-| `pnpm deploy:serve`           | Serve `dist/` with the rules in `vercel.json`, to try the deployment checks without a host (`--mode catch-all` and `--mode none` are the two wrong hosts) |
-| `pnpm deploy:smoke <address>` | HTTP checks of a deployment: home page, assets, nested URLs, missing files, registry JSON, headers                                                        |
-| `pnpm deploy:e2e`             | Browser checks of a deployment: set `E2E_BASE_URL` to its address                                                                                         |
-| `pnpm deploy:links`           | Ask every web address the repository ships whether it still answers (network; never a pull request check)                                                 |
-| `pnpm lint`                   | ESLint (type-aware, react-hooks, jsx-a11y); fails on warnings                                                                                             |
-| `pnpm lint:fix`               | ESLint with autofix                                                                                                                                       |
-| `pnpm format`                 | Format with Prettier                                                                                                                                      |
-| `pnpm format:check`           | Check formatting without writing                                                                                                                          |
-| `pnpm typecheck`              | TypeScript project check                                                                                                                                  |
-| `pnpm test`                   | Unit/component tests (Vitest), single run                                                                                                                 |
-| `pnpm test:watch`             | Vitest in watch mode                                                                                                                                      |
-| `pnpm docs:check`             | Validate the docs: links, anchors, repository paths, and code-sample imports (also part of `pnpm test`)                                                   |
-| `pnpm notes:check`            | Validate the engineering notes: sections, code excerpts against their files, links, and evidence (also part of `pnpm test`)                               |
-| `pnpm registry:check`         | Check `public/r` against the registry and validate the shadcn items (also part of `pnpm test`)                                                            |
-| `pnpm registry:build`         | Regenerate `public/r` from the registry (`vitest run src/registry/shadcn -u`)                                                                             |
-| `pnpm registry:install-test`  | Install the shadcn item into a clean project with the real CLI, build and open it (network; `--runner npm` for npx)                                       |
-| `pnpm registry:failure-test`  | What the real CLI does with bad names, missing files, malformed items, unsafe paths and failing dependencies (network; `--runner npm`, `--show`)          |
-| `pnpm registry:verify-schema` | Compare the saved shadcn JSON Schemas with the published ones (network)                                                                                   |
-| `pnpm test:e2e`               | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme                       |
-| `pnpm test:a11y`              | Only the axe accessibility scans (WCAG 2.1 A and AA rules, light and dark) against the production build; also part of `pnpm test:e2e`                     |
-| `pnpm check`                  | Lint, format check, typecheck, tests, build — what CI runs                                                                                                |
+| Script                        | Purpose                                                                                                                                                                                                           |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                    | Start the dev server                                                                                                                                                                                              |
+| `pnpm build`                  | Typecheck and build for production into `dist/`                                                                                                                                                                   |
+| `pnpm preview`                | Serve the production build                                                                                                                                                                                        |
+| `pnpm dist:check`             | Check `dist/` after a build: required files, root-absolute asset paths, no source maps, no stray `VITE_` setting, secret, or credential in the output                                                             |
+| `pnpm deploy:serve`           | Serve `dist/` with the rules in `vercel.json`, to try the deployment checks without a host (`--mode catch-all` and `--mode none` are the two wrong hosts)                                                         |
+| `pnpm deploy:smoke <address>` | HTTP checks of a deployment: home page, assets, nested URLs, missing files, registry JSON, headers                                                                                                                |
+| `pnpm deploy:e2e`             | Browser checks of a deployment: set `E2E_BASE_URL` to its address                                                                                                                                                 |
+| `pnpm deploy:links`           | Ask every web address the repository ships whether it still answers (network; never a pull request check)                                                                                                         |
+| `pnpm perf:measure`           | Measure a production build in headless Chromium: what a first visit downloads, how it paints, and what the WebGL pages leave behind. Lab runs on one machine; results go to `perf-results/` and are not committed |
+| `pnpm lint`                   | ESLint (type-aware, react-hooks, jsx-a11y); fails on warnings                                                                                                                                                     |
+| `pnpm lint:fix`               | ESLint with autofix                                                                                                                                                                                               |
+| `pnpm format`                 | Format with Prettier                                                                                                                                                                                              |
+| `pnpm format:check`           | Check formatting without writing                                                                                                                                                                                  |
+| `pnpm typecheck`              | TypeScript project check                                                                                                                                                                                          |
+| `pnpm test`                   | Unit/component tests (Vitest), single run                                                                                                                                                                         |
+| `pnpm test:watch`             | Vitest in watch mode                                                                                                                                                                                              |
+| `pnpm docs:check`             | Validate the docs: links, anchors, repository paths, and code-sample imports (also part of `pnpm test`)                                                                                                           |
+| `pnpm notes:check`            | Validate the engineering notes: sections, code excerpts against their files, links, and evidence (also part of `pnpm test`)                                                                                       |
+| `pnpm registry:check`         | Check `public/r` against the registry and validate the shadcn items (also part of `pnpm test`)                                                                                                                    |
+| `pnpm registry:build`         | Regenerate `public/r` from the registry (`vitest run src/registry/shadcn -u`)                                                                                                                                     |
+| `pnpm registry:install-test`  | Install the shadcn item into a clean project with the real CLI, build and open it (network; `--runner npm` for npx)                                                                                               |
+| `pnpm registry:failure-test`  | What the real CLI does with bad names, missing files, malformed items, unsafe paths and failing dependencies (network; `--runner npm`, `--show`)                                                                  |
+| `pnpm registry:verify-schema` | Compare the saved shadcn JSON Schemas with the published ones (network)                                                                                                                                           |
+| `pnpm test:e2e`               | Playwright end-to-end tests against the production build (port 47317). Set `SCREENSHOT_DIR` to save captures per viewport and theme                                                                               |
+| `pnpm test:a11y`              | Only the axe accessibility scans (WCAG 2.1 A and AA rules, light and dark) against the production build; also part of `pnpm test:e2e`                                                                             |
+| `pnpm check`                  | Lint, format check, typecheck, tests, build — what CI runs                                                                                                                                                        |
 
 Run `pnpm check` before pushing; it ends with `pnpm dist:check`. CI also runs `pnpm docs:check`, `pnpm notes:check` and `pnpm registry:check` on their own, then `pnpm test:e2e`. A second workflow runs the shadcn install and failure tests when the registry files change.
 
@@ -316,6 +321,17 @@ been verified.
 - After a deployment, run `pnpm deploy:smoke <address>` and `E2E_BASE_URL=<address> pnpm deploy:e2e`,
   then look by hand. The steps, what has and has not been checked, the limits of the services
   involved, and a troubleshooting table are in `/docs/deployment`.
+
+## Contributing
+
+`CONTRIBUTING.md` describes how to set up, what to run before a pull request, and where each kind of
+change is documented. In short: work on a branch, run `pnpm check`, and add a test with every fix.
+
+## License
+
+Hieu UI Lab is released under the MIT License; see `LICENSE`. The packages it ships keep their own
+licenses, listed in `THIRD-PARTY-NOTICES.md`. The package stays private (`"private": true`): nothing is
+published to npm, and the only registry item published for the shadcn CLI is Kbd.
 
 ## Troubleshooting
 

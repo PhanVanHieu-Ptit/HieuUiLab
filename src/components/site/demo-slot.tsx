@@ -31,7 +31,7 @@ export function DemoSlot({ slug }: { slug: string }) {
     )
   }
   return (
-    <DemoErrorBoundary>
+    <DemoErrorBoundary key={slug}>
       <Suspense fallback={<DemoFallback />}>
         <Demo />
       </Suspense>

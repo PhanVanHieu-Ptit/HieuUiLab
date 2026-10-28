@@ -95,7 +95,7 @@ describe('DataManagementWorkspaceTemplate', () => {
           `${String(libraryItems.length - 2)} of ${String(libraryItems.length - 2)} items`,
         ),
       ).toBeVisible()
-      expect(within(nav()).getByRole('button', { name: 'Change history, 1 change' })).toBeVisible()
+      expect(within(nav()).getByRole('button', { name: 'Change history 1 change' })).toBeVisible()
 
       await goTo(user, /^Change history/)
       const list = screen.getByRole('list', { name: 'Change history' })

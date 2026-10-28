@@ -137,6 +137,7 @@ export const dataTableEntry: ImplementedEntry = {
             default: '5',
             description: 'Placeholder rows while loading.',
           },
+          { name: 'className', type: 'string', description: 'Classes for the outer element.' },
         ],
       },
       {

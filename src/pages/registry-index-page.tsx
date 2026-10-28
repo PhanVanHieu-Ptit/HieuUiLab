@@ -77,7 +77,13 @@ export function RegistryIndexPage({ kind, title, description }: RegistryIndexPag
             resultsId={resultsId}
           />
           {results.length === 0 ? (
-            <NoResults kind={kind} noun={noun} query={query} onClear={clearFilters} />
+            <NoResults
+              id={resultsId}
+              kind={kind}
+              noun={noun}
+              query={query}
+              onClear={clearFilters}
+            />
           ) : (
             <ul
               id={resultsId}
@@ -98,6 +104,8 @@ export function RegistryIndexPage({ kind, title, description }: RegistryIndexPag
 }
 
 interface NoResultsProps {
+  /** The search field's `aria-controls` names the results; with none, this message is them. */
+  id: string
   kind: RegistryKind
   noun: string
   query: CatalogQuery
@@ -108,14 +116,14 @@ interface NoResultsProps {
  * What to try when nothing matches: close names for a likely typo, the other
  * catalog when it has matches for the same words, and clearing the filters.
  */
-function NoResults({ kind, noun, query, onClear }: NoResultsProps) {
+function NoResults({ id, kind, noun, query, onClear }: NoResultsProps) {
   const q = query.q.trim()
   const suggestions = q ? suggestEntries(getRegistryEntries(kind), q) : []
   const other = otherKind[kind]
   const elsewhere = q ? filterRegistry(getRegistryEntries(other), { q }).length : 0
 
   return (
-    <div className="flex flex-col gap-4">
+    <div id={id} className="flex flex-col gap-4">
       <EmptyState
         icon={<SearchX />}
         headingLevel="h2"

@@ -12,7 +12,7 @@ export interface Deployment {
 export const statusTone = {
   live: 'success',
   building: 'info',
-  failed: 'danger',
+  failed: 'destructive',
 } as const satisfies Record<Deployment['status'], StatusTone>
 
 export const maxDeployments = 40

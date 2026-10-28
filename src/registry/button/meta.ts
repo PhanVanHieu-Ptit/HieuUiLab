@@ -45,7 +45,8 @@ export const buttonEntry: ImplementedEntry = {
             name: 'loading',
             type: 'boolean',
             default: 'false',
-            description: 'Shows a spinner, sets aria-busy, and disables the button.',
+            description:
+              'Shows a spinner, sets aria-busy, and disables the button. With asChild there is no spinner, and the child gets aria-busy, aria-disabled, and data-disabled instead, and its click is cancelled.',
           },
           {
             name: 'asChild',

@@ -20,7 +20,7 @@ export const statusBadgeEntry: ImplementedEntry = {
   guidelines: [
     'Keep one map from your domain statuses to tones and labels, and use it everywhere the status appears.',
     'The label is required and is what assistive tech reads; the dot and color only reinforce it.',
-    'Use danger for terminal failures (failed, void, cancelled) and warning for states that need attention soon.',
+    'Use destructive for terminal failures (failed, void, cancelled) and warning for states that need attention soon.',
   ],
   api: {
     parts: [
@@ -29,7 +29,7 @@ export const statusBadgeEntry: ImplementedEntry = {
         props: [
           {
             name: 'tone',
-            type: "'neutral' | 'info' | 'success' | 'warning' | 'danger'",
+            type: "'neutral' | 'info' | 'success' | 'warning' | 'destructive'",
             default: "'neutral'",
             description: 'Color of the badge and dot.',
           },

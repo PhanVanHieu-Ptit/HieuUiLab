@@ -70,6 +70,7 @@ export const formEntry: ImplementedEntry = {
             required: true,
             description: 'Renders the control inside FieldControl; pass field.ref to it.',
           },
+          { name: 'className', type: 'string', description: 'Classes for the Field.' },
         ],
       },
       {

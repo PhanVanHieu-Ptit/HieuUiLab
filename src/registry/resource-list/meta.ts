@@ -58,6 +58,7 @@ export const resourceListEntry: ImplementedEntry = {
             default: '3',
             description: 'Rows while loading.',
           },
+          { name: 'className', type: 'string', description: 'Classes for the outer element.' },
         ],
       },
     ],

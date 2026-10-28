@@ -8,7 +8,7 @@ const invoiceStatus: Record<InvoiceStatus, { tone: StatusTone; label: string }> 
   sent: { tone: 'info', label: 'Sent' },
   paid: { tone: 'success', label: 'Paid' },
   overdue: { tone: 'warning', label: 'Overdue' },
-  void: { tone: 'danger', label: 'Void' },
+  void: { tone: 'destructive', label: 'Void' },
 }
 
 export function StatusBadgeDemo() {

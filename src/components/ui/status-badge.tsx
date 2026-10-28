@@ -3,14 +3,14 @@ import type { ReactNode } from 'react'
 import { Badge, type BadgeProps } from '@/components/ui/badge'
 import { cn } from '@/lib/cn'
 
-export type StatusTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger'
+export type StatusTone = 'neutral' | 'info' | 'success' | 'warning' | 'destructive'
 
 const toneVariant = {
   neutral: 'neutral',
   info: 'info',
   success: 'success',
   warning: 'warning',
-  danger: 'destructive',
+  destructive: 'destructive',
 } as const satisfies Record<StatusTone, BadgeProps['variant']>
 
 export interface StatusBadgeProps extends Omit<BadgeProps, 'variant' | 'children'> {

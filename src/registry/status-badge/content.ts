@@ -27,7 +27,7 @@ export const content: ImplementedEntryContent = {
       {
         kind: 'select',
         prop: 'tone',
-        options: ['neutral', 'info', 'success', 'warning', 'danger'],
+        options: ['neutral', 'info', 'success', 'warning', 'destructive'],
         default: 'neutral',
       },
       { kind: 'select', prop: 'size', options: ['sm', 'md'], default: 'md' },

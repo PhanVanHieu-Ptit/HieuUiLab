@@ -66,7 +66,7 @@ export function RegistryCard({
           aria-label={`${entry.name} live preview`}
           className="relative z-10 flex min-h-44 items-center justify-center-safe overflow-x-auto border-b bg-background/60 p-6"
         >
-          <DemoErrorBoundary>
+          <DemoErrorBoundary key={previewed.slug}>
             <Suspense fallback={null}>
               <LivePreview entry={previewed} />
             </Suspense>

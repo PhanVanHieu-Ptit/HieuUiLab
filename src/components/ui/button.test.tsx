@@ -80,6 +80,52 @@ describe('Button', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
+  it('marks the child busy and disabled, and does not follow it, when asChild is loading', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(
+      <Button asChild loading onClick={onClick}>
+        <a href="#next">Go</a>
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Go' })
+    expect(link).toHaveAttribute('aria-busy', 'true')
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link).toHaveAttribute('data-disabled')
+    // The keyboard still reaches the link, so the click has to be cancelled, as a disabled button
+    // would not receive it.
+    link.focus()
+    await user.keyboard('{Enter}')
+    expect(onClick).not.toHaveBeenCalled()
+    expect(window.location.hash).not.toBe('#next')
+  })
+
+  it('does the same for a disabled asChild button, without claiming it is busy', () => {
+    render(
+      <Button asChild disabled>
+        <a href="#next">Go</a>
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Go' })
+    expect(link).toHaveAttribute('aria-disabled', 'true')
+    expect(link).not.toHaveAttribute('aria-busy')
+  })
+
+  it('leaves an enabled asChild button alone', async () => {
+    const user = userEvent.setup()
+    const onClick = vi.fn()
+    render(
+      <Button asChild onClick={onClick}>
+        <a href="#open">Go</a>
+      </Button>,
+    )
+    const link = screen.getByRole('link', { name: 'Go' })
+    expect(link).not.toHaveAttribute('aria-disabled')
+    expect(link).not.toHaveAttribute('data-disabled')
+    await user.click(link)
+    expect(onClick).toHaveBeenCalledTimes(1)
+  })
+
   it('forwards ref to the underlying element', () => {
     let element: HTMLButtonElement | null = null
     render(

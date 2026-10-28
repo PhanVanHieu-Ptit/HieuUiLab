@@ -46,6 +46,11 @@ export const errorStateEntry: ImplementedEntry = {
             default: "'Try again'",
             description: 'Retry button label.',
           },
+          {
+            name: 'icon',
+            type: 'ReactNode',
+            description: 'Decorative icon above the title, hidden from assistive technology.',
+          },
           { name: 'actions', type: 'ReactNode', description: 'Further actions after retry.' },
           {
             name: 'headingLevel',

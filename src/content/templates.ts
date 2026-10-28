@@ -36,7 +36,11 @@ export interface Template {
   composition: readonly string[]
   decisions: readonly { title: string; rationale: string }[]
   limitations: readonly string[]
-  /** Repository-relative source files. The first is the template component itself. */
+  /**
+   * Repository-relative source files to copy: the template component first, then the helpers it
+   * imports from `@/templates` and `@/registry`. A test keeps this list complete. The blocks and
+   * components it uses are copied from their own registry pages.
+   */
   files: readonly [string, ...string[]]
   mockData: readonly { label: string; path: string }[]
 }
@@ -100,6 +104,7 @@ export const templates: readonly Template[] = [
     files: [
       'src/templates/admin-dashboard/template.tsx',
       'src/templates/shared/template-shell.tsx',
+      'src/registry/demo-controls.tsx',
     ],
     mockData: [
       { label: 'Dashboard overview', path: 'src/registry/dashboard-overview/mock-data.ts' },
@@ -167,6 +172,8 @@ export const templates: readonly Template[] = [
       'src/templates/operations-monitoring/template.tsx',
       'src/templates/shared/template-shell.tsx',
       'src/templates/shared/format.ts',
+      'src/registry/demo-controls.tsx',
+      'src/registry/mock-delay.ts',
     ],
     mockData: [
       { label: 'Monitoring dashboard', path: 'src/registry/monitoring-dashboard/mock-data.ts' },
@@ -232,6 +239,8 @@ export const templates: readonly Template[] = [
       'src/templates/data-management-workspace/template.tsx',
       'src/templates/shared/template-shell.tsx',
       'src/templates/shared/format.ts',
+      'src/registry/demo-controls.tsx',
+      'src/registry/mock-delay.ts',
     ],
     mockData: [
       { label: 'Library items', path: 'src/registry/search-filter-toolbar/mock-data.ts' },

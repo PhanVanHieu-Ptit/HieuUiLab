@@ -73,9 +73,14 @@ const registryHandle = handle(
 )
 
 /**
- * The route tree. A factory, not a constant: React Router clears resolved keys on
- * each route's `lazy` object in place, so routes can't be shared between routers
- * (e.g. one per test).
+ * The route tree. A factory, not a constant: React Router replaces each route's `lazy` in place
+ * once it has loaded, so routes can't be shared between routers (e.g. one per test).
+ *
+ * Every lazy page is a `lazy` function that returns `{ Component }`, not the object form
+ * `lazy: { Component: … }`. React Router 8 drops the error of a lazy property for a route without
+ * its own loader, so a page chunk that fails to load (a tab opened before a deployment asks for a
+ * file that is gone) would leave an empty page and never reach the error page. The function form
+ * reports it. `e2e/route-errors.spec.ts` and `route-errors.test.tsx` fail if that changes.
  */
 export function createRoutes(): RouteObject[] {
   return [
@@ -113,7 +118,9 @@ export function createRoutes(): RouteObject[] {
                       path: ':slug',
                       loader: registryLoader('component'),
                       handle: registryHandle,
-                      lazy: { Component: async () => (await registryDetail()).RegistryDetailPage },
+                      lazy: async () => ({
+                        Component: (await registryDetail()).RegistryDetailPage,
+                      }),
                     },
                   ],
                 },
@@ -129,7 +136,9 @@ export function createRoutes(): RouteObject[] {
                       path: ':slug',
                       loader: registryLoader('block'),
                       handle: registryHandle,
-                      lazy: { Component: async () => (await registryDetail()).RegistryDetailPage },
+                      lazy: async () => ({
+                        Component: (await registryDetail()).RegistryDetailPage,
+                      }),
                     },
                   ],
                 },
@@ -139,7 +148,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      lazy: { Component: async () => (await templatePages()).TemplatesIndexPage },
+                      lazy: async () => ({ Component: (await templatePages()).TemplatesIndexPage }),
                     },
                     {
                       path: ':slug',
@@ -150,14 +159,14 @@ export function createRoutes(): RouteObject[] {
                           description: template.summary,
                         })),
                       ),
-                      lazy: { Component: async () => (await templatePages()).TemplateDetailPage },
+                      lazy: async () => ({ Component: (await templatePages()).TemplateDetailPage }),
                     },
                   ],
                 },
                 {
                   path: 'playground',
                   handle: docsHandle('/playground'),
-                  lazy: { Component: async () => (await playgroundPage()).PlaygroundPage },
+                  lazy: async () => ({ Component: (await playgroundPage()).PlaygroundPage }),
                 },
               ],
             },
@@ -177,7 +186,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      lazy: { Component: async () => (await labPages()).LabIndexPage },
+                      lazy: async () => ({ Component: (await labPages()).LabIndexPage }),
                     },
                     {
                       id: LAB_KIND_ROUTE_ID,
@@ -192,7 +201,7 @@ export function createRoutes(): RouteObject[] {
                       children: [
                         {
                           index: true,
-                          lazy: { Component: async () => (await labPages()).LabCategoryPage },
+                          lazy: async () => ({ Component: (await labPages()).LabCategoryPage }),
                         },
                         {
                           path: ':slug',
@@ -203,7 +212,7 @@ export function createRoutes(): RouteObject[] {
                               description: experiment.summary,
                             })),
                           ),
-                          lazy: { Component: async () => (await labPages()).LabDetailPage },
+                          lazy: async () => ({ Component: (await labPages()).LabDetailPage }),
                         },
                       ],
                     },
@@ -215,7 +224,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      lazy: { Component: async () => (await projectPages()).ProjectsIndexPage },
+                      lazy: async () => ({ Component: (await projectPages()).ProjectsIndexPage }),
                     },
                     {
                       path: ':slug',
@@ -226,7 +235,7 @@ export function createRoutes(): RouteObject[] {
                           description: project.summary,
                         })),
                       ),
-                      lazy: { Component: async () => (await projectPages()).ProjectDetailPage },
+                      lazy: async () => ({ Component: (await projectPages()).ProjectDetailPage }),
                     },
                   ],
                 },
@@ -236,7 +245,7 @@ export function createRoutes(): RouteObject[] {
                   children: [
                     {
                       index: true,
-                      lazy: { Component: async () => (await notePages()).NotesIndexPage },
+                      lazy: async () => ({ Component: (await notePages()).NotesIndexPage }),
                     },
                     {
                       path: ':slug',
@@ -247,14 +256,14 @@ export function createRoutes(): RouteObject[] {
                           description: entry.summary,
                         })),
                       ),
-                      lazy: { Component: async () => (await notePages()).NoteDetailPage },
+                      lazy: async () => ({ Component: (await notePages()).NoteDetailPage }),
                     },
                   ],
                 },
                 {
                   path: 'about',
                   handle: sectionHandle(sections.about),
-                  lazy: { Component: async () => (await aboutPage()).AboutPage },
+                  lazy: async () => ({ Component: (await aboutPage()).AboutPage }),
                 },
                 {
                   // Moved to /labs; redirects replace the history entry so Back does not bounce.

@@ -38,7 +38,6 @@ jobs:
     env:
       # Passed through the environment, never written into a command line.
       DEPLOY_URL: ${{ inputs.url || github.event.deployment_status.environment_url }}
-      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
     steps:
       - name: Check the address
         run: |
@@ -60,8 +59,12 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # The bypass secret is set on the two steps that send it, not on the job, so the install step and
+      # the browser download never see it.
       - name: HTTP checks
         run: pnpm deploy:smoke "$DEPLOY_URL"
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - run: pnpm exec playwright install --with-deps chromium
 
@@ -69,6 +72,7 @@ jobs:
         run: pnpm deploy:e2e
         env:
           E2E_BASE_URL: ${{ env.DEPLOY_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       # Links to other sites depend on servers this repository does not control: reported, never a
       # reason to call the deployment broken.

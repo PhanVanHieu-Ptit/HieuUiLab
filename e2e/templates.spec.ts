@@ -115,10 +115,10 @@ test.describe('admin dashboard', () => {
     )
 
     // Reading a notification lowers the count in the sidebar.
-    await expect(nav.getByRole('button', { name: 'Notifications, 4 unread' })).toBeVisible()
+    await expect(nav.getByRole('button', { name: 'Notifications 4 unread' })).toBeVisible()
     await nav.getByRole('button', { name: /^Notifications/ }).click()
     await app.getByRole('button', { name: /^Mark as read: Lan Anh/ }).click()
-    await expect(nav.getByRole('button', { name: 'Notifications, 3 unread' })).toBeVisible()
+    await expect(nav.getByRole('button', { name: 'Notifications 3 unread' })).toBeVisible()
     await app.getByRole('button', { name: 'Mark all as read' }).click()
     await expect(nav.getByRole('button', { name: 'Notifications', exact: true })).toBeVisible()
   })
@@ -195,14 +195,14 @@ test.describe('operations monitoring', () => {
     await page.goto('/templates/operations-monitoring')
     const app = preview(page, 'Operations monitoring')
     const nav = appNav(app, 'Operations console')
-    await expect(nav.getByRole('button', { name: 'Alerts, 2 unread' })).toBeVisible()
+    await expect(nav.getByRole('button', { name: 'Alerts 2 unread' })).toBeVisible()
 
     await nav.getByRole('button', { name: /^Alerts/ }).click()
     await expect(app.getByText('Background jobs are not processing')).toBeVisible()
     await app
       .getByRole('button', { name: 'Mark as read: Background jobs are not processing' })
       .click()
-    await expect(nav.getByRole('button', { name: 'Alerts, 1 unread' })).toBeVisible()
+    await expect(nav.getByRole('button', { name: 'Alerts 1 unread' })).toBeVisible()
   })
 
   test('narrows the incident log with a saved view and a search', async ({ page }) => {
@@ -243,7 +243,7 @@ test.describe('data management workspace', () => {
       .click()
 
     await expect(app.getByText('10 of 10 items')).toBeVisible()
-    await expect(nav.getByRole('button', { name: 'Change history, 1 change' })).toBeVisible()
+    await expect(nav.getByRole('button', { name: 'Change history 1 change' })).toBeVisible()
     await nav.getByRole('button', { name: /^Change history/ }).click()
     await expect(app.getByRole('list', { name: 'Change history' })).toContainText(
       'You deleted 2 library items',

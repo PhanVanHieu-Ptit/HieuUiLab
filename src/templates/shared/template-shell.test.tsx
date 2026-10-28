@@ -51,14 +51,18 @@ describe('TemplateShell', () => {
   it('reports the chosen view', async () => {
     const user = userEvent.setup()
     const { onViewChange } = setup()
-    await user.click(screen.getByRole('button', { name: 'Second, 3 unread' }))
+    await user.click(screen.getByRole('button', { name: 'Second 3 unread' }))
     expect(onViewChange).toHaveBeenCalledWith('two')
   })
 
-  it('names a badge for assistive tech, starting with the visible label', () => {
+  it('names a badge for assistive tech, containing everything that is visible on the button', () => {
     setup()
     const button = screen.getByRole('button', { name: /^Second/ })
-    expect(button).toHaveAccessibleName('Second, 3 unread')
+    // Label in name (WCAG 2.5.3): what is visible is "Second" and "3", and the name must contain it.
+    expect(button).toHaveAccessibleName('Second 3 unread')
+    expect(button).toHaveAccessibleName(expect.stringContaining('Second 3'))
+    // The text on the button reads "Second 3", with a space, as a checker that joins its text nodes sees it.
+    expect(button.textContent.trim()).toBe('Second 3')
     expect(within(button).getByText('3')).toBeVisible()
     expect(screen.getByRole('button', { name: 'First' })).not.toHaveAttribute('aria-label')
   })

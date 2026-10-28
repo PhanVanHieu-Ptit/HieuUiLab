@@ -46,7 +46,7 @@ describe('AdminDashboardTemplate', () => {
     const user = userEvent.setup()
     render(<AdminDashboardTemplate />)
     const button = () => within(nav()).getByRole('button', { name: /^Notifications/ })
-    expect(button()).toHaveAccessibleName(`Notifications, ${String(unread)} unread`)
+    expect(button()).toHaveAccessibleName(`Notifications ${String(unread)} unread`)
 
     await user.click(button())
     await user.click(screen.getByRole('button', { name: 'Mark all as read' }))

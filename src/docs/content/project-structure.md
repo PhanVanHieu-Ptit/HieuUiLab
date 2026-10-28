@@ -54,12 +54,12 @@ Detail routes have a small loader that looks the slug up in local content. An un
   path: 'notes',
   handle: { meta: { title: 'Notes', description: '…' } },
   children: [
-    { index: true, lazy: { Component: … } },
+    { index: true, lazy: async () => ({ Component: … }) },
     {
       path: ':slug',
       loader: noteLoader, // the note and its Markdown, or a 404
       handle: { meta: metaFromData<NoteLoaderData>(({ entry }) => ({ title: entry.title })) },
-      lazy: { Component: … },
+      lazy: async () => ({ Component: … }),
     },
   ],
 }

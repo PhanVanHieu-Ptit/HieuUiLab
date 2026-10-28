@@ -14,6 +14,8 @@ export const ROOT_FILES = new Set([
   'package.json',
   'README.md',
   'CHANGELOG.md',
+  'CONTRIBUTING.md',
+  'THIRD-PARTY-NOTICES.md',
   'index.html',
   'vite.config.ts',
   'vercel.json',
